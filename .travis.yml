@@ -1,6 +1,6 @@
 language: fsharp
 solution: FSharp.FinancialContracts.sln
-install: ./install-dependencies.sh
+before_install: ./install-dependencies.sh
 mono:
   - latest
   - 3.12.0
