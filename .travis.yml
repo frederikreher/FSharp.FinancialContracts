@@ -1,6 +1,5 @@
-language: fsharp
+language: f#
 solution: FSharp.FinancialContracts.sln
-before_install: ./install-dependencies.sh
 mono:
   - latest
   - 3.12.0
