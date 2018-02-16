@@ -1,5 +1,6 @@
 language: csharp
 solution: FSharp.FinancialContracts.sln
+before_script: msbuild /t:Restore
 mono:
   - latest
   - 3.12.0
