@@ -36,7 +36,7 @@ module Contract =
     let add (d1:DateTime) (days:Days) = d1.AddDays days
 
     // Functions for creating contracts
-    let trade (amount, what) = Trade (amount, what)
+    let trade amount what = Trade (amount, what)
     let after dt contract = After (dt, contract)
     let until dt contract = Until (dt, contract)
 

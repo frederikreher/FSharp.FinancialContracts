@@ -4,17 +4,17 @@ open System
 
 module Contract =
     
-    type Currency
-    type Days
+    type Currency = GBP | USD | DKK | None
+    type Days = Double
     type Contract
 
-    val eval: Contract -> (int * Currency) list
+    val eval: Contract -> DateTime -> (Double * Currency) list
 
     val date : String -> DateTime
     val diff : DateTime -> DateTime -> Days
     val add: DateTime -> Days -> DateTime
 
-    val trade : int -> Currency -> Contract
+    val trade : Double -> Currency -> Contract
     val after : DateTime -> Contract -> Contract
     val until : DateTime -> Contract -> Contract
 
