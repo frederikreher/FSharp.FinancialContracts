@@ -5,18 +5,19 @@ open System
 module Contract =
     
     type Currency
-    type Days
+    type Days = Double
     type Contract
+    type Transaction
 
-    val eval: Contract -> (int * Currency) list
+    val eval: Contract -> DateTime -> IObservable<Transaction>
 
     val date : String -> DateTime
     val diff : DateTime -> DateTime -> Days
-    val add: DateTime -> Days -> DateTime
+    val add : DateTime -> Days -> DateTime
 
-    val trade : int -> Currency -> Contract
-    val after : DateTime -> Contract -> Contract
-    val until : DateTime -> Contract -> Contract
+    val trade : Double -> Currency -> Contract
+    val after : IObservable<Boolean> -> Contract -> Contract
+    val until : IObservable<Boolean> -> Contract -> Contract
 
     // Primitives for defining contracts - See Composing contracts
     val zero : Contract
@@ -24,7 +25,7 @@ module Contract =
     val give : Contract -> Contract
     val _and_ : Contract -> Contract -> Contract
     val _or_ : Contract -> Contract -> Contract
-    val truncate : DateTime -> Contract -> Contract
+    val truncate : IObservable<Boolean> -> Contract -> Contract
     val _then_ : Contract -> Contract -> Contract
     val scale : Double -> Contract -> Contract
     val get : Contract -> Contract
