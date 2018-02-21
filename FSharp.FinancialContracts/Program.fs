@@ -17,3 +17,11 @@ module program =
         printfn "%A" res
         0 // return an integer exit code
 
+(* Notes from meeting with Patrick
+implement:
+	observable type
+	horizion function for contracts
+	
+
+hybrid between composing contracts and multi party contracts to handle horizon
+*)
