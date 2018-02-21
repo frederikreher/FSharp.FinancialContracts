@@ -4,30 +4,27 @@ open System
 
 module Contract =
     
-    type Currency
-    type Days = Double
+    type Currency = GBP | USD | DKK | None
     type Contract
     type Transaction
+    type Time = int
+    // implement arithmetic expression, get
+    type Observable =
+        | Get of Currency * Currency
+    type Environment =
+        | CurrentTime of DateTime
+        | ExchangeRate of Observable
 
-    val eval: Contract -> DateTime -> IObservable<Transaction>
-
-    val date : String -> DateTime
-    val diff : DateTime -> DateTime -> Days
-    val add : DateTime -> Days -> DateTime
-
-    val trade : Double -> Currency -> Contract
-    val after : IObservable<Boolean> -> Contract -> Contract
-    val until : IObservable<Boolean> -> Contract -> Contract
+    val evalC : Environment -> Contract -> Transaction list
+    val evalObs : Environment -> Observable -> float
 
     // Primitives for defining contracts - See Composing contracts
     val zero : Contract
     val one : Currency -> Contract
-    val give : Contract -> Contract
+    val delay : Time -> Contract -> Contract
+    val scale : Observable -> Contract -> Contract
     val _and_ : Contract -> Contract -> Contract
     val _or_ : Contract -> Contract -> Contract
-    val truncate : IObservable<Boolean> -> Contract -> Contract
-    val _then_ : Contract -> Contract -> Contract
-    val scale : Double -> Contract -> Contract
-    val get : Contract -> Contract
-    val anytime : Contract -> Contract  
+    val _if_ : Observable -> Time -> Contract -> Contract -> Contract
+    val give : Contract -> Contract
 
