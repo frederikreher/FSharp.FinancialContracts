@@ -11,9 +11,7 @@ module Contract =
     // implement arithmetic expression, get
     type Observable =
         | Get of Currency * Currency
-    type Environment =
-        | CurrentTime of DateTime
-        | ExchangeRate of Observable
+    type Environment
 
     val evalC : Environment -> Contract -> Transaction list
     val evalObs : Environment -> Observable -> float

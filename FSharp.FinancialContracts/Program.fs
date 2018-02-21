@@ -11,13 +11,13 @@ module program =
 
     [<EntryPoint>]
     let main argv =
-        let env = CurrentTime(DateTime.Now)
+        let env = Environment(1)
         let scaleFactor = Get(DKK, GBP)
         let res = evalC env (_and_ (delay 5 (one GBP)) (give (scale scaleFactor (one DKK))))
         printfn "%A" res
         0 // return an integer exit code
 
-(* Notes from meeting with Patrick
+(* Notes from meeting with Patrick  
 implement:
 	observable type
 	horizion function for contracts
