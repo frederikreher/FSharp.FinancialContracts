@@ -5,24 +5,30 @@ open System
 module Contract =
     
     type Currency = GBP | USD | DKK | None
-    type Contract
     type Transaction
     type Time = int
-    // implement arithmetic expression, get
-    type Observable =
-        | Get of Currency * Currency
-    type Environment
+    type Observable = 
+        | Number of string
+        | Bool of string
+    
+    type ObservableValue = 
+        | NumberValue of float
+        | BoolValue of bool
 
-    val evalC : Environment -> Contract -> Transaction list
-    val evalObs : Environment -> Observable -> float
+    type Environment = Time * Map<Observable,ObservableValue>
+
 
     // Primitives for defining contracts - See Composing contracts
-    val zero : Contract
-    val one : Currency -> Contract
-    val delay : Time -> Contract -> Contract
-    val scale : Observable -> Contract -> Contract
-    val _and_ : Contract -> Contract -> Contract
-    val _or_ : Contract -> Contract -> Contract
-    val _if_ : Observable -> Time -> Contract -> Contract -> Contract
-    val give : Contract -> Contract
 
+    type Contract = 
+        | Zero of float * Currency                     
+        | One of Currency                               
+        | Delay of Time * Contract
+        | Scale of Observable * Contract                    
+                                                        
+        | And of Contract * Contract                    
+        | Or of Contract * Contract                     
+        | If of Observable * Time * Contract * Contract
+        | Give of Contract 
+    
+    val evalC : Environment -> Contract -> Transaction list
