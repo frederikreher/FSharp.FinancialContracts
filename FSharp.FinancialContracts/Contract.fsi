@@ -32,3 +32,5 @@ module Contract =
         | Give of Contract 
     
     val evalC : Environment -> Contract -> Transaction list
+    val increaseTime : Environment -> Environment
+    val getTime : Environment -> Time

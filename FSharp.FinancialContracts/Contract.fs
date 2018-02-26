@@ -36,10 +36,10 @@ module Contract =
 
     // Defines how a contract can be constructed
     type Contract = 
-        | Zero of float * Currency                     // Contract that has no rights or obligations
+        | Zero of float * Currency                      // Contract that has no rights or obligations
         | One of Currency                               // Contract paying one unit of the provided currency. Has an infinite horizon.
         | Delay of Time * Contract
-        | Scale of Observable * Contract                    // Acquire the provided contract, but all rights and obligations 
+        | Scale of Observable * Contract                // Acquire the provided contract, but all rights and obligations 
                                                         // is scaled by the provided value.
         | And of Contract * Contract                    // Immediately acquire both contracts.
         | Or of Contract * Contract                     // Immediately acquire either of the contracts.
