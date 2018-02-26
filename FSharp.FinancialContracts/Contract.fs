@@ -8,16 +8,16 @@ module Contract =
     // Currency used in contracts
     type Currency = GBP | USD | DKK | None
     type Transaction = Transaction of float * Currency
-    type Time = int
+    type Time = float
     type Observable = 
-        | Get of Currency * Currency
+        | Get of Currency
         | Bool of Boolean
         
-    type Environment(time:int) = 
+    (*type Environment(time:int) = 
         let mutable currentTime = time
         member this.CurrentTime() = currentTime
         member this.IncreaseTime() = currentTime <- currentTime + 1
-        new() = Environment(0)
+        new() = Environment(0)*)
 
     // Defines how a contract can be constructed
     type Contract = 
@@ -42,18 +42,23 @@ module Contract =
     let give c = Give(c)
 
     // Evaluate observable
-    let rec evalObs (env:Environment) obs = 
+    let rec evalObs (env:Map<String,float>) obs = 
         match obs with
-        | Get(cur1, cur2) -> 1.0
-        | Bool(b) -> b
+        | Get(cur1) -> 
+            match cur1 with
+            | GBP -> env.["GBP"] / 100.0
+            | USD -> env.["USD"] / 100.0
+            | DKK -> env.["DKK"] / 100.0
+            | _ -> failwith "Unknown currency type"
+        | Bool(b) -> if b = true then 0.0 else 1.0
         | _ -> failwith "Unknown Observable type"
 
     // Evaluate contract
-    let rec evalC (env:Environment) contract = 
+    let rec evalC (env:Map<String,float>) contract = 
         [ match contract with
           | Zero(a, n) -> yield Transaction(a, n)
           | One(currency) -> yield Transaction(1.0, currency)
-          | Delay(t, c) when (env.CurrentTime()) > t -> yield! evalC env c
+          | Delay(t, c) when (env.["CurrentTime"] > t) -> yield! evalC env c
           | Scale(obs, c1) ->
               yield! List.fold (fun acc trans -> 
                                 match trans with
@@ -70,11 +75,11 @@ module Contract =
               else
                   yield! evalC env c2
           | If(obs, t, c1, c2) -> 
-              if (evalObs env obs) then
-                  if (env.CurrentTime()) < t then
+              if (evalObs env obs) = 0.0 then
+                  if env.["CurrentTime"] < t then
                       yield! evalC env c1
               else
-                  if (env.CurrentTime()) < t then
+                  if env.["CurrentTime"] < t then
                       yield! evalC env c2
           | Give(c) -> 
               yield! List.fold (fun acc trans -> 
