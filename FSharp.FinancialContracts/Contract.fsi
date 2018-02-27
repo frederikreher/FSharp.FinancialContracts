@@ -34,3 +34,4 @@ module Contract =
     val evalC : Environment -> Contract -> Transaction list
     val increaseTime : Environment -> Environment
     val getTime : Environment -> Time
+    val getExchangeRate : Currency * Currency -> float
