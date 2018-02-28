@@ -59,7 +59,7 @@ module Contract =
     // Evaluate contract
     let rec evalC (env:Environment) contract  = 
         [ match contract with
-          | Zero(a, n) -> yield Transaction(a, n)
+          | Zero(a, n) -> ()
           | One(currency) -> yield Transaction(1.0, currency)
           | Delay(t, c) when (env |> getTime) >= t -> yield! evalC env c
           | Scale(obs, c1) ->
