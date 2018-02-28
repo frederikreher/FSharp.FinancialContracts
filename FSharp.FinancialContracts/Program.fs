@@ -24,18 +24,17 @@ module program =
         let c3 = And(One(USD), Give(Delay(3,Scale(scaleFactor2,One(DKK)))))
         let c4 = And(Scale(scaleFactor3, One(USD)), Give(Delay(4,Scale(scaleFactor3, Scale(scaleFactor2,One(DKK))))))
 
-        let boolT = Bool("true")
-        let boolF = Bool("false")
-        let ifTest = If(boolT, 0, c1, c3)
-        
-        printfn "%A" (evalC env ifTest)
+        //let boolT = Bool("true")
+        //let boolF = Bool("false")
+        //let ifTest = If(boolF, 0, c1, c3)
+        //printfn "%A" (evalC env ifTest)
 
         //printfn "%A" (getExchangeRate (USD, DKK))
         //printfn "%A" (getExchangeRate (DKK, USD))
 
         //printfn "%A" (evalC env (Zero(10.0, USD)))
 
-        (*for i = 1 to 5 do
+        for i = 1 to 5 do
             env <- increaseTime env
             let res = c1 |> evalC env
             let res2 = c2 |> evalC env
@@ -49,7 +48,7 @@ module program =
             printfn "%A" res3
             printfn "%A" res4
 
-            Thread.Sleep(1000)*)
+            Thread.Sleep(1000)
         0 // return an integer exit code
 
 (* Notes from meeting with Patrick  

@@ -83,10 +83,10 @@ module Contract =
                   yield! evalC env c2
           | If(obs, t, c1, c2) -> 
               if env |> (getBool obs) then
-                  if (env |> getTime) < t then
+                  if (env |> getTime) <= t then
                       yield! evalC env c1
               else
-                  if (env |> getTime) < t then
+                  if (env |> getTime) <= t then
                       yield! evalC env c2
           | Give(c) -> 
               yield! List.fold (fun acc trans -> 
