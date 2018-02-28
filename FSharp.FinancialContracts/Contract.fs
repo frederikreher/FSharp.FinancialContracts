@@ -41,13 +41,13 @@ module Contract =
     // Defines how a contract can be constructed
     type Contract = 
         | Zero of float * Currency                      // Contract that has no rights or obligations
-        | One of Currency                               // Contract paying one unit of the provided currency. Has an infinite horizon.
-        | Delay of Time * Contract
+        | One of Currency                               // Contract paying one unit of the provided currency.
+        | Delay of Time * Contract                      // 
         | Scale of Observable * Contract                // Acquire the provided contract, but all rights and obligations 
                                                         // is scaled by the provided value.
         | And of Contract * Contract                    // Immediately acquire both contracts.
         | Or of Contract * Contract                     // Immediately acquire either of the contracts.
-        | If of Observable * Time * Contract * Contract
+        | If of Observable * Time * Contract * Contract // 
         | Give of Contract                              // Contract giving away the provided contract. 
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
 
@@ -61,7 +61,7 @@ module Contract =
             float(res)
 
     // Evaluate contract
-    let rec evalC (env:Environment) contract  = 
+    let rec evalC (env:Environment) contract : Transaction list = 
         [ match contract with
           | Zero(a, n) -> ()
           | One(currency) -> yield Transaction(1.0, currency)

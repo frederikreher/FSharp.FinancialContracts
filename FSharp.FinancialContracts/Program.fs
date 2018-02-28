@@ -10,7 +10,9 @@ module program =
     let main argv =
         let observables = [(Number("GBP/DKK"), NumberValue(getExchangeRate (GBP, DKK)));
                            (Number("USD/DKK"), NumberValue(getExchangeRate (USD, DKK)));
-                           (Number("100"), NumberValue(100.0))]
+                           (Number("100"), NumberValue(100.0));
+                           (Bool("true"), BoolValue(true));
+                           (Bool("false"), BoolValue(false))]
 
         let mutable env: Environment = 0, (observables |> Map.ofList)
         
@@ -21,7 +23,13 @@ module program =
         let c2 = And(Scale(scaleFactor3, One(GBP)), Give(Delay(4,Scale(scaleFactor3, Scale(scaleFactor1,One(DKK))))))
         let c3 = And(One(USD), Give(Delay(3,Scale(scaleFactor2,One(DKK)))))
         let c4 = And(Scale(scaleFactor3, One(USD)), Give(Delay(4,Scale(scaleFactor3, Scale(scaleFactor2,One(DKK))))))
+
+        let boolT = Bool("true")
+        let boolF = Bool("false")
+        let ifTest = If(boolT, 0, c1, c3)
         
+        printfn "%A" (evalC env ifTest)
+
         //printfn "%A" (getExchangeRate (USD, DKK))
         //printfn "%A" (getExchangeRate (DKK, USD))
 
