@@ -8,17 +8,17 @@ module program =
 
     [<EntryPoint>]
     let main argv =
-        let observables = [(Number("GBP/DKK"), NumberValue(getExchangeRate (GBP, DKK)));
-                           (Number("USD/DKK"), NumberValue(getExchangeRate (USD, DKK)));
-                           (Number("100"), NumberValue(100.0));
-                           (Bool("true"), BoolValue(true));
-                           (Bool("false"), BoolValue(false))]
+        let boolObservables = [(BoolVal("true"), true);
+                               (BoolVal("false"), false)]
+        let numObservables = [(NumVal("GBP/DKK"), getExchangeRate(GBP, DKK));
+                              (NumVal("USD/DKK"), getExchangeRate(USD, DKK));
+                              (NumVal("100"), 100.0)]
 
-        let mutable env: Environment = 0, (observables |> Map.ofList)
+        let mutable env: Environment = 0, (boolObservables |> Map.ofList), (numObservables |> Map.ofList)
         
-        let scaleFactor1 = Number("GBP/DKK")
-        let scaleFactor2 = Number("USD/DKK")
-        let scaleFactor3 = Number("100")
+        let scaleFactor1 = NumVal("GBP/DKK")
+        let scaleFactor2 = NumVal("USD/DKK")
+        let scaleFactor3 = NumVal("100")
         let c1 = And(One(GBP), Give(Delay(3,Scale(scaleFactor1,One(DKK)))))
         let c2 = And(Scale(scaleFactor3, One(GBP)), Give(Delay(4,Scale(scaleFactor3, Scale(scaleFactor1,One(DKK))))))
         let c3 = And(One(USD), Give(Delay(3,Scale(scaleFactor2,One(DKK)))))

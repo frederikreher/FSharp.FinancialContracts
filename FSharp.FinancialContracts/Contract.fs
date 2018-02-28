@@ -15,39 +15,55 @@ module Contract =
     type Transaction = Transaction of float * Currency
     type Time = int
 
-    type Observable = 
-        | Number of string
-        | Bool of string
+    type BoolObs =
+        | BoolVal of string
+        | And of BoolObs * BoolObs
+        | Or of BoolObs * BoolObs
+        | GreaterThan of NumberObs * NumberObs
+    and NumberObs =
+        | NumVal of string
+        | Const of float
+        | Add of NumberObs * NumberObs
+        | Sub of NumberObs * NumberObs
+        | Mult of NumberObs * NumberObs
+        | If of BoolObs * NumberObs * NumberObs
 
-    type ObservableValue = 
-        | NumberValue of float
-        | BoolValue of bool    
+    let rec evalBoolObs (obs : BoolObs) boolEnv numEnv =
+        match obs with
+        | BoolVal(_) -> Map.find obs boolEnv
+        | And(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) && (evalBoolObs bool2 boolEnv numEnv)
+        | Or(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) || (evalBoolObs bool2 boolEnv numEnv)
+        | GreaterThan(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) > (evalNumberObs num2 numEnv boolEnv)
+    and evalNumberObs obs numEnv boolEnv =
+        match obs with
+        | NumVal(s) -> Map.find obs numEnv
+        | Const(f) -> f
+        | Add(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) + (evalNumberObs num2 numEnv boolEnv)
+        | Sub(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) - (evalNumberObs num2 numEnv boolEnv)
+        | Mult(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) * (evalNumberObs num2 numEnv boolEnv)
+        | If(bool, num1, num2) -> 
+            if (evalBoolObs bool boolEnv numEnv) then
+                (evalNumberObs num1 numEnv boolEnv)
+            else
+                (evalNumberObs num2 numEnv boolEnv)
 
-    type Environment = Time * Map<Observable,ObservableValue>
+    type Environment = Time * Map<BoolObs, bool> * Map<NumberObs, float>
 
-    let getNumber k (t,m) = 
-        match m |> Map.find k with
-            | NumberValue f -> f
-            | _ -> failwith ("Type is not a valid number type")
-    
-    let getBool k (t,m) = 
-        match m |> Map.find k with
-            | BoolValue b -> b
-            | _ -> failwith ("Type is not a valid boolean type")
-
-    let increaseTime ((t,v):Environment) = (t+1,v)
-    let getTime ((t,_):Environment) = t
+    let increaseTime ((t, obsEnv, numEnv):Environment) = (t+1, obsEnv, numEnv)
+    let getTime ((t,_,_):Environment) = t
+    let getBoolEnv ((_,boolEnv,_):Environment) = boolEnv
+    let getNumEnv ((_,_,numEnv):Environment) = numEnv
 
     // Defines how a contract can be constructed
     type Contract = 
         | Zero of float * Currency                      // Contract that has no rights or obligations
         | One of Currency                               // Contract paying one unit of the provided currency.
         | Delay of Time * Contract                      // 
-        | Scale of Observable * Contract                // Acquire the provided contract, but all rights and obligations 
+        | Scale of NumberObs * Contract                // Acquire the provided contract, but all rights and obligations 
                                                         // is scaled by the provided value.
         | And of Contract * Contract                    // Immediately acquire both contracts.
         | Or of Contract * Contract                     // Immediately acquire either of the contracts.
-        | If of Observable * Time * Contract * Contract // 
+        | If of BoolObs * Time * Contract * Contract // 
         | Give of Contract                              // Contract giving away the provided contract. 
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
 
@@ -69,7 +85,7 @@ module Contract =
           | Scale(obs, c1) ->
               yield! List.fold (fun acc trans -> 
                                 match trans with
-                                | Transaction(a, n) -> Transaction((env |> (getNumber obs)) * a, n)::acc
+                                | Transaction(a, n) -> Transaction((evalNumberObs obs (getNumEnv env) (getBoolEnv env)) * a, n)::acc
                                 | _ -> failwith "'Scale' contract could not be evaluated"
                                ) [] (evalC env c1)
           | And(c1, c2) -> 
@@ -82,7 +98,7 @@ module Contract =
               else
                   yield! evalC env c2
           | If(obs, t, c1, c2) -> 
-              if env |> (getBool obs) then
+              if (evalBoolObs obs (getBoolEnv env) (getNumEnv env)) then
                   if (env |> getTime) <= t then
                       yield! evalC env c1
               else
