@@ -17,9 +17,6 @@ module Contract =
 
     type Environment = Time * Map<Observable,ObservableValue>
 
-
-    // Primitives for defining contracts - See Composing contracts
-
     type Contract = 
         | Zero of float * Currency                     
         | One of Currency                               

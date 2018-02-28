@@ -34,15 +34,6 @@ module Contract =
     let increaseTime ((t,v):Environment) = (t+1,v)
     let getTime ((t,_):Environment) = t
 
-    let getExchangeRate (cur1:Currency, cur2:Currency) = 
-        if string(cur1) = string(cur2) then
-            1.0
-        else
-            let url = "https://api.fixer.io/latest?base=" + string(cur1) + "&symbols=" + string(cur2)
-            let query = Http.RequestString( url )
-            let res = query.[(query.LastIndexOf(":") + 1)..(query.Length - 3)]
-            float(res)
-
     // Defines how a contract can be constructed
     type Contract = 
         | Zero of float * Currency                      // Contract that has no rights or obligations
@@ -55,6 +46,15 @@ module Contract =
         | If of Observable * Time * Contract * Contract
         | Give of Contract                              // Contract giving away the provided contract. 
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
+
+    let getExchangeRate (cur1:Currency, cur2:Currency) = 
+        if string(cur1) = string(cur2) then
+            1.0
+        else
+            let url = "https://api.fixer.io/latest?base=" + string(cur1) + "&symbols=" + string(cur2)
+            let query = Http.RequestString( url )
+            let res = query.[(query.LastIndexOf(":") + 1)..(query.Length - 3)]
+            float(res)
 
     // Evaluate contract
     let rec evalC (env:Environment) contract  = 
