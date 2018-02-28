@@ -35,10 +35,13 @@ module Contract =
     let getTime ((t,_):Environment) = t
 
     let getExchangeRate (cur1:Currency, cur2:Currency) = 
-        let url = "https://api.fixer.io/latest?base=" + string(cur1) + "&symbols=" + string(cur2)
-        let query = Http.RequestString( url )
-        let res = query.[(query.LastIndexOf(":") + 1)..(query.Length - 3)]
-        float(res)
+        if string(cur1) = string(cur2) then
+            1.0
+        else
+            let url = "https://api.fixer.io/latest?base=" + string(cur1) + "&symbols=" + string(cur2)
+            let query = Http.RequestString( url )
+            let res = query.[(query.LastIndexOf(":") + 1)..(query.Length - 3)]
+            float(res)
 
     // Defines how a contract can be constructed
     type Contract = 
