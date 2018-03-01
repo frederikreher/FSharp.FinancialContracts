@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Environment.fsi" />
+    <Compile Include="Environment.fs" />
     <Compile Include="Contract.fsi" />
     <Compile Include="Contract.fs" />
     <Compile Include="Program.fs" />
@@ -13,7 +15,6 @@
   
   <ItemGroup>
     <PackageReference Include="FSharp.Data" Version="2.4.5" />
-    <PackageReference Include="System.Reactive" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>

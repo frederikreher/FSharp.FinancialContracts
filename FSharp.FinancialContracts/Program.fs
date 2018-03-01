@@ -2,6 +2,7 @@
 namespace FSharp.FinancialContracts
 
 open System.Threading
+open Environment
 open Contract
 
 module program = 
@@ -26,10 +27,12 @@ module program =
         let c5 = And(c1,c2)
         let c6 = Or(c5, Delay(12, Scale(scaleFactor3, One(NOK))))
 
-        //let boolT = Bool("true")
-        //let boolF = Bool("false")
-        //let ifTest = If(boolF, 0, c1, c3)
-        //printfn "%A" (evalC env ifTest)
+        //let boolT = BoolVal("true")
+        //let boolF = BoolVal("false")
+        //let ifTest1 = If(boolF, 0, c1, c3)
+        //let ifTest2 = If(boolT, 0, c1, c3)
+        //printfn "%A" (evalC env ifTest1)
+        //printfn "%A" (evalC env ifTest2)
 
         //printfn "%A" (getExchangeRate (USD, DKK))
         //printfn "%A" (getExchangeRate (DKK, USD))
