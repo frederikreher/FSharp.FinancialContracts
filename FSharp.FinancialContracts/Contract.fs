@@ -6,27 +6,32 @@ open Environment
 
 module Contract =
 
-    // Currency used in contracts
+    // Currency used in contracts.
     type Currency = 
         | USD | JPY | BGN | CZK | DKK | GBP | HUF | PLN | RON | SEK 
         | CHF | ISK | NOK | HRK | RUB | TRY | AUD | BRL | CAD | CNY 
         | HKD | IDR | ILS | INR | KRW | MXN | MYR | NZD | PHP | SGD
         | THB | ZAR | EUR
+
+    // Evaluation of a contract result in a Transaction.
     type Transaction = Transaction of float * Currency
 
     // Defines how a contract can be constructed
     type Contract = 
-        | Zero of float * Currency                      // Contract that has no rights or obligations
+        | Zero of float * Currency                      // Contract that has no rights or obligations.
         | One of Currency                               // Contract paying one unit of the provided currency.
-        | Delay of Time * Contract                      // 
-        | Scale of NumberObs * Contract                // Acquire the provided contract, but all rights and obligations 
+        | Delay of Time * Contract                      // Acquire the contract at the provided time or later.
+        | Scale of NumberObs * Contract                 // Acquire the provided contract, but all rights and obligations 
                                                         // is scaled by the provided value.
         | And of Contract * Contract                    // Immediately acquire both contracts.
         | Or of Contract * Contract                     // Immediately acquire either of the contracts.
-        | If of BoolObs * Time * Contract * Contract // 
+        | If of BoolObs * Time * Contract * Contract    // Acquire the first contract if the observable is true 
+                                                        // else acquire the second contract. Either contract 
+                                                        // is acquired at the provided time or later.
         | Give of Contract                              // Contract giving away the provided contract. 
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
 
+    // Provides the current exchange rate between two currencies.
     let getExchangeRate (cur1:Currency, cur2:Currency) = 
         if string(cur1) = string(cur2) then
             1.0
@@ -36,6 +41,7 @@ module Contract =
             let res = query.[(query.LastIndexOf(":") + 1)..(query.Length - 3)]
             float(res)
 
+    // Return the horizon at which all elements of a contract can be evaluated.
     let rec horizon c (t:Time) =
         match c with
         | Zero(a, n) -> max t 0
@@ -49,7 +55,7 @@ module Contract =
 
     let getHorizon c = horizon c 0
 
-    // Evaluate contract
+    // Evaluates a contract and returns a list of Transactions.
     let rec evalC (env:Environment) contract : Transaction list = 
         [ match contract with
           | Zero(a, n) -> ()
