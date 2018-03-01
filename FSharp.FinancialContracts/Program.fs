@@ -19,10 +19,12 @@ module program =
         let scaleFactor1 = NumVal("GBP/DKK")
         let scaleFactor2 = NumVal("USD/DKK")
         let scaleFactor3 = NumVal("100")
-        let c1 = And(One(GBP), Give(Delay(3,Scale(scaleFactor1,One(DKK)))))
-        let c2 = And(Scale(scaleFactor3, One(GBP)), Give(Delay(4,Scale(scaleFactor3, Scale(scaleFactor1,One(DKK))))))
-        let c3 = And(One(USD), Give(Delay(3,Scale(scaleFactor2,One(DKK)))))
-        let c4 = And(Scale(scaleFactor3, One(USD)), Give(Delay(4,Scale(scaleFactor3, Scale(scaleFactor2,One(DKK))))))
+        let c1 = And(One(GBP), Give(Delay(3, Scale(scaleFactor1, One(DKK)))))
+        let c2 = And(Scale(scaleFactor3, One(GBP)), Give(Delay(4, Scale(scaleFactor3, Scale(scaleFactor1, One(DKK))))))
+        let c3 = And(One(USD), Give(Delay(3, Scale(scaleFactor2, One(DKK)))))
+        let c4 = And(Scale(scaleFactor3, One(USD)), Give(Delay(4, Scale(scaleFactor3, Scale(scaleFactor2, One(DKK))))))
+        let c5 = And(c1,c2)
+        let c6 = Or(c5, Delay(12, Scale(scaleFactor3, One(NOK))))
 
         //let boolT = Bool("true")
         //let boolF = Bool("false")
@@ -32,9 +34,12 @@ module program =
         //printfn "%A" (getExchangeRate (USD, DKK))
         //printfn "%A" (getExchangeRate (DKK, USD))
 
+        //printfn "%A" (getHorizon (One(PHP)))
+        //printfn "%A" (getHorizon c6)
+
         //printfn "%A" (evalC env (Zero(10.0, USD)))
 
-        for i = 1 to 5 do
+        (*for i = 1 to 5 do
             env <- increaseTime env
             let res = c1 |> evalC env
             let res2 = c2 |> evalC env
@@ -48,14 +53,5 @@ module program =
             printfn "%A" res3
             printfn "%A" res4
 
-            Thread.Sleep(1000)
+            Thread.Sleep(1000)*)
         0 // return an integer exit code
-
-(* Notes from meeting with Patrick  
-implement:
-	observable type
-	horizion function for contracts
-	
-
-hybrid between composing contracts and multi party contracts to handle horizon
-*)

@@ -31,15 +31,15 @@ module Contract =
     val getTime : Environment -> Time
 
     type Contract = 
-        | Zero of float * Currency                     
-        | One of Currency                               
+        | Zero of float * Currency
+        | One of Currency
         | Delay of Time * Contract
-        | Scale of NumberObs * Contract                    
-                                                        
-        | And of Contract * Contract                    
-        | Or of Contract * Contract                     
+        | Scale of NumberObs * Contract
+        | And of Contract * Contract
+        | Or of Contract * Contract
         | If of BoolObs * Time * Contract * Contract
         | Give of Contract 
 
-    val getExchangeRate : Currency * Currency -> float    
+    val getExchangeRate : Currency * Currency -> float
+    val getHorizon : Contract -> Time
     val evalC : Environment -> Contract -> Transaction list

@@ -76,6 +76,19 @@ module Contract =
             let res = query.[(query.LastIndexOf(":") + 1)..(query.Length - 3)]
             float(res)
 
+    let rec horizon c (t:Time) =
+        match c with
+        | Zero(a, n) -> max t 0
+        | One(currency) -> max t 0 
+        | Delay(t1, c) -> max t1 (horizon c t)
+        | Scale(obs, c1) -> horizon c1 t
+        | And(c1, c2) -> max (horizon c1 t) (horizon c2 t)
+        | Or(c1, c2) -> max (horizon c1 t) (horizon c2 t)
+        | If(obs, t1, c1, c2) -> max t1 (max (horizon c1 t) (horizon c2 t))
+        | Give(c) -> horizon c t
+
+    let getHorizon c = horizon c 0
+
     // Evaluate contract
     let rec evalC (env:Environment) contract : Transaction list = 
         [ match contract with
