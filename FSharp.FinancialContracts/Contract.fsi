@@ -23,4 +23,5 @@ module Contract =
 
     val getExchangeRate : Currency * Currency -> float
     val getHorizon : Contract -> Time
+    val getObservables : Contract -> BoolObs list * NumberObs list
     val evalC : Environment -> Contract -> Transaction list

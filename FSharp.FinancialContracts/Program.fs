@@ -39,7 +39,11 @@ module program =
 
         //printfn "%A" (getHorizon (One(PHP)))
         //printfn "%A" (getHorizon c6)
-
+        
+        //let greaterThan = GreaterThan(Const 5.0, Const 1.0)
+        //printfn "%A" (getObservables c1)
+        //printfn "%A" (getObservables (If(greaterThan, 0, c5, c6)))
+        //printfn "%A" (evalC env (If(greaterThan, 0, c1, c3)))
         //printfn "%A" (evalC env (Zero(10.0, USD)))
 
         (*for i = 1 to 5 do

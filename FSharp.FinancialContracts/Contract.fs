@@ -52,8 +52,39 @@ module Contract =
         | Or(c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> max t1 (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
-
     let getHorizon c = horizon c 0
+
+    // Return a tuple of boolObs list and numberObs list, 
+    // containing the observables needed to evaluate all elements of a contract.
+    let rec observables c boolAcc numAcc =
+        match c with
+        | Zero(_, _) -> (boolAcc, numAcc)
+        | One(_) -> (boolAcc, numAcc)
+        | Delay(_, c) -> observables c boolAcc numAcc
+        | Scale(obs, c1) -> 
+            if not (List.contains obs numAcc) then
+                observables c1 boolAcc (obs::numAcc)
+            else
+                observables c1 boolAcc numAcc
+        | And(c1, c2) -> 
+            match (observables c2 boolAcc numAcc) with
+            | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
+            | _ -> failwith "Unexpected return when identifying observables"
+        | Or(c1, c2) -> 
+            match (observables c2 boolAcc numAcc) with
+            | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
+            | _ -> failwith "Unexpected return when identifying observables"
+        | If(obs, _, c1, c2) -> 
+            if not (List.contains obs boolAcc) then
+                match (observables c2 (obs::boolAcc) numAcc) with
+                | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
+                | _ -> failwith "Unexpected return when identifying observables"
+            else
+                match (observables c2 boolAcc numAcc) with
+                | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
+                | _ -> failwith "Unexpected return when identifying observables"
+        | Give(c) -> observables c boolAcc numAcc
+    let getObservables c = observables c [] []
 
     // Evaluates a contract and returns a list of Transactions.
     let rec evalC (env:Environment) contract : Transaction list = 
