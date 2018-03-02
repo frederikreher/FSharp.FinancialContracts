@@ -18,14 +18,14 @@ module Environment =
         | If of BoolObs * NumberObs * NumberObs
 
     // Evaluation of boolean observable, returns a boolean value.
-    let rec evalBoolObs (obs : BoolObs) boolEnv numEnv =
+    let rec evalBoolObs (obs : BoolObs) boolEnv numEnv : bool =
         match obs with
         | BoolVal(_) -> Map.find obs boolEnv
         | And(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) && (evalBoolObs bool2 boolEnv numEnv)
         | Or(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) || (evalBoolObs bool2 boolEnv numEnv)
         | GreaterThan(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) > (evalNumberObs num2 numEnv boolEnv)
     // Evaluation of float observable, returns a float value.
-    and evalNumberObs obs numEnv boolEnv =
+    and evalNumberObs obs numEnv boolEnv : float =
         match obs with
         | NumVal(_) -> Map.find obs numEnv
         | Const(f) -> f
@@ -43,11 +43,11 @@ module Environment =
     // Environment contains the value of observables.
     type Environment = Time * Map<BoolObs, bool> * Map<NumberObs, float>
     // Pass the time of an Environment.
-    let increaseTime ((t, obsEnv, numEnv):Environment) = (t+1, obsEnv, numEnv)
+    let increaseTime ((t, obsEnv, numEnv):Environment) : Environment = (t+1, obsEnv, numEnv)
     // Get the current time of an Environment.
-    let getTime ((t,_,_):Environment) = t
+    let getTime ((t,_,_):Environment) : Time = t
     // Get the map containing the values of boolean observables.
-    let getBoolEnv ((_,boolEnv,_):Environment) = boolEnv
+    let getBoolEnv ((_,boolEnv,_):Environment) : Map<BoolObs, bool> = boolEnv
     // Get the map containing the values of float observables.
-    let getNumEnv ((_,_,numEnv):Environment) = numEnv
+    let getNumEnv ((_,_,numEnv):Environment) : Map<NumberObs, float> = numEnv
 

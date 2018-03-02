@@ -32,7 +32,7 @@ module Contract =
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
 
     // Provides the current exchange rate between two currencies.
-    let getExchangeRate (cur1:Currency, cur2:Currency) = 
+    let getExchangeRate (cur1:Currency, cur2:Currency) : float = 
         if string(cur1) = string(cur2) then
             1.0
         else
@@ -42,7 +42,7 @@ module Contract =
             float(res)
 
     // Return the horizon at which all elements of a contract can be evaluated.
-    let rec horizon c (t:Time) =
+    let rec horizon c (t:Time) : Time =
         match c with
         | Zero(a, n) -> max t 0
         | One(currency) -> max t 0 
@@ -52,11 +52,11 @@ module Contract =
         | Or(c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> max t1 (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
-    let getHorizon c = horizon c 0
+    let getHorizon c : Time = horizon c 0
 
-    // Return a tuple of boolObs list and numberObs list, 
+    // Return a tuple of BoolObs list and NumberObs list, 
     // containing the observables needed to evaluate all elements of a contract.
-    let rec observables c boolAcc numAcc =
+    let rec observables c boolAcc numAcc : BoolObs list * NumberObs list =
         match c with
         | Zero(_, _) -> (boolAcc, numAcc)
         | One(_) -> (boolAcc, numAcc)
@@ -84,7 +84,7 @@ module Contract =
                 | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
                 | _ -> failwith "Unexpected return when identifying observables"
         | Give(c) -> observables c boolAcc numAcc
-    let getObservables c = observables c [] []
+    let getObservables c : BoolObs list * NumberObs list = observables c [] []
 
     // Evaluates a contract and returns a list of Transactions.
     let rec evalC (env:Environment) contract : Transaction list = 
