@@ -26,3 +26,5 @@ module Environment =
     val getTime : Environment -> Time
     val getBoolEnv : Environment -> Map<BoolObs, bool>
     val getNumEnv : Environment -> Map<NumberObs, float>
+    val addBoolObs : BoolObs * bool -> Map<BoolObs, bool> -> Map<BoolObs, bool>
+    val addNumObs : NumberObs * float -> Map<NumberObs, float> -> Map<NumberObs, float>

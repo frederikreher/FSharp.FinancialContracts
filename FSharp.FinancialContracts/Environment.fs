@@ -50,4 +50,9 @@ module Environment =
     let getBoolEnv ((_,boolEnv,_):Environment) : Map<BoolObs, bool> = boolEnv
     // Get the map containing the values of float observables.
     let getNumEnv ((_,_,numEnv):Environment) : Map<NumberObs, float> = numEnv
-
+    // Add a boolean observable to the environment.
+    let addBoolObs (boolObs, bool) (boolEnv:Map<BoolObs, bool>) : Map<BoolObs, bool> = 
+        boolEnv.Add(boolObs, bool)
+    // Add a float observable to the environment.
+    let addNumObs (numObs, value) (numEnv:Map<NumberObs, float>) : Map<NumberObs, float> = 
+        numEnv.Add(numObs, value)
