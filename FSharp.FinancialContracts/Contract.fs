@@ -71,9 +71,14 @@ module Contract =
             | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
             //| _ -> failwith "Unexpected return when identifying observables"
         | Or(obs, c1, c2) -> 
-            match (observables c2 boolAcc numAcc) with
-            | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
-            //| _ -> failwith "Unexpected return when identifying observables"
+           if not (List.contains obs boolAcc) then
+               match (observables c2 (obs::boolAcc) numAcc) with
+               | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
+              // | _ -> failwith "Unexpected return when identifying observables"
+           else
+               match (observables c2 boolAcc numAcc) with
+               | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
+           //    | _ -> failwith "Unexpected return when identifying observables"
         | If(obs, c1, c2) -> 
             if not (List.contains obs boolAcc) then
                 match (observables c2 (obs::boolAcc) numAcc) with
@@ -103,6 +108,7 @@ module Contract =
               yield! evalC env c2
           | Or(obs,c1, c2) ->
               let b = (evalBoolObs obs (getBoolEnv env) (getNumEnv env))
+              printfn "Or bool was %A" b
               if b then 
                   match evalC env c1 with
                   [] -> yield! evalC env c2

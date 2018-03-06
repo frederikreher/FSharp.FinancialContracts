@@ -20,14 +20,15 @@ module Environment =
     // Evaluation of boolean observable, returns a boolean value.
     let rec evalBoolObs (obs : BoolObs) boolEnv numEnv : bool =
         match obs with
-        | BoolVal(_) -> Map.find obs boolEnv
+        | BoolVal(s) -> Map.find s boolEnv
         | And(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) && (evalBoolObs bool2 boolEnv numEnv)
         | Or(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) || (evalBoolObs bool2 boolEnv numEnv)
         | GreaterThan(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) > (evalNumberObs num2 numEnv boolEnv)
+
     // Evaluation of float observable, returns a float value.
     and evalNumberObs obs numEnv boolEnv : float =
         match obs with
-        | NumVal(_) -> Map.find obs numEnv
+        | NumVal(s) -> Map.find s numEnv
         | Const(f) -> f
         | Add(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) + (evalNumberObs num2 numEnv boolEnv)
         | Sub(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) - (evalNumberObs num2 numEnv boolEnv)
@@ -41,18 +42,24 @@ module Environment =
     // Type representing time.
     type Time = int
     // Environment contains the value of observables.
-    type Environment = Time * Map<BoolObs, bool> * Map<NumberObs, float>
+    type Environment = Time * Map<string, bool> * Map<string, float>
     // Pass the time of an Environment.
     let increaseTime ((t, obsEnv, numEnv):Environment) : Environment = (t+1, obsEnv, numEnv)
     // Get the current time of an Environment.
     let getTime ((t,_,_):Environment) : Time = t
     // Get the map containing the values of boolean observables.
-    let getBoolEnv ((_,boolEnv,_):Environment) : Map<BoolObs, bool> = boolEnv
+    let getBoolEnv ((_,boolEnv,_):Environment) : Map<string, bool> = boolEnv
     // Get the map containing the values of float observables.
-    let getNumEnv ((_,_,numEnv):Environment) : Map<NumberObs, float> = numEnv
+    let getNumEnv ((_,_,numEnv):Environment) : Map<string, float> = numEnv
+
     // Add a boolean observable to the environment.
-    let addBoolObs (boolObs, bool) (boolEnv:Map<BoolObs, bool>) : Map<BoolObs, bool> = 
-        boolEnv.Add(boolObs, bool)
+    let addBoolObs (boolObs, bool) (boolEnv:Map<string, bool>) : Map<string, bool> = 
+        match boolObs with 
+        | BoolVal(s) -> boolEnv.Add(s, bool)
+        | _ -> failwith "Only expects boolVal"
+    
     // Add a float observable to the environment.
-    let addNumObs (numObs, value) (numEnv:Map<NumberObs, float>) : Map<NumberObs, float> = 
-        numEnv.Add(numObs, value)
+    let addNumObs (numObs, value) (numEnv:Map<string, float>) : Map<string, float> = 
+        match numObs with 
+        | NumVal(s) -> numEnv.Add(s, value)
+        | _ -> failwith "Only expects boolVal"

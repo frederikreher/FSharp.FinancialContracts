@@ -15,16 +15,16 @@ module Environment =
         | Mult of NumberObs * NumberObs
         | If of BoolObs * NumberObs * NumberObs
 
-    val evalBoolObs : BoolObs -> Map<BoolObs, bool> -> Map<NumberObs, float> -> bool
-    val evalNumberObs : NumberObs -> Map<NumberObs, float> -> Map<BoolObs, bool> -> float
+    val evalBoolObs : BoolObs -> Map<string, bool> -> Map<string, float> -> bool
+    val evalNumberObs : NumberObs -> Map<string, float> -> Map<string, bool> -> float
     
     type Time = int
 
-    type Environment = Time * Map<BoolObs, bool> * Map<NumberObs, float>
+    type Environment = Time * Map<string, bool> * Map<string, float>
 
     val increaseTime : Environment -> Environment
     val getTime : Environment -> Time
-    val getBoolEnv : Environment -> Map<BoolObs, bool>
-    val getNumEnv : Environment -> Map<NumberObs, float>
-    val addBoolObs : BoolObs * bool -> Map<BoolObs, bool> -> Map<BoolObs, bool>
-    val addNumObs : NumberObs * float -> Map<NumberObs, float> -> Map<NumberObs, float>
+    val getBoolEnv : Environment -> Map<string, bool>
+    val getNumEnv : Environment -> Map<string, float>
+    val addBoolObs : BoolObs * bool -> Map<string, bool> -> Map<string, bool>
+    val addNumObs : NumberObs * float -> Map<string, float> -> Map<string, float>
