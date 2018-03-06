@@ -54,6 +54,8 @@ module Contract =
         | Give(c) -> horizon c t
     let getHorizon c : Time = horizon c 0
 
+
+
     // Return a tuple of BoolObs list and NumberObs list, 
     // containing the observables needed to evaluate all elements of a contract.
     let rec observables c boolAcc numAcc : BoolObs list * NumberObs list =
@@ -62,34 +64,25 @@ module Contract =
         | One(_) -> (boolAcc, numAcc)
         | Delay(_, c) -> observables c boolAcc numAcc
         | Scale(obs, c1) -> 
-            if not (List.contains obs numAcc) then
-                observables c1 boolAcc (obs::numAcc)
-            else
-                observables c1 boolAcc numAcc
+            let (boolAcc1,numAcc1) = (numberObs obs boolAcc numAcc)
+            observables c1 boolAcc1 numAcc1
         | And(c1, c2) -> 
-            match (observables c2 boolAcc numAcc) with
-            | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
-            //| _ -> failwith "Unexpected return when identifying observables"
+            let (boolAcc1, numAcc1) = (observables c2 boolAcc numAcc)
+            observables c1 boolAcc1 numAcc1
         | Or(obs, c1, c2) -> 
-           if not (List.contains obs boolAcc) then
-               match (observables c2 (obs::boolAcc) numAcc) with
-               | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
-              // | _ -> failwith "Unexpected return when identifying observables"
-           else
-               match (observables c2 boolAcc numAcc) with
-               | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
-           //    | _ -> failwith "Unexpected return when identifying observables"
+            let (boolAcc1,numAcc1) = (boolObs obs boolAcc numAcc)
+            let (boolAcc2,numAcc2) = observables c2 boolAcc1 numAcc1
+            observables c2 boolAcc2 numAcc2
         | If(obs, c1, c2) -> 
-            if not (List.contains obs boolAcc) then
-                match (observables c2 (obs::boolAcc) numAcc) with
-                | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
-               // | _ -> failwith "Unexpected return when identifying observables"
-            else
-                match (observables c2 boolAcc numAcc) with
-                | (boolAcc1, numAcc1) -> observables c1 boolAcc1 numAcc1
-            //    | _ -> failwith "Unexpected return when identifying observables"
+            let (boolAcc1,numAcc1) = (boolObs obs boolAcc numAcc)
+            let (boolAcc2,numAcc2) = observables c2 boolAcc1 numAcc1
+            observables c2 boolAcc2 numAcc2
         | Give(c) -> observables c boolAcc numAcc
+   
+    
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
+
+
 
     // Evaluates a contract and returns a list of Transactions.
     let rec evalC (env:Environment) contract : Transaction list = 

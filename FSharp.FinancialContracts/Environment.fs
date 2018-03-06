@@ -38,6 +38,47 @@ module Environment =
                 (evalNumberObs num1 numEnv boolEnv)
             else
                 (evalNumberObs num2 numEnv boolEnv)
+    
+    
+    let rec boolObs (obs:BoolObs) boolAcc numAcc : (BoolObs list * NumberObs list) =
+        match obs with
+        | BoolVal(_) -> 
+            if not (List.contains obs boolAcc) then
+                (obs::boolAcc,numAcc)
+            else
+                (boolAcc, numAcc)
+        | And(bool1, bool2) -> 
+            let (boolAcc1, numAcc1) = boolObs bool1 boolAcc numAcc
+            boolObs bool2 boolAcc1 numAcc1
+        | Or(bool1, bool2) -> 
+            let (boolAcc1, numAcc1) = boolObs bool1 boolAcc numAcc
+            boolObs bool2 boolAcc1 numAcc1
+        | GreaterThan(num1, num2) -> 
+            let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
+            numberObs num2 boolAcc1 numAcc1
+    // Evaluation of float observable, returns a float value.
+    and numberObs (obs:NumberObs) boolAcc numAcc : (BoolObs list * NumberObs list) =
+        match obs with
+        | NumVal(_) -> 
+            if not (List.contains obs numAcc) then
+                (boolAcc,obs::numAcc)
+            else
+                (boolAcc, numAcc)
+        | Const(_) -> (boolAcc, numAcc)
+        | Add(num1, num2) -> 
+            let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
+            numberObs num2 boolAcc1 numAcc1
+        | Sub(num1, num2) -> 
+            let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
+            numberObs num2 boolAcc1 numAcc1
+        | Mult(num1, num2) -> 
+            let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
+            numberObs num2 boolAcc1 numAcc1
+        | NumberObs.If(bool, num1, num2) -> 
+            let (boolAcc1, numAcc1) = boolObs bool boolAcc numAcc
+            let (boolAcc2, numAcc2) = numberObs num1 boolAcc1 numAcc1
+            numberObs num2 boolAcc2 numAcc2
+
 
     // Type representing time.
     type Time = int
@@ -62,4 +103,4 @@ module Environment =
     let addNumObs (numObs, value) (numEnv:Map<string, float>) : Map<string, float> = 
         match numObs with 
         | NumVal(s) -> numEnv.Add(s, value)
-        | _ -> failwith "Only expects boolVal"
+        | _ -> failwith "Only expects numval"

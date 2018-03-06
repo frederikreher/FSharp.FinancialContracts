@@ -33,7 +33,7 @@ module program =
         //let amer = failwith "Not yet implemented"
 
         // If vs. Or
-        let c2 = Scale(Mult(NumVal("one"),NumVal("two")),One(GBP))
+        let c2 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(GBP))
 
         let c3 = If(BoolVal("50/50"), One(DKK), Zero)
 
@@ -54,7 +54,7 @@ module program =
         
         for i = 1 to 10 do
             printfn "%A" i
-            printfn "%A" (evalC (env1) c2)
+            printfn "%A" (evalC (generateObservables i c2) c2)
             //printfn "%A" (evalC env1 c2)
             Thread.Sleep(1000)
 

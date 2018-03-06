@@ -17,7 +17,10 @@ module Environment =
 
     val evalBoolObs : BoolObs -> Map<string, bool> -> Map<string, float> -> bool
     val evalNumberObs : NumberObs -> Map<string, float> -> Map<string, bool> -> float
-    
+
+    val boolObs : BoolObs -> BoolObs list -> NumberObs list -> BoolObs list * NumberObs list 
+    val numberObs : NumberObs -> BoolObs list -> NumberObs list -> BoolObs list * NumberObs list 
+
     type Time = int
 
     type Environment = Time * Map<string, bool> * Map<string, float>
@@ -28,3 +31,4 @@ module Environment =
     val getNumEnv : Environment -> Map<string, float>
     val addBoolObs : BoolObs * bool -> Map<string, bool> -> Map<string, bool>
     val addNumObs : NumberObs * float -> Map<string, float> -> Map<string, float>
+
