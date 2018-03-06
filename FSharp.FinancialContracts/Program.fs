@@ -4,12 +4,14 @@ namespace FSharp.FinancialContracts
 open System.Threading
 open Environment
 open Contract
+open System
 
 module program = 
 
     [<EntryPoint>]
     let main argv =
         let boolObservables = [(BoolVal("true"), true);
+                               (BoolVal("50/50"), if ((new Random()).Next(0,2) = 0) then true else false);
                                (BoolVal("false"), false)]
         let numObservables = [(NumVal("GBP/DKK"), getExchangeRate(GBP, DKK));
                               (NumVal("USD/DKK"), getExchangeRate(USD, DKK));
@@ -24,12 +26,16 @@ module program =
             Delay(time, Scale(obs, One(cur)))
         
         let c1 = (zcb 5 50.0 DKK)
-
+        
         // European option
         //let eur = failwith "Not yet implemented"
 
         // American option
         //let amer = failwith "Not yet implemented"
+
+        // If vs. Or
+        let c2 = Or(One(DKK), One(EUR))
+        let c3 = If(BoolVal("50/50"), 3, One(DKK), One(EUR))
 
         let addObservables c env = 
             match env with
@@ -47,7 +53,7 @@ module program =
         for i = 1 to 10 do
             env1 <- increaseTime env1
             printfn "%A" i
-            printfn "%A" (evalC (addObservables c1 env1) c1)
+            printfn "%A" (evalC env1 c3)
             Thread.Sleep(1000)
 
         0 // return an integer exit code
