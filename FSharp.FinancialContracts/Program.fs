@@ -37,7 +37,7 @@ module program =
 
         let c3 = If(BoolVal("50/50"), One(DKK), Zero)
 
-        let generateObservables t c = 
+        let generateObservables t hori c : Environment.Environment = 
             let rndBool = (fun () -> (if (new Random()).Next(0,2) = 0 then true else false));
             let rndNum = (fun () -> float((new Random()).NextDouble())) 
 
@@ -51,19 +51,21 @@ module program =
                                      ) Map.empty nums
 
             let newBoolEnv =
-                let arr = Array.create (t+1) Map.empty
-                Array.set arr t boolEnvAtT
+                let arr = Array.create (hori+1) Map.empty
+                Array.set arr hori boolEnvAtT
                 arr
             let newNumEnv =
-                let arr = Array.create (t+1) Map.empty
-                Array.set arr t numEnvAtT
+                let arr = Array.create (hori+1) Map.empty
+                Array.set arr hori numEnvAtT
                 arr
             (t, newBoolEnv, newNumEnv)
 
         
-        for i = 1 to 10 do
+        for i = 1 to (getHorizon c1) do
             printfn "%A" i
-            printfn "%A" (evalC (generateObservables i c2) c2)
+            let env = (generateObservables i (i + (getHorizon c1)) c1)
+            printfn "%A" env
+            printfn "%A" (evalC  env c1)
             //printfn "%A" (evalC env1 c2)
             Thread.Sleep(1000)
 

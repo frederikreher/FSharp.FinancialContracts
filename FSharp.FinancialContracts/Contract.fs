@@ -85,11 +85,12 @@ module Contract =
         [ match contract with
           | Zero -> ()
           | One(currency) -> yield Transaction(1.0, currency)
-          | Delay(t, c) when (env |> getTime) >= t -> yield! evalC env c
+          | Delay(t, c)  -> yield! evalC (increaseTime t env) c
           | Scale(obs, c1) ->
               yield! List.fold (fun acc trans -> 
                                 match trans with
-                                | Transaction(a, n) -> Transaction((evalNumberObs obs (getNumEnv (getTime env) env) (getBoolEnv (getTime env) env)) * a, n)::acc
+                                | Transaction(a, n) -> 
+                                    Transaction((evalNumberObs obs (getNumEnv (getTime env) env) (getBoolEnv (getTime env) env)) * a, n)::acc
               //                  | _ -> failwith "'Scale' contract could not be evaluated"
                                ) [] (evalC env c1)
           | And(c1, c2) -> 

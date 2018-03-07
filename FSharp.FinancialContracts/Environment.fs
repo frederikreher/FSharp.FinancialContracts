@@ -85,7 +85,7 @@ module Environment =
     // Environment contains the value of observables.
     type Environment = Time * Map<string, bool> array * Map<string, float> array
     // Pass the time of an Environment.
-    let increaseTime ((t, obsEnv, numEnv):Environment) : Environment = (t+1, obsEnv, numEnv)
+    let increaseTime t1 ((t2, obsEnv, numEnv):Environment) : Environment = (t1+t2, obsEnv, numEnv)
     // Get the current time of an Environment.
     let getTime ((t,_,_):Environment) : Time = t
     // Get the map containing the values of boolean observables.
