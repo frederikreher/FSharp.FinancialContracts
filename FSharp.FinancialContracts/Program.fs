@@ -17,7 +17,7 @@ module program =
                               ("100", 100.0)]
 
         // Add function to add to environments???
-        let mutable env1: Environment.Environment = 0, (boolObservables |> Map.ofList), (numObservables |> Map.ofList)
+        let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
 
         // Zero-coupon discount bond
         let zcb time amount cur = 
@@ -42,13 +42,22 @@ module program =
             let rndNum = (fun () -> float((new Random()).NextDouble())) 
 
             let (bools, nums) = getObservables c
-            let newBoolEnv = List.fold (fun acc obs -> (addBoolObs (obs, rndBool()) acc)) Map.empty bools
-            let newNumEnv = List.fold (fun acc obs -> 
+            let boolEnvAtT = List.fold (fun acc obs -> (addBoolObs (obs, rndBool()) acc)) Map.empty bools
+            let numEnvAtT = List.fold (fun acc obs -> 
                                        match obs with
                                        | NumVal(s) ->
                                            (addNumObs (obs, rndNum()) acc)
                                        | _ -> failwith "Not yet implemented"
                                      ) Map.empty nums
+
+            let newBoolEnv =
+                let arr = Array.create (t+1) Map.empty
+                Array.set arr t boolEnvAtT
+                arr
+            let newNumEnv =
+                let arr = Array.create (t+1) Map.empty
+                Array.set arr t numEnvAtT
+                arr
             (t, newBoolEnv, newNumEnv)
 
         

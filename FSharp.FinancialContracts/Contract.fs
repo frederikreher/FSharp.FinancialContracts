@@ -52,9 +52,8 @@ module Contract =
         | Or(obs, c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | Give(c) -> horizon c t
+
     let getHorizon c : Time = horizon c 0
-
-
 
     // Return a tuple of BoolObs list and NumberObs list, 
     // containing the observables needed to evaluate all elements of a contract.
@@ -79,11 +78,8 @@ module Contract =
             observables c2 boolAcc2 numAcc2
         | Give(c) -> observables c boolAcc numAcc
    
-    
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
-
-
-
+    
     // Evaluates a contract and returns a list of Transactions.
     let rec evalC (env:Environment) contract : Transaction list = 
         [ match contract with
@@ -93,14 +89,14 @@ module Contract =
           | Scale(obs, c1) ->
               yield! List.fold (fun acc trans -> 
                                 match trans with
-                                | Transaction(a, n) -> Transaction((evalNumberObs obs (getNumEnv env) (getBoolEnv env)) * a, n)::acc
+                                | Transaction(a, n) -> Transaction((evalNumberObs obs (getNumEnv (getTime env) env) (getBoolEnv (getTime env) env)) * a, n)::acc
               //                  | _ -> failwith "'Scale' contract could not be evaluated"
                                ) [] (evalC env c1)
           | And(c1, c2) -> 
               yield! evalC env c1
               yield! evalC env c2
           | Or(obs,c1, c2) ->
-              let b = (evalBoolObs obs (getBoolEnv env) (getNumEnv env))
+              let b = (evalBoolObs obs (getBoolEnv (getTime env) env) (getNumEnv (getTime env) env))
               printfn "Or bool was %A" b
               if b then 
                   match evalC env c1 with
@@ -111,7 +107,7 @@ module Contract =
                   [] -> yield! evalC env c1
                   | trans -> yield! trans
           | If(obs, c1, c2) -> 
-              let temp = (evalBoolObs obs (getBoolEnv env) (getNumEnv env))
+              let temp = (evalBoolObs obs (getBoolEnv (getTime env) env) (getNumEnv (getTime env) env))
               printfn "%A" temp
               if temp then
                   yield! evalC env c1

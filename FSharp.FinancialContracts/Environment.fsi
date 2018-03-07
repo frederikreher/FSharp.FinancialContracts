@@ -23,12 +23,11 @@ module Environment =
 
     type Time = int
 
-    type Environment = Time * Map<string, bool> * Map<string, float>
+    type Environment = Time * Map<string, bool> array * Map<string, float> array
 
     val increaseTime : Environment -> Environment
     val getTime : Environment -> Time
-    val getBoolEnv : Environment -> Map<string, bool>
-    val getNumEnv : Environment -> Map<string, float>
+    val getBoolEnv : Time -> Environment -> Map<string, bool>
+    val getNumEnv : Time -> Environment -> Map<string, float>
     val addBoolObs : BoolObs * bool -> Map<string, bool> -> Map<string, bool>
     val addNumObs : NumberObs * float -> Map<string, float> -> Map<string, float>
-
