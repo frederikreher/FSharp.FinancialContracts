@@ -119,5 +119,4 @@ module Contract =
                                 match trans with
                                 | Transaction(a, n) -> Transaction(-a, n)::acc
                                 //| _ -> failwith "'Give' contract could not be evaluated"
-                               ) [] (evalC env c)
-          | _ -> () ]
+                               ) [] (evalC env c)]
