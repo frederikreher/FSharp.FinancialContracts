@@ -10,7 +10,10 @@
     <Compile Include="Environment.fs" />
     <Compile Include="Contract.fsi" />
     <Compile Include="Contract.fs" />
+    <Compile Include="Contracts.fsi" />
+    <Compile Include="Contracts.fs" />
     <Compile Include="Program.fs" />
+    
   </ItemGroup>
   
   <ItemGroup>
