@@ -11,13 +11,3 @@ module Properties =
 
    //Count the number of transactions
    let countIs target (ts: Transaction list) = (ts |> List.length) = target
-
-   type BIG = Transaction list -> bool
-
-   let p = sumIs 40.0 DKK
-
-   let p2 = countIs 2
-
-   let parent = p && p2
-
-   let s = "hej"
