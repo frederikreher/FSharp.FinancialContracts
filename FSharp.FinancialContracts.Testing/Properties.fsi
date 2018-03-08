@@ -5,6 +5,6 @@ open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
 
 module Properties =
-    //val sumIs : float -> Currency -> Transaction list
-    //val countIs : int -> Transaction list 
+    val sumIs : float -> Currency -> Transaction list -> bool
+    val countIs : int -> Transaction list -> bool
     val s : string

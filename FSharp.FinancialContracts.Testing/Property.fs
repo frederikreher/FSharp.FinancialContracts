@@ -6,9 +6,10 @@ open FSharp.FinancialContracts.Environment
 
 module Property =
 
-    type Property = 
-        | TransactionProperty of (Transaction list -> bool)
+    type Property = Transaction list -> bool
 
-    type Property with
-       static member (|&&|) (TransactionProperty p1, TransactionProperty p2) = TransactionProperty(fun ts -> p1 ts && p2 ts)
-      
+    let testProperty (property:Property) ts : bool = property ts
+
+    let (&&) p1 p2 : Property = (fun ts -> p1 ts && p2 ts)
+    let (||) p1 p2 : Property = (fun ts -> p1 ts || p2 ts)
+     

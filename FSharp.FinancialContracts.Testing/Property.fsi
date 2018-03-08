@@ -6,9 +6,9 @@ open FSharp.FinancialContracts.Environment
 
 module Property =
 
-    type Property = 
-        | TransactionProperty of (Transaction list -> bool)
+    type Property = Transaction list -> bool
 
-    type Property with
-       static member (|&&|) : Property * Property -> Property
+    val testProperty : Property -> Transaction list -> bool
+
+    val (&&) : Property -> Property -> Property
       
