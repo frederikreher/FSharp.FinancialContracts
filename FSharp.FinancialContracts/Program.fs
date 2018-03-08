@@ -26,6 +26,7 @@ module program =
         let c2 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(GBP))
 
         let c3 = If(BoolVal("50/50"), 5, One(DKK), Zero)
+        let c4 = If(LessThan(Const 0.5, NumVal("rand")), 1, One(DKK), Zero)
 
         let generateObservables t hori c : Environment.Environment = 
             let rndBool = (fun () -> (if (new Random()).Next(0,2) = 0 then true else false));
@@ -44,11 +45,12 @@ module program =
                                        ) (Array.create (hori+1) Map.empty) [0..hori]
             (t, newBoolEnv, newNumEnv)
 
-        for i = 1 to (getHorizon c3) do
+        printfn "%A" (getHorizon c4)
+        for i = 0 to (getHorizon c4) do
             printfn "%A" i
-            let env = (generateObservables i (i + (getHorizon c3)) c3)
+            let env = (generateObservables i (i + (getHorizon c4)) c4)
             printfn "%A" env
-            printfn "%A" (evalC  env c3)
+            printfn "%A" (evalC  env c4)
             //printfn "%A" (evalC env1 c2)
             Thread.Sleep(1000)
 
