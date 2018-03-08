@@ -42,22 +42,16 @@ module program =
             let rndNum = (fun () -> float((new Random()).NextDouble())) 
 
             let (bools, nums) = getObservables c
-            let boolEnvAtT = List.fold (fun acc obs -> (addBoolObs (obs, rndBool()) acc)) Map.empty bools
-            let numEnvAtT = List.fold (fun acc obs -> 
-                                       match obs with
-                                       | NumVal(s) ->
-                                           (addNumObs (obs, rndNum()) acc)
-                                       | _ -> failwith "Not yet implemented"
-                                     ) Map.empty nums
-
-            let newBoolEnv =
-                let arr = Array.create (hori+1) Map.empty
-                Array.set arr hori boolEnvAtT
-                arr
-            let newNumEnv =
-                let arr = Array.create (hori+1) Map.empty
-                Array.set arr hori numEnvAtT
-                arr
+            let newBoolEnv = List.fold (fun acc index -> 
+                                         let boolEnv = List.fold (fun acc1 obs -> (addBoolObs (obs, rndBool()) acc1)) Map.empty bools
+                                         Array.set acc index boolEnv
+                                         acc
+                                       ) (Array.create (hori+1) Map.empty) [0..hori]
+            let newNumEnv = List.fold (fun acc index -> 
+                                         let numEnv = List.fold (fun acc1 obs -> (addNumObs (obs, rndNum()) acc1)) Map.empty nums
+                                         Array.set acc index numEnv
+                                         acc
+                                       ) (Array.create (hori+1) Map.empty) [0..hori]
             (t, newBoolEnv, newNumEnv)
 
         
