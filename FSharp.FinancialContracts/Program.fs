@@ -21,47 +21,36 @@ module program =
         let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
         
         let c1 = (zcb 5 (Const 50.0) DKK)
-        
-        // European option
-        //let eur = failwith "Not yet implemented"
-
-        // American option
-        //let amer = failwith "Not yet implemented"
 
         // If vs. Or
         let c2 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(GBP))
 
-        let c3 = If(BoolVal("50/50"), One(DKK), Zero)
+        let c3 = If(BoolVal("50/50"), 5, One(DKK), Zero)
+        let c4 = If(LessThan(Const 0.5, NumVal("rand")), 1, One(DKK), Zero)
 
         let generateObservables t hori c : Environment.Environment = 
             let rndBool = (fun () -> (if (new Random()).Next(0,2) = 0 then true else false));
             let rndNum = (fun () -> float((new Random()).NextDouble())) 
 
             let (bools, nums) = getObservables c
-            let boolEnvAtT = List.fold (fun acc obs -> (addBoolObs (obs, rndBool()) acc)) Map.empty bools
-            let numEnvAtT = List.fold (fun acc obs -> 
-                                       match obs with
-                                       | NumVal(s) ->
-                                           (addNumObs (obs, rndNum()) acc)
-                                       | _ -> failwith "Not yet implemented"
-                                     ) Map.empty nums
-
-            let newBoolEnv =
-                let arr = Array.create (hori+1) Map.empty
-                Array.set arr hori boolEnvAtT
-                arr
-            let newNumEnv =
-                let arr = Array.create (hori+1) Map.empty
-                Array.set arr hori numEnvAtT
-                arr
+            let newBoolEnv = List.fold (fun acc index -> 
+                                         let boolEnv = List.fold (fun acc1 obs -> (addBoolObs (obs, rndBool()) acc1)) Map.empty bools
+                                         Array.set acc index boolEnv
+                                         acc
+                                       ) (Array.create (hori+1) Map.empty) [0..hori]
+            let newNumEnv = List.fold (fun acc index -> 
+                                         let numEnv = List.fold (fun acc1 obs -> (addNumObs (obs, rndNum()) acc1)) Map.empty nums
+                                         Array.set acc index numEnv
+                                         acc
+                                       ) (Array.create (hori+1) Map.empty) [0..hori]
             (t, newBoolEnv, newNumEnv)
 
-        
-        for i = 1 to (getHorizon c1) do
+        printfn "%A" (getHorizon c4)
+        for i = 0 to (getHorizon c4) do
             printfn "%A" i
-            let env = (generateObservables i (i + (getHorizon c1)) c1)
+            let env = (generateObservables i (i + (getHorizon c4)) c4)
             printfn "%A" env
-            printfn "%A" (evalC  env c1)
+            printfn "%A" (evalC  env c4)
             //printfn "%A" (evalC env1 c2)
             Thread.Sleep(1000)
 

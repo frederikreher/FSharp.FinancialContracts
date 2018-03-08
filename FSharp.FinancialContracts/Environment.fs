@@ -8,6 +8,8 @@ module Environment =
         | And of BoolObs * BoolObs
         | Or of BoolObs * BoolObs
         | GreaterThan of NumberObs * NumberObs
+        | LessThan of NumberObs * NumberObs
+        | Not of BoolObs
     // Observable of type float.
     and NumberObs =
         | NumVal of string
@@ -24,6 +26,8 @@ module Environment =
         | And(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) && (evalBoolObs bool2 boolEnv numEnv)
         | Or(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) || (evalBoolObs bool2 boolEnv numEnv)
         | GreaterThan(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) > (evalNumberObs num2 numEnv boolEnv)
+        | LessThan(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) < (evalNumberObs num2 numEnv boolEnv)
+        | Not(bool) -> not (evalBoolObs bool boolEnv numEnv)
 
     // Evaluation of float observable, returns a float value.
     and evalNumberObs obs numEnv boolEnv : float =
@@ -39,7 +43,7 @@ module Environment =
             else
                 (evalNumberObs num2 numEnv boolEnv)
     
-    
+    //
     let rec boolObs (obs:BoolObs) boolAcc numAcc : (BoolObs list * NumberObs list) =
         match obs with
         | BoolVal(_) -> 
@@ -56,7 +60,11 @@ module Environment =
         | GreaterThan(num1, num2) -> 
             let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
             numberObs num2 boolAcc1 numAcc1
-    // Evaluation of float observable, returns a float value.
+        | LessThan(num1, num2) -> 
+            let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
+            numberObs num2 boolAcc1 numAcc1
+        | Not(bool) -> boolObs bool boolAcc numAcc
+    // 
     and numberObs (obs:NumberObs) boolAcc numAcc : (BoolObs list * NumberObs list) =
         match obs with
         | NumVal(_) -> 

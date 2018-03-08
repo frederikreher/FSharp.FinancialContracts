@@ -7,6 +7,8 @@ module Environment =
         | And of BoolObs * BoolObs
         | Or of BoolObs * BoolObs
         | GreaterThan of NumberObs * NumberObs
+        | LessThan of NumberObs * NumberObs
+        | Not of BoolObs
     and NumberObs =
         | NumVal of string
         | Const of float
