@@ -24,8 +24,7 @@ module Contract =
         | Scale of NumberObs * Contract                 // Acquire the provided contract, but all rights and obligations 
                                                         // is scaled by the provided value.
         | And of Contract * Contract                    // Immediately acquire both contracts.
-        | Or of BoolObs * Contract * Contract           // Immediately acquire either of the contracts.
-        | If of BoolObs * Time * Contract * Contract           // Acquire the first contract if the observable is true 
+        | If of BoolObs * Time * Contract * Contract    // Acquire the first contract if the observable is true 
                                                         // else acquire the second contract. Either contract 
                                                         // is acquired at the provided time or later.
         | Give of Contract                              // Contract giving away the provided contract. 
@@ -49,7 +48,6 @@ module Contract =
         | Delay(t1, c) -> t1 + (horizon c t)
         | Scale(obs, c1) -> horizon c1 t
         | And(c1, c2) -> max (horizon c1 t) (horizon c2 t)
-        | Or(obs, c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> t1 + (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
 
@@ -68,10 +66,6 @@ module Contract =
         | And(c1, c2) -> 
             let (boolAcc1, numAcc1) = (observables c2 boolAcc numAcc)
             observables c1 boolAcc1 numAcc1
-        | Or(obs, c1, c2) -> 
-            let (boolAcc1,numAcc1) = (boolObs obs boolAcc numAcc)
-            let (boolAcc2,numAcc2) = observables c1 boolAcc1 numAcc1
-            observables c2 boolAcc2 numAcc2
         | If(obs, _, c1, c2) -> 
             let (boolAcc1,numAcc1) = (boolObs obs boolAcc numAcc)
             let (boolAcc2,numAcc2) = observables c1 boolAcc1 numAcc1
@@ -96,17 +90,6 @@ module Contract =
           | And(c1, c2) -> 
               yield! evalC env c1
               yield! evalC env c2
-          | Or(obs,c1, c2) ->
-              let b = (evalBoolObs obs (getBoolEnv (getTime env) env) (getNumEnv (getTime env) env))
-              printfn "Or bool was %A" b
-              if b then 
-                  match evalC env c1 with
-                  [] -> yield! evalC env c2
-                  | trans -> yield! trans
-              else
-                  match evalC env c2 with
-                  [] -> yield! evalC env c1
-                  | trans -> yield! trans
           | If(obs, t, c1, c2) -> 
               let currentTime = getTime env
               let isFalse = List.forall (fun t1 -> 
@@ -114,7 +97,6 @@ module Contract =
                                             let bVal = evalBoolObs obs (getBoolEnv t1 env1) (getNumEnv t1 env1)
                                             bVal = false
                                         ) [currentTime..(t + currentTime)]
-              //let bVal = (evalBoolObs obs (getBoolEnv (getTime env) env) (getNumEnv (getTime env) env))
               if isFalse then
                   yield! evalC env c2
               else

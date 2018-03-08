@@ -17,7 +17,6 @@ module Contract =
         | Delay of Time * Contract
         | Scale of NumberObs * Contract
         | And of Contract * Contract
-        | Or of BoolObs * Contract * Contract
         | If of BoolObs * Time * Contract * Contract
         | Give of Contract 
 
