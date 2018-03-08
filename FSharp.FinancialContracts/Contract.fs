@@ -12,7 +12,7 @@ module Contract =
         | CHF | ISK | NOK | HRK | RUB | TRY | AUD | BRL | CAD | CNY 
         | HKD | IDR | ILS | INR | KRW | MXN | MYR | NZD | PHP | SGD
         | THB | ZAR | EUR
-
+    
     // Evaluation of a contract result in a Transaction.
     type Transaction = Transaction of float * Currency
 
