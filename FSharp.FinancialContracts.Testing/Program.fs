@@ -24,17 +24,16 @@ let main argv =
                                      acc
                                    ) (Array.create (hori+1) Map.empty) [0..(hori+1)]
         (t, newBoolEnv, newNumEnv)
-
+        
+    //let propertyCheck c (property: Environment -> Transaction list -> bool) = 
+        //[for t in [1..1000] do 
+            //let env = generateObservables t c 
+            //let transactions = evalC env c
+            //yield property env transactions
+            //]
     
-    let propertyCheck c (property: Environment -> Transaction list -> bool) = 
-        [for t in [1..1000] do 
-            let env = generateObservables t (getHorizon c) c 
-            let transactions = evalC env c
-            yield property env transactions
-            ]
-    
-    let res = propertyCheck c (fun e t -> true)
+    //let res = propertyCheck c (fun e t -> true)
 
-    printf "%A" res
+    printf "%A" 1
 
     0 // return an integer exit code

@@ -4,6 +4,7 @@ namespace FSharp.FinancialContracts
 open System.Threading
 open Environment
 open Contract
+open Contracts
 open System
 
 module program = 
@@ -18,13 +19,8 @@ module program =
 
         // Add function to add to environments???
         let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
-
-        // Zero-coupon discount bond
-        let zcb time amount cur = 
-            let obs = NumVal(string(amount))
-            Delay(time, Scale(obs, One(cur)))
         
-        let c1 = (zcb 5 50.0 DKK)
+        let c1 = (zcb 5 (Const 50.0) DKK)
         
         // European option
         //let eur = failwith "Not yet implemented"
