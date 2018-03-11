@@ -20,13 +20,13 @@ module program =
         // Add function to add to environments???
         let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
         
-        let c1 = (zcb 5 (Const 50.0) DKK)
+        let c1 = (zcbO 5 (Const 50.0) DKK)
 
         // If vs. Or
         let c2 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(GBP))
 
         let c3 = If(BoolVal("50/50"), 5, One(DKK), Zero)
-        let c4 = If(LessThan(Const 0.5, NumVal("rand")), 1, One(DKK), Zero)
+        let c4 = If(Not(LessThan(Const 0.5, NumVal("rand"))), 1, One(DKK), Zero)
 
         let generateObservables t hori c : Environment.Environment = 
             let rndBool = (fun () -> (if (new Random()).Next(0,2) = 0 then true else false));
@@ -44,7 +44,7 @@ module program =
                                          acc
                                        ) (Array.create (hori+1) Map.empty) [0..hori]
             (t, newBoolEnv, newNumEnv)
-
+            
         printfn "%A" (getHorizon c4)
         for i = 0 to (getHorizon c4) do
             printfn "%A" i

@@ -16,7 +16,7 @@ module Contract =
     // Evaluation of a contract result in a Transaction.
     type Transaction = Transaction of float * Currency
 
-    // Defines how a contract can be constructed
+    // Defines how a contract can be constructed.
     type Contract = 
         | Zero                                          // Contract that has no rights or obligations.
         | One of Currency                               // Contract paying one unit of the provided currency.
@@ -50,7 +50,6 @@ module Contract =
         | And(c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> t1 + (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
-
     let getHorizon c : Time = horizon c 0
 
     // Return a tuple of BoolObs list and NumberObs list, 
@@ -71,7 +70,6 @@ module Contract =
             let (boolAcc2,numAcc2) = observables c1 boolAcc1 numAcc1
             observables c2 boolAcc2 numAcc2
         | Give(c) -> observables c boolAcc numAcc
-   
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
     
     // Evaluates a contract and returns a list of Transactions.
@@ -85,7 +83,6 @@ module Contract =
                                 match trans with
                                 | Transaction(a, n) -> 
                                     Transaction((evalNumberObs obs (getNumEnv (getTime env) env) (getBoolEnv (getTime env) env)) * a, n)::acc
-              //                  | _ -> failwith "'Scale' contract could not be evaluated"
                                ) [] (evalC env c1)
           | And(c1, c2) -> 
               yield! evalC env c1
@@ -105,5 +102,4 @@ module Contract =
               yield! List.fold (fun acc trans -> 
                                 match trans with
                                 | Transaction(a, n) -> Transaction(-a, n)::acc
-                                //| _ -> failwith "'Give' contract could not be evaluated"
                                ) [] (evalC env c)]

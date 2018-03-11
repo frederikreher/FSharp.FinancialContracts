@@ -6,7 +6,8 @@ open Environment
 
 module Contracts =
 
-    // Zero-coupon discount bond
-    let zcb time obs cur = Delay(time, Scale(obs, One(cur)))
-    let zcbF time value cur = Delay(time, Scale(Const value, One(cur)))
+    // Zero-coupon discount bond using an observable.
+    let zcbO time obs cur = Delay(time, Scale(obs, One(cur)))
+    // Zero-coupon discount bond using an constant.
+    let zcbC time value cur = Delay(time, Scale(Const value, One(cur)))
     
