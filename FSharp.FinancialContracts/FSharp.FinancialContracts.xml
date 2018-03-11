@@ -89,8 +89,17 @@
 <member name="T:FSharp.FinancialContracts.Contract.Transaction">
  <summary> Evaluation of a contract result in a Transaction. </summary>
 </member>
+<member name="T:FSharp.FinancialContracts.Contract.Asset">
+ <summary> Used in contracts to create transactions. </summary>
+</member>
+<member name="T:FSharp.FinancialContracts.Contract.Measure">
+ <summary> Used to specify the measurement type of a commodity. </summary>
+</member>
+<member name="T:FSharp.FinancialContracts.Contract.Commodity">
+ <summary> Commodity used in an asset. </summary>
+</member>
 <member name="T:FSharp.FinancialContracts.Contract.Currency">
- <summary> Currency used in contracts. </summary>
+ <summary> Currency used in an asset. </summary>
 </member>
 <member name="M:FSharp.FinancialContracts.Contract.evalC(System.Tuple{System.Int32,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Boolean}[],Microsoft.FSharp.Collections.FSharpMap{System.String,System.Double}[]},FSharp.FinancialContracts.Contract.Contract)">
  <summary> Evaluates a contract. </summary>
@@ -120,14 +129,14 @@
  <param name="cur2"> The currency to exchange to. </param>
  <returns> A float value representing the exchange rate between the two currencies. </returns>
 </member>
-<member name="M:FSharp.FinancialContracts.Contracts.zcbC(System.Int32,System.Double,FSharp.FinancialContracts.Contract.Currency)">
+<member name="M:FSharp.FinancialContracts.Contracts.zcbC(System.Int32,System.Double,FSharp.FinancialContracts.Contract.Asset)">
  <summary> Zero-coupon discount bond using an constant. </summary>
  <param name="time"> The time at which the contract can be evaluated. </param>
  <param name="value"> The amount in a transaction specified using an constant. </param>
  <param name="cur">  </param>
  <returns> The currency used in an transaction. </returns>
 </member>
-<member name="M:FSharp.FinancialContracts.Contracts.zcbO(System.Int32,FSharp.FinancialContracts.Environment.NumberObs,FSharp.FinancialContracts.Contract.Currency)">
+<member name="M:FSharp.FinancialContracts.Contracts.zcbO(System.Int32,FSharp.FinancialContracts.Environment.NumberObs,FSharp.FinancialContracts.Contract.Asset)">
  <summary> Zero-coupon discount bond using an observable. </summary>
  <param name="time"> The time at which the contract can be evaluated. </param>
  <param name="obs"> The amount in a transaction specified using an observable. </param>

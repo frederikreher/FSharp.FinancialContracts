@@ -6,20 +6,37 @@ open Environment
 
 module Contract =
 
-    // Currency used in contracts.
+    // Currency used in an asset.
     type Currency = 
         | USD | JPY | BGN | CZK | DKK | GBP | HUF | PLN | RON | SEK 
         | CHF | ISK | NOK | HRK | RUB | TRY | AUD | BRL | CAD | CNY 
         | HKD | IDR | ILS | INR | KRW | MXN | MYR | NZD | PHP | SGD
         | THB | ZAR | EUR
+
+    // Commodity used in an asset.
+    type Commodity =
+        | Gold
+        | Oil
+        | Elextricity
+
+    // Used to specify the measurement type of a commodity.
+    type Measure =
+        | KG
+        | WATT
+        | BARREL
     
+    // Used in contracts to create transactions.
+    type Asset =
+        | Currency of Currency
+        | Commodity of Commodity * Measure
+
     // Evaluation of a contract result in a Transaction.
-    type Transaction = Transaction of float * Currency
+    type Transaction = Transaction of float * Asset
 
     // Defines how a contract can be constructed.
     type Contract = 
         | Zero                                          // Contract that has no rights or obligations.
-        | One of Currency                               // Contract paying one unit of the provided currency.
+        | One of Asset                                  // Contract paying one unit of the provided currency.
         | Delay of Time * Contract                      // Acquire the contract at the provided time or later.
         | Scale of NumberObs * Contract                 // Acquire the provided contract, but all rights and obligations 
                                                         // is scaled by the provided value.

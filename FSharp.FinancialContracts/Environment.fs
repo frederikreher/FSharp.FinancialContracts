@@ -20,7 +20,7 @@ module Environment =
         | If of BoolObs * NumberObs * NumberObs
 
     // Evaluation of boolean observable, returns a boolean value.
-    let rec evalBoolObs (obs : BoolObs) boolEnv numEnv : bool =
+    let rec evalBoolObs obs boolEnv numEnv : bool =
         match obs with
         | BoolVal(s) -> Map.find s boolEnv
         | And(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) && (evalBoolObs bool2 boolEnv numEnv)
@@ -81,7 +81,7 @@ module Environment =
         | Mult(num1, num2) -> 
             let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
             numberObs num2 boolAcc1 numAcc1
-        | NumberObs.If(bool, num1, num2) -> 
+        | If(bool, num1, num2) -> 
             let (boolAcc1, numAcc1) = boolObs bool boolAcc numAcc
             let (boolAcc2, numAcc2) = numberObs num1 boolAcc1 numAcc1
             numberObs num2 boolAcc2 numAcc2
@@ -109,4 +109,4 @@ module Environment =
     let addNumObs (numObs, value) (numEnv:Map<string, float>) : Map<string, float> = 
         match numObs with 
         | NumVal(s) -> numEnv.Add(s, value)
-        | _ -> failwith "Only expects numval"
+        | _ -> failwith "Only expects numVal"
