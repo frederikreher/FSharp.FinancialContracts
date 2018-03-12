@@ -5,6 +5,7 @@ module Environment =
     /// <summary> Observable of type boolean. </summary>
     type BoolObs =
         | BoolVal of string
+        | Bool of bool
         | And of BoolObs * BoolObs
         | Or of BoolObs * BoolObs
         | GreaterThan of NumberObs * NumberObs

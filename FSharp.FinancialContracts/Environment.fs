@@ -5,6 +5,7 @@ module Environment =
     // Observable of type boolean.
     type BoolObs =
         | BoolVal of string
+        | Bool of bool
         | And of BoolObs * BoolObs
         | Or of BoolObs * BoolObs
         | GreaterThan of NumberObs * NumberObs
@@ -23,6 +24,7 @@ module Environment =
     let rec evalBoolObs obs boolEnv numEnv : bool =
         match obs with
         | BoolVal(s) -> Map.find s boolEnv
+        | Bool(b) -> b
         | And(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) && (evalBoolObs bool2 boolEnv numEnv)
         | Or(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) || (evalBoolObs bool2 boolEnv numEnv)
         | GreaterThan(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) > (evalNumberObs num2 numEnv boolEnv)
@@ -50,6 +52,7 @@ module Environment =
                 (obs::boolAcc,numAcc)
             else
                 (boolAcc, numAcc)
+        | Bool(_) -> (boolAcc, numAcc)
         | And(bool1, bool2) -> 
             let (boolAcc1, numAcc1) = boolObs bool1 boolAcc numAcc
             boolObs bool2 boolAcc1 numAcc1

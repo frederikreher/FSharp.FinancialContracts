@@ -21,11 +21,12 @@ module program =
         let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
         
         let c1 = (zcbO 5 (Const 50.0) (Currency DKK))
+        let c2 = americanC 5 10.0 (Currency DKK)
 
         // If vs. Or
-        let c2 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(Currency GBP))
-        let c3 = If(BoolVal("50/50"), 5, One(Currency DKK), Zero)
-        let c4 = If(Not(LessThan(Const 0.5, NumVal("rand"))), 1, One(Currency DKK), One(Commodity(Gold, KG)))
+        let c3 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(Currency GBP))
+        let c4 = If(BoolVal("50/50"), 5, One(Currency DKK), Zero)
+        let c5 = If(Not(Bool false), 1, One(Currency DKK), One(Commodity(Gold, KG)))
 
         let generateObservables t hori c : Environment.Environment = 
             let rndBool = (fun () -> (if (new Random()).Next(0,2) = 0 then true else false));
@@ -44,12 +45,12 @@ module program =
                                        ) (Array.create (hori+1) Map.empty) [0..hori]
             (t, newBoolEnv, newNumEnv)
             
-        printfn "%A" (getHorizon c4)
-        for i = 0 to (getHorizon c4) do
+        printfn "%A" (getHorizon c2)
+        for i = 0 to 10 do
             printfn "%A" i
-            let env = (generateObservables i (i + (getHorizon c4)) c4)
+            let env = (generateObservables i (i + (getHorizon c2)) c2)
             printfn "%A" env
-            printfn "%A" (evalC  env c4)
+            printfn "%A" (evalC  env c2)
             //printfn "%A" (evalC env1 c2)
             Thread.Sleep(1000)
 
