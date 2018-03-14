@@ -34,11 +34,13 @@ module program =
             let rndNum = (fun () -> float((new Random()).NextDouble())) 
 
             let (bools, nums) = getObservables c
+            let array = (Array.create (hori+1) Map.empty)
+
             let newBoolEnv = List.fold (fun acc index -> 
                                          let boolEnv = List.fold (fun acc1 obs -> (addBoolObs (obs, rndBool()) acc1)) Map.empty bools
                                          Array.set acc index boolEnv
                                          acc
-                                       ) (Array.create (hori+1) Map.empty) [0..hori]
+                                       ) array [0..hori]
             let newNumEnv = List.fold (fun acc index -> 
                                          let numEnv = List.fold (fun acc1 obs -> (addNumObs (obs, rndNum()) acc1)) Map.empty nums
                                          Array.set acc index numEnv

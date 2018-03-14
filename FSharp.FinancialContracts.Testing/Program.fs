@@ -9,7 +9,15 @@ module program =
      
     [<EntryPoint>]
     let main argv =
-        let c = Scale(Add(NumVal "x", NumVal "y"),One(DKK))
+        let c = Contract.If(BoolVal("b"),20,Scale(Add(NumVal "x", NumVal "y"),One(Currency DKK)),Zero)
+        let genTime = fun t -> float t
+
+        let numGenMap = (Map.empty.Add (NumVal "x",genTime)).Add(NumVal "y",rndNumWitin 10.0 20.0)
+
+        let boolGenMap = Map.empty.Add (BoolVal "b",fun t -> if t=15 then true else false)
+
+        let env = generateEnvironment c numGenMap boolGenMap rndNum rndBool
+
 
         //wlet env = generateObservables t c
 
@@ -23,7 +31,7 @@ module program =
         
         //let res = propertyCheck c (fun e t -> true)
 
-        printf "%A" 1
+        printf "%A" env
 
 
         0 // return an integer exit code

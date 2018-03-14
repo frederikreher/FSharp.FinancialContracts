@@ -11,10 +11,10 @@ type TestClass () =
 
     [<TestMethod>]
     member this.TestTestingFramework () =
-        let list = [Transaction(2.0,DKK)]
+        let list = [Transaction(2.0,(Currency DKK))]
 
-        let sumProperty = sumIs 2.0 DKK
-        let countProperty = countIs 1
+        let sumProperty = sumIs 2.0 (Currency DKK)
+        let countProperty = countIs 2
 
         Assert.IsTrue(list |> testProperty (sumProperty && countProperty))
 

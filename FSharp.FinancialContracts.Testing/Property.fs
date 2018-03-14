@@ -6,10 +6,11 @@ open FSharp.FinancialContracts.Environment
 
 module Property =
 
-    type Property = Transaction list -> bool
+    type Property = Environment -> Transaction list -> bool
 
-    let testProperty (property:Property) ts : bool = property ts
 
-    let (&&) p1 p2 : Property = (fun ts -> p1 ts && p2 ts)
-    let (||) p1 p2 : Property = (fun ts -> p1 ts || p2 ts)
+    let testProperty (property:Property) env ts : bool = property env ts
+
+    let (&&) p1 p2 : Property = (fun env ts -> p1 env ts && p2 env ts)
+    let (||) p1 p2 : Property = (fun env ts -> p1 env ts || p2 env ts)
      

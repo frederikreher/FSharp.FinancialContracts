@@ -87,6 +87,7 @@ module Contract =
             let (boolAcc2,numAcc2) = observables c1 boolAcc1 numAcc1
             observables c2 boolAcc2 numAcc2
         | Give(c) -> observables c boolAcc numAcc
+    
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
     
     // Evaluates a contract and returns a list of Transactions.
@@ -109,7 +110,7 @@ module Contract =
               let isFalse = List.forall (fun t1 -> 
                                             let env1 = increaseTime 1 env
                                             let bVal = evalBoolObs obs (getBoolEnv t1 env1) (getNumEnv t1 env1)
-                                            bVal = false
+                                            not bVal
                                         ) [currentTime..(t + currentTime)]
               if isFalse then
                   yield! evalC env c2

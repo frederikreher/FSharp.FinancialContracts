@@ -11,8 +11,8 @@
     <Compile Include="Property.fs" />
     <Compile Include="Properties.fsi" />
     <Compile Include="Properties.fs" />
+    <Compile Include="Generators.fsi" />
     <Compile Include="Generators.fs" />
     <Compile Include="Program.fs" />
-    
   </ItemGroup>
 </Project>
