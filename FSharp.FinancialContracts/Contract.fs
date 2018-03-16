@@ -67,7 +67,7 @@ module Contract =
         | And(c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> t1 + (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
-    let getHorizon c : Time = horizon c 0
+    let getHorizon c : Time = (horizon c 0)+1
 
     // Return a tuple of BoolObs list and NumberObs list, 
     // containing the observables needed to evaluate all elements of a contract.
@@ -87,7 +87,6 @@ module Contract =
             let (boolAcc2,numAcc2) = observables c1 boolAcc1 numAcc1
             observables c2 boolAcc2 numAcc2
         | Give(c) -> observables c boolAcc numAcc
-    
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
     
     // Evaluates a contract and returns a list of Transactions.
@@ -110,7 +109,7 @@ module Contract =
               let isFalse = List.forall (fun t1 -> 
                                             let env1 = increaseTime 1 env
                                             let bVal = evalBoolObs obs (getBoolEnv t1 env1) (getNumEnv t1 env1)
-                                            not bVal
+                                            bVal
                                         ) [currentTime..(t + currentTime)]
               if isFalse then
                   yield! evalC env c2
