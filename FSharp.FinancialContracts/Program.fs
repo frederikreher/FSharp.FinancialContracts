@@ -20,9 +20,9 @@ module program =
         // Add function to add to environments???
         let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
         
-        let c1 = (zcbO 5 (Const 50.0) (Currency DKK))
-        let c2 = americanC (Bool true) 5 10.0 (Currency DKK)
-        let c3 = europeanC (GreaterThan(Const 5.0, Const 2.0)) 5 10.00 (Currency GBP)
+        let c1 = (zcb 5 (Const 50.0) (Currency DKK))
+        let c2 = american (Bool true) 5 (Const 10.0) (Currency DKK)
+        let c3 = european (GreaterThan(Const 5.0, Const 2.0)) 5 (Const 10.0) (Currency GBP)
 
         // If vs. Or
         let c7 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(Currency GBP))
@@ -34,27 +34,25 @@ module program =
             let rndNum = (fun () -> float((new Random()).NextDouble())) 
 
             let (bools, nums) = getObservables c
-            let array = (Array.create (hori+1) Map.empty)
+            let array = (Array.create (hori) Map.empty)
 
             let newBoolEnv = List.fold (fun acc index -> 
                                          let boolEnv = List.fold (fun acc1 obs -> (addBoolObs (obs, rndBool()) acc1)) Map.empty bools
                                          Array.set acc index boolEnv
                                          acc
-                                       ) array [0..hori]
+                                       ) array [0..(hori - 1)]
             let newNumEnv = List.fold (fun acc index -> 
                                          let numEnv = List.fold (fun acc1 obs -> (addNumObs (obs, rndNum()) acc1)) Map.empty nums
                                          Array.set acc index numEnv
                                          acc
-                                       ) (Array.create (hori+1) Map.empty) [0..hori]
+                                       ) (Array.create (hori) Map.empty) [0..(hori - 1)]
             (t, newBoolEnv, newNumEnv)
             
-        printfn "%A" (getHorizon c3)
-        for i = 0 to 10 do
-            printfn "%A" i
-            let env = (generateObservables i (i + (getHorizon c3)) c3)
+        printfn "%A" (getHorizon c8)
+        for i = 0 to (getHorizon c8) do
+            let env = (generateObservables i (i + (getHorizon c8)) c8)
             printfn "%A" env
-            printfn "%A" (evalC  env c3)
-            //printfn "%A" (evalC env1 c2)
+            printfn "%A" (evalC env c8)
             //Thread.Sleep(1000)
 
         0 // return an integer exit code

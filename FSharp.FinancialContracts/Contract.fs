@@ -67,6 +67,7 @@ module Contract =
         | And(c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> t1 + (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
+
     let getHorizon c : Time = (horizon c 0)+1
 
     // Return a tuple of BoolObs list and NumberObs list, 
@@ -88,35 +89,56 @@ module Contract =
             observables c2 boolAcc2 numAcc2
         | Give(c) -> observables c boolAcc numAcc
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
+
+    // Evaluates a contract and returns an array of list of Transactions.
+    let rec evalContract (env:Environment) contract transactions : Transaction list [] = 
+        let now = getTime env
+        match contract with
+        | Zero -> transactions
+        | One(currency) -> 
+            Array.set transactions now (Transaction(1.0, currency)::(transactions.[now]))
+            transactions
+        | Delay(t, c) -> evalContract (increaseTime t env) c transactions
+        | Scale(obs, c1) ->
+            let newTrans = evalContract env c1 transactions
+            Array.fold (fun acc day -> 
+                            let scaledDay = List.fold (fun updatedDay trans ->
+                                                         match trans with
+                                                         | Transaction (a, n) ->
+                                                            Transaction((evalNumberObs obs (getNumEnv now env) (getBoolEnv now env)) * a, n)::updatedDay
+                                                      ) List.empty day
+                            Array.set acc (Array.IndexOf(newTrans, day)) scaledDay
+                            acc
+                       ) (Array.create (transactions.Length) List.empty) newTrans
+        | And(c1, c2) -> 
+            let transC1 = evalContract env c1 transactions
+            let transC2 =  evalContract env c2 transactions
+            Array.fold (fun acc trans -> 
+                            let index = Array.IndexOf(transC1, trans)
+                            Array.set acc index (trans@(acc.[index]))
+                            acc
+                       ) transC1 transC2
+        | If(obs, t, c1, c2) -> 
+            let currentTime = getTime env
+            let (bVal, time) = 
+                let verifyBool t1 = evalBoolObs obs (getBoolEnv t1 env) (getNumEnv t1 env)
+                match List.tryFind verifyBool [currentTime..(t + currentTime)] with
+                | Some value -> (true, value)
+                | None -> (false, 0)
+            if bVal then
+                evalContract (increaseTime (time - currentTime) env) c1 transactions
+            else
+                evalContract env c2 transactions
+        | Give(c) -> 
+            let newTrans = evalContract env c transactions
+            Array.fold (fun acc day -> 
+                            let negatedDay = List.fold (fun updatedDay trans ->
+                                                         match trans with
+                                                         | Transaction(a, n) -> Transaction(-a, n)::updatedDay
+                                                       ) List.empty day
+                            Array.set acc (Array.IndexOf(newTrans, day)) negatedDay
+                            acc
+                       ) (Array.create (transactions.Length) List.empty) newTrans
     
-    // Evaluates a contract and returns a list of Transactions.
-    let rec evalC (env:Environment) contract : Transaction list = 
-        [ match contract with
-          | Zero -> ()
-          | One(currency) -> yield Transaction(1.0, currency)
-          | Delay(t, c)  -> yield! evalC (increaseTime t env) c
-          | Scale(obs, c1) ->
-              yield! List.fold (fun acc trans -> 
-                                match trans with
-                                | Transaction(a, n) -> 
-                                    Transaction((evalNumberObs obs (getNumEnv (getTime env) env) (getBoolEnv (getTime env) env)) * a, n)::acc
-                               ) [] (evalC env c1)
-          | And(c1, c2) -> 
-              yield! evalC env c1
-              yield! evalC env c2
-          | If(obs, t, c1, c2) -> 
-              let currentTime = getTime env
-              let isFalse = List.forall (fun t1 -> 
-                                            let env1 = increaseTime 1 env
-                                            let bVal = evalBoolObs obs (getBoolEnv t1 env1) (getNumEnv t1 env1)
-                                            bVal
-                                        ) [currentTime..(t + currentTime)]
-              if isFalse then
-                  yield! evalC env c2
-              else
-                  yield! evalC env c1
-          | Give(c) -> 
-              yield! List.fold (fun acc trans -> 
-                                match trans with
-                                | Transaction(a, n) -> Transaction(-a, n)::acc
-                               ) [] (evalC env c)]
+    let evalC (env:Environment) contract : Transaction list [] =
+        evalContract env contract (Array.create (getTime env + (getHorizon contract)) List.empty)
