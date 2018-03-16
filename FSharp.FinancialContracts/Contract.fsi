@@ -66,5 +66,5 @@ module Contract =
     /// <summary> Evaluates a contract. </summary>
     /// <param name="env"> The Environment to evaluate the contract in. </param>
     /// <param name="contract"> The contract to evaluate. </param>
-    /// <returns> Returns a list of Transactions. </returns>
-    val evalC : Environment -> Contract -> Transaction list
+    /// <returns> Returns an array of list of Transactions. </returns>
+    val evalC : Environment -> Contract -> Transaction list []
