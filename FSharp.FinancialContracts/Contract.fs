@@ -101,6 +101,7 @@ module Contract =
         | Delay(t, c) -> evalContract (increaseTime t env) c transactions
         | Scale(obs, c1) ->
             let newTrans = evalContract env c1 transactions
+            printfn "new trans is %A" newTrans
             Array.fold (fun acc day -> 
                             let scaledDay = List.fold (fun updatedDay trans ->
                                                          match trans with
@@ -111,13 +112,17 @@ module Contract =
                             acc
                        ) (Array.create (transactions.Length) List.empty) newTrans
         | And(c1, c2) -> 
-            let transC1 = evalContract env c1 transactions
-            let transC2 =  evalContract env c2 transactions
+            let transC1 = evalContract env c1 (Array.create (transactions.Length) List.empty)
+            let transC2 =  evalContract env c2 (Array.create (transactions.Length) List.empty)
+            printfn "Length of c1 %A" (Array.length transC1)
+            printfn "Length of c2 %A" (Array.length transC2)
             Array.fold (fun acc trans -> 
-                            let index = Array.IndexOf(transC1, trans)
+                            let index = Array.IndexOf(transC2, trans)
+                            printfn "Index is %A" index
                             Array.set acc index (trans@(acc.[index]))
                             acc
                        ) transC1 transC2
+            //transC2
         | If(obs, t, c1, c2) -> 
             let (bVal, time) = 
                 let verifyBool t1 = evalBoolObs obs now env
