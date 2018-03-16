@@ -9,20 +9,21 @@ module program =
      
     [<EntryPoint>]
     let main argv =
-        let c = If(BoolVal("b"),20,Scale(Add(NumVal "x", NumVal "y"),One(Currency DKK)),Zero)
+        let c = If(BoolVal("b"),0,Scale(Add(NumVal "x", NumVal "y"),One(Currency DKK)),One(Currency USD))
 
         let numGenMap = Map.empty
                             .Add(NumVal "x", fun t -> float t)
                             .Add(NumVal "y", NumericGenerators.Default)
 
         let boolGenMap = Map.empty
-                            .Add(BoolVal "b", BoolGenerators.Default)
+                            .Add(BoolVal "b", fun t -> t = 10)
 
         let env = EnvironmentGenerators.Default c
         let customEnv = EnvironmentGenerators.WithCustomGenerators numGenMap boolGenMap c
 
-        printfn "%A" env
-        let trans = evalC env c
+        printfn "%A" customEnv
+        let trans = evalC customEnv c
+        let t10 = trans.[0];
 
         //let env = generateObservables t c
 
@@ -37,6 +38,7 @@ module program =
         //let res = propertyCheck c (fun e t -> true)
 
         printf "%A" trans
+        printfn "Element 0 isNull %A" t10
 
 
         0 // return an integer exit code

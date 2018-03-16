@@ -17,7 +17,6 @@ module Generators =
 
     (*Default bool generators *)
     let rndBoolShiftGen f : ValueGenerator<bool> = fun t -> (new Random()).NextDouble() <= f;
-
     let rndBoolGen : ValueGenerator<bool>        = rndBoolShiftGen 0.5
     let boolAtDateGen t : ValueGenerator<bool>   = fun t -> t = t 
     let boolNotAtDateGen t : ValueGenerator<bool>   = fun t -> t <> t
@@ -36,9 +35,9 @@ module Generators =
 
     [<Sealed>] 
     type NumericGenerators =
-       static member RandomNumber : ValueGenerator<float>                              = rndNumGen
+       static member RandomNumber : ValueGenerator<float>                                = rndNumGen
        static member RandomNumberWithinRange : (float -> float -> ValueGenerator<float>) = rndNumWithinGen
-       static member Default : ValueGenerator<float>                                   = NumericGenerators.RandomNumberWithinRange 1.0 10.0
+       static member Default : ValueGenerator<float>                                     = NumericGenerators.RandomNumberWithinRange 1.0 10.0
 
     //If generator not present in map use default generator
     let findGen genMap defGen obs : ValueGenerator<'a> = 
