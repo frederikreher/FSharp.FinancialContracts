@@ -20,9 +20,10 @@ module program =
         // Add function to add to environments???
         let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
         
-        let c1 = (zcb 5 (Const 50.0) (Currency DKK))
-        let c2 = american (Bool true) 5 (Const 10.0) (Currency DKK)
-        let c3 = european (GreaterThan(Const 5.0, Const 2.0)) 5 (Const 10.0) (Currency GBP)
+        let c1 = zcb 5 (Const 50.0) (Currency DKK)
+        let c2 = american (Bool true) 5 (One(Currency DKK))
+        let c3 = european (GreaterThan(Const 5.0, Const 2.0)) 5 (Scale((Const 100.0), One(Currency GBP)))
+        let c4 = asian (BoolVal("test")) (NumVal("x")) 5 3 (One(Currency DKK))
 
         // If vs. Or
         let c7 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(Currency GBP))
@@ -48,11 +49,11 @@ module program =
                                        ) (Array.create (hori) Map.empty) [0..(hori - 1)]
             (t, newBoolEnv, newNumEnv)
             
-        printfn "%A" (getHorizon c8)
-        for i = 0 to (getHorizon c8) do
-            let env = (generateObservables i (i + (getHorizon c8)) c8)
+        printfn "%A" (getHorizon c4)
+        for i = 0 to (getHorizon c4) do
+            let env = (generateObservables i (i + (getHorizon c4)) c4)
             printfn "%A" env
-            printfn "%A" (evalC env c8)
+            printfn "%A" (evalC env c4)
             //Thread.Sleep(1000)
 
         0 // return an integer exit code

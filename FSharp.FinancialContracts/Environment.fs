@@ -1,6 +1,12 @@
 ﻿namespace FSharp.FinancialContracts
 
 module Environment =
+            
+    // Type representing time.
+    type Time = int
+
+    // Environment contains the value of observables for all times and the current time.
+    type Environment = Time * Map<string, bool> array * Map<string, float> array
 
     // Observable of type boolean.
     type BoolObs =
@@ -19,30 +25,57 @@ module Environment =
         | Sub of NumberObs * NumberObs
         | Mult of NumberObs * NumberObs
         | If of BoolObs * NumberObs * NumberObs
+        | Average of NumberObs * Time
+
+    // Pass the time of an Environment.
+    let increaseTime t1 ((t2, obsEnv, numEnv):Environment) : Environment = (t1+t2, obsEnv, numEnv)
+    // Get the current time of an Environment.
+    let getTime ((t,_,_):Environment) : Time = t
+    // Get the map of boolean observables in an Environment at a specific point in time.
+    let getBoolEnv t ((_,boolEnv,_):Environment) : Map<string, bool> = boolEnv.[t]
+    // Get the map of numerical observables in an Environment at a specific point in time.
+    let getNumEnv t ((_,_,numEnv):Environment) : Map<string, float> = numEnv.[t]
+
+    // Add a boolean observable to the map of boolean observables.
+    let addBoolObs (boolObs, bool) (boolEnv:Map<string, bool>) : Map<string, bool> = 
+        match boolObs with 
+        | BoolVal(s) -> boolEnv.Add(s, bool)
+        | _ -> failwith "Only expects boolVal"
+    // Add a float observable to the map of numerical observables.
+    let addNumObs (numObs, value) (numEnv:Map<string, float>) : Map<string, float> = 
+        match numObs with 
+        | NumVal(s) -> numEnv.Add(s, value)
+        | _ -> failwith "Only expects numVal"
 
     // Evaluation of boolean observable, returns a boolean value.
-    let rec evalBoolObs obs boolEnv numEnv : bool =
+    let rec evalBoolObs obs t env : bool =
         match obs with
-        | BoolVal(s) -> Map.find s boolEnv
+        | BoolVal(s) -> Map.find s (getBoolEnv t env)
         | Bool(b) -> b
-        | And(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) && (evalBoolObs bool2 boolEnv numEnv)
-        | Or(bool1, bool2) -> (evalBoolObs bool1 boolEnv numEnv) || (evalBoolObs bool2 boolEnv numEnv)
-        | GreaterThan(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) > (evalNumberObs num2 numEnv boolEnv)
-        | LessThan(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) < (evalNumberObs num2 numEnv boolEnv)
-        | Not(bool) -> not (evalBoolObs bool boolEnv numEnv)
+        | And(bool1, bool2) -> (evalBoolObs bool1 t env) && (evalBoolObs bool2 t env)
+        | Or(bool1, bool2) -> (evalBoolObs bool1 t env) || (evalBoolObs bool2 t env)
+        | GreaterThan(num1, num2) -> (evalNumberObs num1 t env) > (evalNumberObs num2 t env)
+        | LessThan(num1, num2) -> (evalNumberObs num1 t env) < (evalNumberObs num2 t env)
+        | Not(bool) -> not (evalBoolObs bool t env)
     // Evaluation of float observable, returns a float value.
-    and evalNumberObs obs numEnv boolEnv : float =
+    and evalNumberObs obs t env : float =
         match obs with
-        | NumVal(s) -> Map.find s numEnv
+        | NumVal(s) -> Map.find s (getNumEnv t env)
         | Const(f) -> f
-        | Add(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) + (evalNumberObs num2 numEnv boolEnv)
-        | Sub(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) - (evalNumberObs num2 numEnv boolEnv)
-        | Mult(num1, num2) -> (evalNumberObs num1 numEnv boolEnv) * (evalNumberObs num2 numEnv boolEnv)
+        | Add(num1, num2) -> (evalNumberObs num1 t env) + (evalNumberObs num2 t env)
+        | Sub(num1, num2) -> (evalNumberObs num1 t env) - (evalNumberObs num2 t env)
+        | Mult(num1, num2) -> (evalNumberObs num1 t env) * (evalNumberObs num2 t env)
         | If(bool, num1, num2) -> 
-            if (evalBoolObs bool boolEnv numEnv) then
-                (evalNumberObs num1 numEnv boolEnv)
+            if (evalBoolObs bool t env) then
+                (evalNumberObs num1 t env)
             else
-                (evalNumberObs num2 numEnv boolEnv)
+                (evalNumberObs num2 t env)
+        | Average(num, t) -> 
+            if t > (getTime env) then
+                failwith "The observable period cannot exceed the horizon of the contract"
+            else
+                let res = List.fold (fun sum time -> sum + (evalNumberObs num ((getTime env) - time) env)) 0.0 [0..(t-1)]
+                res / float(t)
 
     // Identifies the observables, that the provided boolean observable depends on.
     let rec boolObs (obs:BoolObs) boolAcc numAcc : (BoolObs list * NumberObs list) =
@@ -88,28 +121,4 @@ module Environment =
             let (boolAcc1, numAcc1) = boolObs bool boolAcc numAcc
             let (boolAcc2, numAcc2) = numberObs num1 boolAcc1 numAcc1
             numberObs num2 boolAcc2 numAcc2
-            
-    // Type representing time.
-    type Time = int
-    // Environment contains the value of observables for all times and the current time.
-    type Environment = Time * Map<string, bool> array * Map<string, float> array
-
-    // Pass the time of an Environment.
-    let increaseTime t1 ((t2, obsEnv, numEnv):Environment) : Environment = (t1+t2, obsEnv, numEnv)
-    // Get the current time of an Environment.
-    let getTime ((t,_,_):Environment) : Time = t
-    // Get the map of boolean observables in an Environment at a specific point in time.
-    let getBoolEnv t ((_,boolEnv,_):Environment) : Map<string, bool> = boolEnv.[t]
-    // Get the map of numerical observables in an Environment at a specific point in time.
-    let getNumEnv t ((_,_,numEnv):Environment) : Map<string, float> = numEnv.[t]
-
-    // Add a boolean observable to the map of boolean observables.
-    let addBoolObs (boolObs, bool) (boolEnv:Map<string, bool>) : Map<string, bool> = 
-        match boolObs with 
-        | BoolVal(s) -> boolEnv.Add(s, bool)
-        | _ -> failwith "Only expects boolVal"
-    // Add a float observable to the map of numerical observables.
-    let addNumObs (numObs, value) (numEnv:Map<string, float>) : Map<string, float> = 
-        match numObs with 
-        | NumVal(s) -> numEnv.Add(s, value)
-        | _ -> failwith "Only expects numVal"
+        | Average(num, _) -> numberObs num boolAcc numAcc
