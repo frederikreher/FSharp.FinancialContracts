@@ -1,25 +1,30 @@
 ﻿namespace FSharp.FinancialContracts.Testing
 
 open System
-open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Testing.Generators
+open FSharp.FinancialContracts.Contract
 
 module program =
      
     [<EntryPoint>]
     let main argv =
-        let c = Contract.If(BoolVal("b"),20,Scale(Add(NumVal "x", NumVal "y"),One(Currency DKK)),Zero)
-        let genTime = fun t -> float t
+        let c = If(BoolVal("b"),20,Scale(Add(NumVal "x", NumVal "y"),One(Currency DKK)),Zero)
 
-        let numGenMap = (Map.empty.Add (NumVal "x",genTime)).Add(NumVal "y",rndNumWitin 10.0 20.0)
+        let numGenMap = Map.empty
+                            .Add(NumVal "x", fun t -> float t)
+                            .Add(NumVal "y", NumericGenerators.Default)
 
-        let boolGenMap = Map.empty.Add (BoolVal "b",fun t -> if t=15 then true else false)
+        let boolGenMap = Map.empty
+                            .Add(BoolVal "b", BoolGenerators.Default)
 
-        let env = generateEnvironment c numGenMap boolGenMap rndNum rndBool
+        let env = EnvironmentGenerators.Default c
+        let customEnv = EnvironmentGenerators.WithCustomGenerators numGenMap boolGenMap c
 
+        printfn "%A" env
+        let trans = evalC env c
 
-        //wlet env = generateObservables t c
+        //let env = generateObservables t c
 
         
         //let propertyCheck c (property: Environment -> Transaction list -> bool) = 
@@ -31,7 +36,7 @@ module program =
         
         //let res = propertyCheck c (fun e t -> true)
 
-        printf "%A" env
+        printf "%A" trans
 
 
         0 // return an integer exit code
