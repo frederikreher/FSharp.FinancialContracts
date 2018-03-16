@@ -107,15 +107,16 @@ module Contract =
               yield! evalC env c2
           | If(obs, t, c1, c2) -> 
               let currentTime = getTime env
-              let isFalse = List.forall (fun t1 -> 
-                                            let env1 = increaseTime 1 env
-                                            let bVal = evalBoolObs obs (getBoolEnv t1 env1) (getNumEnv t1 env1)
-                                            not bVal
-                                        ) [currentTime..(t + currentTime)]
-              if isFalse then
-                  yield! evalC env c2
+              let (bVal, time) = 
+                  let verifyBool t1 = evalBoolObs obs (getBoolEnv t1 env) (getNumEnv t1 env)
+                  match List.tryFind verifyBool [currentTime..(t + currentTime)] with
+                  | Some value -> (true, value)
+                  | None -> (false, 0)
+              if bVal then
+                  yield! evalC (increaseTime (time - currentTime) env) c1
               else
-                  yield! evalC env c1
+                  yield! evalC env c2
+              
           | Give(c) -> 
               yield! List.fold (fun acc trans -> 
                                 match trans with

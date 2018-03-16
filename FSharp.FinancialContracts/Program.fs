@@ -48,13 +48,11 @@ module program =
                                        ) (Array.create (hori+1) Map.empty) [0..hori]
             (t, newBoolEnv, newNumEnv)
             
-        printfn "%A" (getHorizon c3)
-        for i = 0 to 10 do
-            printfn "%A" i
-            let env = (generateObservables i (i + (getHorizon c3)) c3)
+        //printfn "%A" (getHorizon c8)
+        for i = 1 to (getHorizon c8) do
+            let env = (generateObservables i (i + (getHorizon c8)) c8)
             printfn "%A" env
-            printfn "%A" (evalC  env c3)
-            //printfn "%A" (evalC env1 c2)
+            printfn "%A" (evalC env c8)
             //Thread.Sleep(1000)
 
         0 // return an integer exit code
