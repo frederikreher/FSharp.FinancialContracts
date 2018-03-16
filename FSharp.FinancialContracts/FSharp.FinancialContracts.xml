@@ -2,17 +2,51 @@
 <doc>
 <assembly><name>FSharp.FinancialContracts</name></assembly>
 <members>
+<member name="T:FSharp.FinancialContracts.Environment.NumberObs">
+ <summary> Observable of type float. </summary>
+</member>
+<member name="T:FSharp.FinancialContracts.Environment.BoolObs">
+ <summary> Observable of type boolean. </summary>
+</member>
 <member name="T:FSharp.FinancialContracts.Environment.Environment">
  <summary> Environment contains the value of observables for all times and the current time. </summary>
 </member>
 <member name="T:FSharp.FinancialContracts.Environment.Time">
  <summary> Type representing time. </summary>
 </member>
-<member name="T:FSharp.FinancialContracts.Environment.NumberObs">
- <summary> Observable of type float. </summary>
+<member name="M:FSharp.FinancialContracts.Environment.numberObs(FSharp.FinancialContracts.Environment.NumberObs,Microsoft.FSharp.Collections.FSharpList{FSharp.FinancialContracts.Environment.BoolObs},Microsoft.FSharp.Collections.FSharpList{FSharp.FinancialContracts.Environment.NumberObs})">
+ <summary> Identifies the observables, that the provided numerical observable depends on. </summary>
+ <param name="obs"> The observable to find dependent observables for. </param>
+ <param name="boolAcc"> Accumulator for dependent boolean observables. </param>
+ <param name="numAcc"> Accumulator for dependent numerical observables. </param>
+ <returns>
+ A tuple containing two list, one for all dependent boolean observables
+ and one for dependent numerical observables.
+ </returns>
 </member>
-<member name="T:FSharp.FinancialContracts.Environment.BoolObs">
- <summary> Observable of type boolean. </summary>
+<member name="M:FSharp.FinancialContracts.Environment.boolObs(FSharp.FinancialContracts.Environment.BoolObs,Microsoft.FSharp.Collections.FSharpList{FSharp.FinancialContracts.Environment.BoolObs},Microsoft.FSharp.Collections.FSharpList{FSharp.FinancialContracts.Environment.NumberObs})">
+ <summary> Identifies the observables, that the provided boolean observable depends on. </summary>
+ <param name="obs"> The observable to find dependent observables for. </param>
+ <param name="boolAcc"> Accumulator for dependent boolean observables. </param>
+ <param name="numAcc"> Accumulator for dependent numerical observables. </param>
+ <returns> 
+ A tuple containing two list, one for all dependent boolean observables
+ and one for dependent numerical observables.
+ </returns>
+</member>
+<member name="M:FSharp.FinancialContracts.Environment.evalNumberObs(FSharp.FinancialContracts.Environment.NumberObs,System.Int32,System.Tuple{System.Int32,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Boolean}[],Microsoft.FSharp.Collections.FSharpMap{System.String,System.Double}[]})">
+ <summary> Evaluation of boolean observable, returns a boolean value. </summary>
+ <param name="obs"> The observable to evaluate. </param>
+ <param name="t"> Determines the point in time where the value of NumVal objects will be looked up. </param>
+ <param name="env"> Environment for numerical values, used to look up NumVal objects. </par
+ <returns> A float value representing the value of the evaluated observable. </returns>
+</member>
+<member name="M:FSharp.FinancialContracts.Environment.evalBoolObs(FSharp.FinancialContracts.Environment.BoolObs,System.Int32,System.Tuple{System.Int32,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Boolean}[],Microsoft.FSharp.Collections.FSharpMap{System.String,System.Double}[]})">
+ <summary> Evaluation of boolean observable, returns a boolean value. </summary>
+ <param name="obs"> The observable to evaluate. </param>
+ <param name="t"> Determines the point in time where the value of BoolVal objects will be looked up. </param>
+ <param name="env"> Environment for boolean values, used to look up BoolVal objects. </param>
+ <returns> A boolean value representing the value of the evaluated observable. </returns>
 </member>
 <member name="M:FSharp.FinancialContracts.Environment.addNumObs(FSharp.FinancialContracts.Environment.NumberObs,System.Double,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Double})">
  <summary> Add a float observable to the map of numerical observables. </summary>
@@ -48,40 +82,6 @@
  <param name="t1"> The time that the current time of the Environment should be increased. </param>
  <param name="env"> The Environment to increase the time of. </param>
  <returns> The Environment with an updated current time. </returns>
-</member>
-<member name="M:FSharp.FinancialContracts.Environment.numberObs(FSharp.FinancialContracts.Environment.NumberObs,Microsoft.FSharp.Collections.FSharpList{FSharp.FinancialContracts.Environment.BoolObs},Microsoft.FSharp.Collections.FSharpList{FSharp.FinancialContracts.Environment.NumberObs})">
- <summary> Identifies the observables, that the provided numerical observable depends on. </summary>
- <param name="obs"> The observable to find dependent observables for. </param>
- <param name="boolAcc"> Accumulator for dependent boolean observables. </param>
- <param name="numAcc"> Accumulator for dependent numerical observables. </param>
- <returns>
- A tuple containing two list, one for all dependent boolean observables
- and one for dependent numerical observables.
- </returns>
-</member>
-<member name="M:FSharp.FinancialContracts.Environment.boolObs(FSharp.FinancialContracts.Environment.BoolObs,Microsoft.FSharp.Collections.FSharpList{FSharp.FinancialContracts.Environment.BoolObs},Microsoft.FSharp.Collections.FSharpList{FSharp.FinancialContracts.Environment.NumberObs})">
- <summary> Identifies the observables, that the provided boolean observable depends on. </summary>
- <param name="obs"> The observable to find dependent observables for. </param>
- <param name="boolAcc"> Accumulator for dependent boolean observables. </param>
- <param name="numAcc"> Accumulator for dependent numerical observables. </param>
- <returns> 
- A tuple containing two list, one for all dependent boolean observables
- and one for dependent numerical observables.
- </returns>
-</member>
-<member name="M:FSharp.FinancialContracts.Environment.evalNumberObs(FSharp.FinancialContracts.Environment.NumberObs,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Double},Microsoft.FSharp.Collections.FSharpMap{System.String,System.Boolean})">
- <summary> Evaluation of boolean observable, returns a boolean value. </summary>
- <param name="obs"> The observable to evaluate. </param>
- <param name="numEnv"> Environment for nummerical values, used to look up NumVal objects. </param>
- <param name="boolEnv"> Environment for boolean values, used to look up BoolVal objects. </param>
- <returns> A float value representing the value of the evaluated observable. </returns>
-</member>
-<member name="M:FSharp.FinancialContracts.Environment.evalBoolObs(FSharp.FinancialContracts.Environment.BoolObs,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Boolean},Microsoft.FSharp.Collections.FSharpMap{System.String,System.Double})">
- <summary> Evaluation of boolean observable, returns a boolean value. </summary>
- <param name="obs"> The observable to evaluate. </param>
- <param name="boolEnv"> Environment for boolean values, used to look up BoolVal objects. </param>
- <param name="numEnv"> Environment for nummerical values, used to look up NumVal objects. </param>
- <returns> A boolean value representing the value of the evaluated observable. </returns>
 </member>
 <member name="T:FSharp.FinancialContracts.Contract.Contract">
  <summary> Defines how a contract can be constructed. </summary>
@@ -129,51 +129,35 @@
  <param name="cur2"> The currency to exchange to. </param>
  <returns> A float value representing the exchange rate between the two currencies. </returns>
 </member>
-<member name="M:FSharp.FinancialContracts.Contracts.europeanC(FSharp.FinancialContracts.Environment.BoolObs,System.Int32,System.Double,FSharp.FinancialContracts.Contract.Asset)">
- <summary> European option using an constant. </summary>
- <param name="expr"> The expr that determines which contract to evaluate. </param>
- <param name="time"> The latest time at which the contract can be evaluated. </param>
- <param name="value"> The amount in a transaction specified using an constant. </param>
- <param name="asset"> The asset used in an transaction. </param>
- <returns> The currency used in an transaction. </returns>
-</member>
-<member name="M:FSharp.FinancialContracts.Contracts.europeanO(FSharp.FinancialContracts.Environment.BoolObs,System.Int32,FSharp.FinancialContracts.Environment.NumberObs,FSharp.FinancialContracts.Contract.Asset)">
+<member name="M:FSharp.FinancialContracts.Contracts.asian(FSharp.FinancialContracts.Environment.BoolObs,FSharp.FinancialContracts.Environment.NumberObs,System.Int32,System.Int32,FSharp.FinancialContracts.Contract.Contract)">
  <summary> European option using an observable. </summary>
- <param name="expr"> The expr that determines which contract to evaluate. </param>
- <param name="time"> The latest time at which the contract can be evaluated. </param>
- <param name="obs"> The amount in a transaction specified using an observable. </param>
- <param name="asset"> The asset used in an transaction. </param>
- <returns> The currency used in an transaction. </returns>
-</member>
-<member name="M:FSharp.FinancialContracts.Contracts.americanC(FSharp.FinancialContracts.Environment.BoolObs,System.Int32,System.Double,FSharp.FinancialContracts.Contract.Asset)">
- <summary> American option using an constant. </summary>
- <param name="expr"> The expr that determines which contract to evaluate. </param>
- <param name="time"> The latest time at which the contract can be evaluated. </param>
- <param name="value"> The amount in a transaction specified using an constant. </param>
- <param name="asset"> The asset used in an transaction. </param>
- <returns> The currency used in an transaction. </returns>
-</member>
-<member name="M:FSharp.FinancialContracts.Contracts.americanO(FSharp.FinancialContracts.Environment.BoolObs,System.Int32,FSharp.FinancialContracts.Environment.NumberObs,FSharp.FinancialContracts.Contract.Asset)">
- <summary> American option using an observable. </summary>
- <param name="expr"> The expr that determines which contract to evaluate. </param>
- <param name="time"> The latest time at which the contract can be evaluated. </param>
- <param name="obs"> The amount in a transaction specified using an observable. </param>
- <param name="asset"> The asset used in an transaction. </param>
- <returns> The currency used in an transaction. </returns>
-</member>
-<member name="M:FSharp.FinancialContracts.Contracts.zcbC(System.Int32,System.Double,FSharp.FinancialContracts.Contract.Asset)">
- <summary> Zero-coupon discount bond using an constant. </summary>
+ <param name="boolObs"> The observable that determines if contract should be evaluated. </param>
+ <param name="numObs"> The observable to get the average of. </param>
  <param name="time"> The time at which the contract can be evaluated. </param>
- <param name="value"> The amount in a transaction specified using an constant. </param>
- <param name="asset"> The asset used in an transaction. </param>
- <returns> The currency used in an transaction. </returns>
+ <param name="obsPeriod"> The length of the period used to determine the average of numObs. </param>
+ <param name="c"> The contract to include in the option. </param>
+ <returns> A contract matching the rules of an asian option. </returns>
 </member>
-<member name="M:FSharp.FinancialContracts.Contracts.zcbO(System.Int32,FSharp.FinancialContracts.Environment.NumberObs,FSharp.FinancialContracts.Contract.Asset)">
+<member name="M:FSharp.FinancialContracts.Contracts.european(FSharp.FinancialContracts.Environment.BoolObs,System.Int32,FSharp.FinancialContracts.Contract.Contract)">
+ <summary> European option using an observable. </summary>
+ <param name="boolObs"> The observable that determines if contract should be evaluated. </param>
+ <param name="time"> The time at which the contract can be evaluated. </param>
+ <param name="c"> The contract to include in the option. </param>
+ <returns> A contract matching the rules of an european option. </returns>
+</member>
+<member name="M:FSharp.FinancialContracts.Contracts.american(FSharp.FinancialContracts.Environment.BoolObs,System.Int32,FSharp.FinancialContracts.Contract.Contract)">
+ <summary> American option using an observable. </summary>
+ <param name="boolObs"> The observable that determines if contract should be evaluated. </param>
+ <param name="time"> The latest time at which the contract can be evaluated. </param>
+ <param name="c"> The contract to include in the option. </param>
+ <returns> A contract matching the rules of an american option. </returns>
+</member>
+<member name="M:FSharp.FinancialContracts.Contracts.zcb(System.Int32,FSharp.FinancialContracts.Environment.NumberObs,FSharp.FinancialContracts.Contract.Asset)">
  <summary> Zero-coupon discount bond using an observable. </summary>
  <param name="time"> The time at which the contract can be evaluated. </param>
  <param name="obs"> The amount in a transaction specified using an observable. </param>
  <param name="asset"> The asset used in an transaction. </param>
- <returns>  </returns>
+ <returns> ... </returns>
 </member>
 </members>
 </doc>
