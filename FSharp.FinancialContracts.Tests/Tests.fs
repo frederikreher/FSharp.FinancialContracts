@@ -36,14 +36,21 @@ type TestClass () =
 
         let trans = evalC env europ 
 
-        printfn "env are %A" env
-        printfn "transactions are %A" trans
-
-        let allTransactions = fun ts -> true
+        let allTransactions = fun t -> true
+        let DKKTransactions = fun (Transaction(f,c)) -> c = Currency DKK
         let transactionsOfCurrencies curs : Filter = fun (Transaction(f,c)) -> List.contains c curs
 
-        let sumOf filter (op:(float -> float -> bool)) f = Sum(f,op,filter)
+
+
+        let sumProp = SumOf(allTransactions,(>),40.0)
+        let sumPropDKK = SumOf(DKKTransactions,(>),40.0)
+
+        let sumOf filter op f = SumOf(filter,op,f)
+        let p1 = sumOf allTransactions (>) 40.0
+        let p1 = ForAllTimes(p1)
+
 
         let p = ((sumOf (transactionsOfCurrencies [Currency CNY]) (<=) 40.0)) || (sumOf (transactionsOfCurrencies [Currency CNY]) (>=) 20.0)
+
 
         Assert.IsTrue(testProperty p env trans)
