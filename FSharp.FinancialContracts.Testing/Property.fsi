@@ -5,18 +5,22 @@ open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
 
 module Property =
+    type Property = (Environment -> Transaction list -> bool)
+    type BinOp<'a> = ('a -> 'a -> bool)
     type Filter = (Transaction -> bool)
-    type BinOp = (float -> float -> bool)
     
-    type Property = 
-        | Predicate of (Environment -> Transaction list[] -> bool)
-        | And of Property * Property
-        | Or of Property * Property
-        | SumOf of Filter * BinOp * float 
+    type TransactionProperty = 
+        | And of TransactionProperty * TransactionProperty
+        | Or of TransactionProperty * TransactionProperty
         | ForAllTimes of Property
+        | At of Time * Property
+        | Not of TransactionProperty
 
-    val (&&) : Property -> Property -> Property
-    val (||) : Property -> Property -> Property
+    val SumOf : Filter -> BinOp<float> -> float -> Property
+    val CountOf : Filter -> BinOp<int> -> int -> Property
 
-    val evalProp : Property -> Environment -> Transaction list[] -> bool
-    val testProperty : Property -> Environment -> Transaction list[] -> bool
+    val (&&) : TransactionProperty -> TransactionProperty -> TransactionProperty
+    val (||) : TransactionProperty -> TransactionProperty -> TransactionProperty
+
+    val evalProp : TransactionProperty -> Environment -> Transaction list[] -> bool
+    val testProperty : TransactionProperty -> Environment -> Transaction list[] -> bool
