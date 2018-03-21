@@ -125,7 +125,7 @@ module Contract =
             //transC2
         | If(obs, t, c1, c2) -> 
             let (bVal, time) = 
-                let verifyBool t1 = evalBoolObs obs t1 env
+                let verifyBool t1 = evalBoolObs obs t env
                 match List.tryFind verifyBool [now..(t + now)] with
                 | Some value -> (true, value)
                 | None -> (false, 0)

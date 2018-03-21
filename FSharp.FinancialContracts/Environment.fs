@@ -32,10 +32,10 @@ module Environment =
     // Get the current time of an Environment.
     let getTime ((t,_,_):Environment) : Time = t
     // Get the map of boolean observables in an Environment at a specific point in time.
-    let getBoolEnv t ((_,boolEnv,_):Environment) : Map<string, bool> = boolEnv.[t]
+    let getBoolEnv ((_,boolEnv,_):Environment) : Map<string, bool>[] = boolEnv
     // Get the map of numerical observables in an Environment at a specific point in time.
-    let getNumEnv t ((_,_,numEnv):Environment) : Map<string, float> = numEnv.[t]
-
+    let getNumEnv ((_,_,numEnv):Environment) : Map<string, float>[] = numEnv
+   
     // Add a boolean observable to the map of boolean observables.
     let addBoolObs (boolObs, bool) (boolEnv:Map<string, bool>) : Map<string, bool> = 
         match boolObs with 
@@ -48,33 +48,35 @@ module Environment =
         | _ -> failwith "Only expects numVal"
 
     // Evaluation of boolean observable, returns a boolean value.
-    let rec evalBoolObs obs t env : bool =
+    let rec evalBoolObs obs env : bool =
+        let t = getTime env
         match obs with
-        | BoolVal(s) -> Map.find s (getBoolEnv t env)
+        | BoolVal(s) -> Map.find s (getBoolEnv env).[t]
         | Bool(b) -> b
-        | And(bool1, bool2) -> (evalBoolObs bool1 t env) && (evalBoolObs bool2 t env)
-        | Or(bool1, bool2) -> (evalBoolObs bool1 t env) || (evalBoolObs bool2 t env)
-        | GreaterThan(num1, num2) -> (evalNumberObs num1 t env) > (evalNumberObs num2 t env)
-        | LessThan(num1, num2) -> (evalNumberObs num1 t env) < (evalNumberObs num2 t env)
-        | Not(bool) -> not (evalBoolObs bool t env)
+        | And(bool1, bool2) -> (evalBoolObs bool1 env) && (evalBoolObs bool2 env)
+        | Or(bool1, bool2) -> (evalBoolObs bool1 env) || (evalBoolObs bool2 env)
+        | GreaterThan(num1, num2) -> (evalNumberObs num1 env) > (evalNumberObs num2 env)
+        | LessThan(num1, num2) -> (evalNumberObs num1 env) < (evalNumberObs num2 env)
+        | Not(bool) -> not (evalBoolObs bool env)
     // Evaluation of float observable, returns a float value.
-    and evalNumberObs obs t env : float =
+    and evalNumberObs obs env : float =
+        let t = getTime env
         match obs with
-        | NumVal(s) -> Map.find s (getNumEnv t env)
+        | NumVal(s) -> Map.find s (getNumEnv env).[t]
         | Const(f) -> f
-        | Add(num1, num2) -> (evalNumberObs num1 t env) + (evalNumberObs num2 t env)
-        | Sub(num1, num2) -> (evalNumberObs num1 t env) - (evalNumberObs num2 t env)
-        | Mult(num1, num2) -> (evalNumberObs num1 t env) * (evalNumberObs num2 t env)
+        | Add(num1, num2) -> (evalNumberObs num1 env) + (evalNumberObs num2 env)
+        | Sub(num1, num2) -> (evalNumberObs num1 env) - (evalNumberObs num2 env)
+        | Mult(num1, num2) -> (evalNumberObs num1 env) * (evalNumberObs num2 env)
         | If(bool, num1, num2) -> 
-            if (evalBoolObs bool t env) then
-                (evalNumberObs num1 t env)
+            if (evalBoolObs bool env) then
+                (evalNumberObs num1 env)
             else
-                (evalNumberObs num2 t env)
+                (evalNumberObs num2 env)
         | Average(num, t) -> 
             if t > (getTime env) then
                 failwith "The observable period cannot exceed the horizon of the contract"
             else
-                let res = List.fold (fun sum time -> sum + (evalNumberObs num ((getTime env) - time) env)) 0.0 [0..(t-1)]
+                let res = List.fold (fun sum time -> sum + (evalNumberObs num env)) 0.0 [0..(t-1)]
                 res / float(t)
 
     // Identifies the observables, that the provided boolean observable depends on.

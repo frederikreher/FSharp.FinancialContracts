@@ -36,7 +36,9 @@ module Property =
                 p env ts
             | Not(p) -> not (evalProp p env t)
     
-    let (&&) p1 p2 : TransactionProperty = And(p1,p2)
+    let (&&) p1 p2 : Property = fun ts env -> (p1 env ts) && (p2 env ts)
     let (||) p1 p2 : TransactionProperty = Or(p1,p2)
 
     let testProperty prop env ts = evalProp prop env ts
+
+    //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)

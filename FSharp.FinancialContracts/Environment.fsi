@@ -39,12 +39,12 @@ module Environment =
     /// <param name="t"> The time to get the map at. </param>
     /// <param name="env"> The Environment to get the map of observables from. </param>
     /// <returns> The map of boolean observables at the specific point in time. </returns>
-    val getBoolEnv : Time -> Environment -> Map<string, bool>
+    val getBoolEnv : Environment -> Map<string, bool> []
     /// <summary> Get the map of numerical observables in an Environment at a specific point in time. </summary>
     /// <param name="t"> The time to get the map at. </param>
     /// <param name="env"> The Environment to get the map of observables from. </param>
     /// <returns> The map of numerical observables at the specific point in time. </returns>
-    val getNumEnv : Time -> Environment -> Map<string, float>
+    val getNumEnv : Environment -> Map<string, float> []
     
     /// <summary> Add a boolean observable to the map of boolean observables. </summary>
     /// <param name="(boolObs, bool)"> The tuple of a boolean observables and a boolean value, to add to the map. </param>
@@ -62,13 +62,13 @@ module Environment =
     /// <param name="t"> Determines the point in time where the value of BoolVal objects will be looked up. </param>
     /// <param name="env"> Environment for boolean values, used to look up BoolVal objects. </param>
     /// <returns> A boolean value representing the value of the evaluated observable. </returns>
-    val evalBoolObs : BoolObs -> Time -> Environment -> bool
+    val evalBoolObs : BoolObs -> Environment -> bool
     /// <summary> Evaluation of boolean observable, returns a boolean value. </summary>
     /// <param name="obs"> The observable to evaluate. </param>
     /// <param name="t"> Determines the point in time where the value of NumVal objects will be looked up. </param>
     /// <param name="env"> Environment for numerical values, used to look up NumVal objects. </par
     /// <returns> A float value representing the value of the evaluated observable. </returns>
-    val evalNumberObs : NumberObs -> Time -> Environment -> float
+    val evalNumberObs : NumberObs -> Environment -> float
     
     /// <summary> Identifies the observables, that the provided boolean observable depends on. </summary>
     /// <param name="obs"> The observable to find dependent observables for. </param>

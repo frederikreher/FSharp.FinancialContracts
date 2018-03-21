@@ -5,6 +5,7 @@ open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Contract
 
 module Generators =
+    let random = new Random()
 
     //Generic function type for generating values at a point in time, time might likely be ignored
     type ValueGenerator<'a> = Time -> 'a
@@ -16,7 +17,7 @@ module Generators =
     type EnvironmentGenerator = Contract -> Environment
 
     (*Default bool generators *)
-    let rndBoolShiftGen f : ValueGenerator<bool> = fun t -> (new Random()).NextDouble() <= f;
+    let rndBoolShiftGen f : ValueGenerator<bool> = fun t -> random.NextDouble() <= f;
     let rndBoolGen : ValueGenerator<bool>        = rndBoolShiftGen 0.5
     let boolAtDateGen t : ValueGenerator<bool>   = fun t -> t = t 
     let boolNotAtDateGen t : ValueGenerator<bool>   = fun t -> t <> t
@@ -30,8 +31,8 @@ module Generators =
        static member Default : ValueGenerator<bool>                      = BoolGenerators.RandomBool
 
     (*Default numeric generators *)
-    let rndNumGen : ValueGenerator<float>               = (fun t -> float((new Random()).NextDouble())) 
-    let rndNumWithinGen min max : ValueGenerator<float> = (fun t -> min + ((max - min) * float((new Random()).NextDouble())))
+    let rndNumGen : ValueGenerator<float>               = (fun t -> float(random.NextDouble())) 
+    let rndNumWithinGen min max : ValueGenerator<float> = (fun t -> min + ((max - min) * float(random.NextDouble())))
 
     [<Sealed>] 
     type NumericGenerators =
@@ -51,7 +52,7 @@ module Generators =
     let genNumValues numObs genMap gen t : Map<string,float>   = List.fold (fun bMap obs -> bMap |> (addNumObs (obs,  ((findGen genMap gen obs) t)))) Map.empty numObs
 
     //Generates enviroment for the entire horizon of contract. Maps contain optional generators for observables
-    let generateEnvironment numGenMap boolGenMap c : Environment = 
+    let  generateEnvironment numGenMap boolGenMap c : Environment = 
         let horizon = getHorizon c
         let (boolObs, numsObs) = getObservables c
        
