@@ -37,10 +37,10 @@ type TestClass () =
 
         let allTransactions = fun t -> true
 
-        let p = CountOf allTransactions (=) 2
-        let atDay20 = At(20,p)
+        let p = countOf allTransactions (=) 2
+        let atDay20 = atTime 20 p
         
-        Assert.IsTrue(testProperty atDay20 env trans)
+        Assert.IsTrue(atDay20 env trans)
 
     [<TestMethod>]
     member this.AmericanOption () =
@@ -58,10 +58,10 @@ type TestClass () =
 
         let allTransactions = fun t -> true
 
-        let p = CountOf allTransactions (=) 2
-        let atDay0 = At(0,p)
+        let p = countOf allTransactions (=) 2
+        let atDay0 = atTime 0 p
         
-        Assert.IsTrue(testProperty atDay0 env trans)
+        Assert.IsTrue(atDay0 env trans)
         
     [<TestMethod>]
     member this.AmericanOptionWithRandomEnvironment () =
@@ -77,13 +77,13 @@ type TestClass () =
         let allTransactions = fun _ -> true
         
         let checkBoolVal = fun en _ -> evalBoolObs (BoolVal "test") en
-        let boolValAt0 = At(0, checkBoolVal)
-        let checkTransactions = CountOf allTransactions (=) 2
-        let transactionsAt0 = At(0, checkTransactions)
-        let test = TransactionProperty.And(boolValAt0, transactionsAt0)
-        let atDay0 = Or(test, Not(boolValAt0))
+        let boolValAt0 = atTime 0 checkBoolVal
+        let checkTransactions = countOf allTransactions (=) 2
+        let transactionsAt0 = atTime 0 checkTransactions
+        let test = boolValAt0 && transactionsAt0
+        let atDay0 = test => boolValAt0
         
-        Assert.IsTrue(testProperty atDay0 env trans)
+        Assert.IsTrue(atDay0 env trans)
 
     [<TestMethod>]
     member this.AsianOption () =
@@ -101,7 +101,7 @@ type TestClass () =
 
         let allTransactions = fun t -> true
 
-        let p = CountOf allTransactions (=) 2
-        let atDay20 = At(20,p)
+        let p = countOf allTransactions (=) 2
+        let atDay20 = atTime 20 p
         
-        Assert.IsTrue(testProperty atDay20 env trans)
+        Assert.IsTrue(atDay20 env trans)
