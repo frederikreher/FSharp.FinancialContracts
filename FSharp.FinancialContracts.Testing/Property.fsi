@@ -31,8 +31,10 @@ module Property =
     val countOf : Filter -> BinOp<int> -> int -> Property
     
     //Advanced combinators
-    val atTime       : Time -> Property -> Property
-    val forAllTimes  : Property -> Property
-    val forSomeTime  : Property -> Property
+    val atTime         : Time -> Property -> Property
+    val forAllTimes    : Property -> Property
+    val forSomeTime    : Property -> Property
+    val satisfyBoolObs : BoolObs -> Property
+    val satisfyNumObs  : NumberObs -> BinOp<float> -> float -> Property
     
     //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)
