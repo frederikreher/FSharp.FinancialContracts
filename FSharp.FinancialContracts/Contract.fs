@@ -47,15 +47,7 @@ module Contract =
         | Give of Contract                              // Contract giving away the provided contract. 
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
 
-    // Provides the current exchange rate between two currencies.
-    let getExchangeRate (cur1:Currency, cur2:Currency) : float = 
-        if string(cur1) = string(cur2) then
-            1.0
-        else
-            let url = "https://api.fixer.io/latest?base=" + string(cur1) + "&symbols=" + string(cur2)
-            let query = Http.RequestString( url )
-            let res = query.[(query.LastIndexOf(":") + 1)..(query.Length - 3)]
-            float(res)
+
 
     // Return the horizon at which all elements of a contract can be evaluated.
     let rec horizon c (t:Time) : Time =
