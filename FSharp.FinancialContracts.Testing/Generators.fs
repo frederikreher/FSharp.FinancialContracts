@@ -19,8 +19,8 @@ module Generators =
     (*Default bool generators *)
     let rndBoolShiftGen f : ValueGenerator<bool> = fun t -> random.NextDouble() <= f;
     let rndBoolGen : ValueGenerator<bool>        = rndBoolShiftGen 0.5
-    let boolAtDateGen t : ValueGenerator<bool>   = fun t -> t = t 
-    let boolNotAtDateGen t : ValueGenerator<bool>   = fun t -> t <> t
+    let boolAtDateGen t : ValueGenerator<bool>   = fun n -> n = t 
+    let boolNotAtDateGen t : ValueGenerator<bool>   = fun n -> n <> t
 
     [<Sealed>]
     type BoolGenerators =

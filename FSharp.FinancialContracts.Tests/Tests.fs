@@ -76,7 +76,7 @@ type TestClass () =
 
         let allTransactions = fun _ -> true
         
-        let checkBoolVal = fun en _ -> evalBoolObs (BoolVal "test") 0 en
+        let checkBoolVal = fun en _ -> evalBoolObs (BoolVal "test") en
         let boolValAt0 = At(0, checkBoolVal)
         let checkTransactions = CountOf allTransactions (=) 2
         let transactionsAt0 = At(0, checkTransactions)

@@ -106,7 +106,7 @@ module Contract =
                             let scaledDay = List.fold (fun updatedDay trans ->
                                                          match trans with
                                                          | Transaction (a, n) ->
-                                                            Transaction((evalNumberObs obs now env) * a, n)::updatedDay
+                                                            Transaction((evalNumberObs obs env) * a, n)::updatedDay
                                                       ) List.empty day
                             Array.set acc (Array.IndexOf(newTrans, day)) scaledDay
                             acc
@@ -124,15 +124,10 @@ module Contract =
                        ) transC1 transC2
             //transC2
         | If(obs, t, c1, c2) -> 
-            let (bVal, time) = 
-                let verifyBool t1 = evalBoolObs obs t env
-                match List.tryFind verifyBool [now..(t + now)] with
-                | Some value -> (true, value)
-                | None -> (false, 0)
-            if bVal then
-                evalContract (increaseTime (time - now) env) c1 transactions
-            else
-                evalContract env c2 transactions
+            let boolValue = evalBoolObs obs env
+            if t = 0 && not boolValue then evalContract env c2 transactions
+            else if t >= 0 && boolValue then evalContract env c1 transactions
+            else evalContract (increaseTime 1 env) (If(obs, t-1, c1, c2)) transactions
         | Give(c) -> 
             let newTrans = evalContract env c transactions
             Array.fold (fun acc day -> 

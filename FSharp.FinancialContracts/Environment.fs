@@ -26,7 +26,7 @@ module Environment =
         | Mult of NumberObs * NumberObs
         | If of BoolObs * NumberObs * NumberObs
         | Average of NumberObs * Time
-
+     
     // Pass the time of an Environment.
     let increaseTime t1 ((t2, obsEnv, numEnv):Environment) : Environment = (t1+t2, obsEnv, numEnv)
     // Get the current time of an Environment.
