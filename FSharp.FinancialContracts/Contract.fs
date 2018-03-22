@@ -117,5 +117,6 @@ module Contract =
                 let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
                 Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
             transactions
+    
     let evalC (env:Environment) contract : Transaction list [] =
         evalContract env contract (Array.create (getTime env + (getHorizon contract)) List.empty)
