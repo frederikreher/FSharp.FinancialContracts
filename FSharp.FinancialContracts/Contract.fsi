@@ -41,12 +41,6 @@ module Contract =
         | If of BoolObs * Time * Contract * Contract
         | Give of Contract 
 
-    /// <summary> Provides the current exchange rate between two currencies. </summary>
-    /// <param name="cur1"> The currency to exchange from. </param>
-    /// <param name="cur2"> The currency to exchange to. </param>
-    /// <returns> A float value representing the exchange rate between the two currencies. </returns>
-    val getExchangeRate : Currency * Currency -> float
-
     /// <summary> Finds the horizon of a contract. </summary>
     /// <param name="c"> The contract to find a horizon for. </param>
     /// <returns> 

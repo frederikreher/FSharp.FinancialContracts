@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <DocumentationFile>.\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Environment.fsi" />
     <Compile Include="Environment.fs" />
@@ -14,15 +12,8 @@
     <Compile Include="Contracts.fsi" />
     <Compile Include="Contracts.fs" />
     <Compile Include="Program.fs" />
-    
   </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="FSharp.Data" Version="2.4.5" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.3.4" />
   </ItemGroup>
-
 </Project>
