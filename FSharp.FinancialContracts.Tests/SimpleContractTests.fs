@@ -38,9 +38,24 @@ type SimpleContractTests () =
     
     [<TestMethod>]
     member this.TestAndScale () =
-        let contract = Scale(Const 4.1,And(And(And(One (Currency DKK),One (Currency DKK)),Delay(2,One (Currency GBP))),Scale(Const 2.0,Delay(2,One (Currency USD)))))
+        let scaleObs : ValueGenerator<float> = fun t -> if t = 0 then 3.0 else if t = 2 then 4.0 else 0.0 
 
-        let env = EnvironmentGenerators.WithDefaultGenerators contract
+        let contract = And(Scale(NumVal("x"),And(And(And(One (Currency DKK),One (Currency DKK)),Delay(2,One (Currency GBP))),Scale(Const 2.0,Delay(2,One (Currency USD))))),Delay(2,One (Currency CZK)))
+
+        let env = contract |> EnvironmentGenerators.WithCustomGenerators (Map.empty.Add(NumVal("x"),scaleObs)) Map.empty
+        //printfn "Environment is %A" env   
+        printfn "Result of TestAndScale is %A" (evalC env contract)
+
+
+        Assert.IsTrue(true)
+
+    [<TestMethod>]
+    member this.TestGive() =
+        let scaleObs : ValueGenerator<float> = fun t -> if t = 0 then 3.0 else if t = 2 then 4.0 else 0.0 
+
+        let contract = And(Scale(NumVal("x"),And(And(And(One (Currency DKK),One (Currency DKK)),Delay(2,One (Currency GBP))),Give(Scale(Const 2.0,Delay(2,One (Currency USD)))))),Delay(2,One (Currency CZK)))
+
+        let env = contract |> EnvironmentGenerators.WithCustomGenerators (Map.empty.Add(NumVal("x"),scaleObs)) Map.empty
         //printfn "Environment is %A" env   
         printfn "Result of TestAndScale is %A" (evalC env contract)
 
