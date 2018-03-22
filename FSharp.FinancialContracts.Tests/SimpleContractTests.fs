@@ -52,12 +52,13 @@ type SimpleContractTests () =
     [<TestMethod>]
     member this.TestGive() =
         let scaleObs : ValueGenerator<float> = fun t -> if t = 0 then 3.0 else if t = 2 then 4.0 else 0.0 
+        let give = Give(Scale(Const 2.0,Delay(2,One (Currency USD))))
+        let contract = And(Scale(NumVal("x"),And(And(And(One (Currency DKK),One (Currency DKK)),Delay(2,One (Currency GBP))),give)),Delay(2,One (Currency CZK)))
+        let giveContract = Give(contract)
 
-        let contract = And(Scale(NumVal("x"),And(And(And(One (Currency DKK),One (Currency DKK)),Delay(2,One (Currency GBP))),Give(Scale(Const 2.0,Delay(2,One (Currency USD)))))),Delay(2,One (Currency CZK)))
-
-        let env = contract |> EnvironmentGenerators.WithCustomGenerators (Map.empty.Add(NumVal("x"),scaleObs)) Map.empty
+        let env = giveContract |> EnvironmentGenerators.WithCustomGenerators (Map.empty.Add(NumVal("x"),scaleObs)) Map.empty
         //printfn "Environment is %A" env   
-        printfn "Result of TestAndScale is %A" (evalC env contract)
+        printfn "Result of TestAndScale is %A" (evalC env giveContract)
 
 
         Assert.IsTrue(true)
