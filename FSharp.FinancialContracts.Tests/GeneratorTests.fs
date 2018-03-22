@@ -10,37 +10,26 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 open FSharp.FinancialContracts.Contract
 
 [<TestClass>]
-type TestClass () =
+type GeneratorTests () =
 
     [<TestMethod>]
-    member this.TestTestingFramework () =
-        let list = [Transaction(2.0,(Currency DKK))]
-
-        let sumProperty = sumIs 2.0 (Currency DKK)
-        let countProperty = countIs 2
-
-        Assert.IsTrue(true)
-
-    [<TestMethod>]
-    member this.EuropeanOption () =
+    member this.TestNumberWithinRange () =
         let scale1 = Scale(NumVal("x"),One(Currency CNY))
         let scale2 = Scale(NumVal("y"),One(Currency DKK))
-        let c = And(scale1,scale2)
-        let europ = european (Bool true) 20 c
+        let c = Delay(200,And(scale1,scale2))
 
         let numGenMap = Map.empty
                             .Add(NumVal "x", NumericGenerators.RandomNumberWithinRange 20.0 40.0)
+                            .Add(NumVal "y", NumericGenerators.RandomNumberWithinRange 40.0 60.0)
 
-        let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty europ
+        let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty c
+        printfn "env is %A" env
         
-        let trans = evalC env europ 
-
-        let allTransactions = fun t -> true
-
-        let p = countOf allTransactions (=) 2
-        let atDay20 = atTime 20 p
+        let xProperty = (satisfyNumObs (NumVal "x") (>=) 20.0) &|& (satisfyNumObs (NumVal "x") (<=) 30.0)
+        let yProperty = (satisfyNumObs (NumVal "y") (>=) 40.0) &|& (satisfyNumObs (NumVal "y") (<=) 60.0)
+        let p = forAllTimes xProperty &|& yProperty
         
-        Assert.IsTrue(atDay20 env trans)
+        Assert.IsTrue(p env Array.empty)
 
     [<TestMethod>]
     member this.AmericanOption () =
