@@ -20,7 +20,29 @@ type SimpleContractTests () =
         for gen in gens do 
             let boolGen = (Map.empty.Add(BoolVal("x"),gen))
             let env = EnvironmentGenerators.WithCustomGenerators Map.empty boolGen contract
-            //printfn "Environment is %A" env
+            //printfn "Environment is %A" env   
             printfn "Result is %A" (evalC env contract)
+
+        Assert.IsTrue(true)
+
+    [<TestMethod>]
+    member this.TestAnd () =
+        let contract = Scale(Const 4.1,And(And(And(One (Currency DKK),One (Currency DKK)),Delay(2,One (Currency GBP))),Delay(2,One (Currency USD))))
+
+        let env = EnvironmentGenerators.WithDefaultGenerators contract
+        //printfn "Environment is %A" env   
+        printfn "Result of TestAnd is %A" (evalC env contract)
+
+
+        Assert.IsTrue(true)
+    
+    [<TestMethod>]
+    member this.TestAndScale () =
+        let contract = Scale(Const 4.1,And(And(And(One (Currency DKK),One (Currency DKK)),Delay(2,One (Currency GBP))),Scale(Const 2.0,Delay(2,One (Currency USD)))))
+
+        let env = EnvironmentGenerators.WithDefaultGenerators contract
+        //printfn "Environment is %A" env   
+        printfn "Result of TestAndScale is %A" (evalC env contract)
+
 
         Assert.IsTrue(true)

@@ -100,7 +100,7 @@ module Contract =
             transactions
         | Delay(t, c) -> evalContract (increaseTime t env) c transactions
         | Scale(obs, c1) ->
-            let newTrans = evalContract env c1 transactions
+            let newTrans = evalContract env c1 (Array.create (transactions.Length) List.empty)
             printfn "new trans is %A" newTrans
             Array.fold (fun acc day -> 
                             let scaledDay = List.fold (fun updatedDay trans ->
@@ -112,22 +112,14 @@ module Contract =
                             acc
                        ) (Array.create (transactions.Length) List.empty) newTrans
         | And(c1, c2) -> 
-            let transC1 = evalContract env c1 (Array.create (transactions.Length) List.empty)
-            let transC2 =  evalContract env c2 (Array.create (transactions.Length) List.empty)
-            printfn "Length of c1 %A" (Array.length transC1)
-            printfn "Length of c2 %A" (Array.length transC2)
-            Array.fold (fun acc trans -> 
-                            let index = Array.IndexOf(transC2, trans)
-                            printfn "Index is %A" index
-                            Array.set acc index (trans@(acc.[index]))
-                            acc
-                       ) transC1 transC2
-            //transC2
+            evalContract env c1 transactions |> ignore
+            evalContract env c2 transactions |> ignore
+            transactions
         | If(obs, t, c1, c2) -> 
             let boolValue = evalBoolObs obs env
-            if t = 0 && not boolValue then evalContract env c2 transactions
-            else if t >= 0 && boolValue then evalContract env c1 transactions
-            else evalContract (increaseTime 1 env) (If(obs, t-1, c1, c2)) transactions
+            if t = 0 && not boolValue then evalContract env c2 transactions //Time has gone and boolvalue is false return c2
+            else if t >= 0 && boolValue then evalContract env c1 transactions //If bool value is true and time hasn't gone return 2
+            else evalContract (increaseTime 1 env) (If(obs, t-1, c1, c2)) transactions //Else IncreaseEnvironment time and decrease t
         | Give(c) -> 
             let newTrans = evalContract env c transactions
             Array.fold (fun acc day -> 
