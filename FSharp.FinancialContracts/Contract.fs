@@ -90,6 +90,9 @@ module Contract =
         | Give(c) -> observables c boolAcc numAcc
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
 
+    let multiplyTransactions f ts : Transaction list = List.map (fun (Transaction(v,ass)) -> Transaction(f*v,ass)) ts
+
+
     // Evaluates a contract and returns an array of list of Transactions.
     let rec evalContract (env:Environment) contract transactions : Transaction list [] = 
         let now = getTime env
@@ -99,18 +102,13 @@ module Contract =
             Array.set transactions now (Transaction(1.0, currency)::(transactions.[now]))
             transactions
         | Delay(t, c) -> evalContract (increaseTime t env) c transactions
-        | Scale(obs, c1) ->
-            let newTrans = evalContract env c1 (Array.create (transactions.Length) List.empty)
-            printfn "new trans is %A" newTrans
-            Array.fold (fun acc day -> 
-                            let scaledDay = List.fold (fun updatedDay trans ->
-                                                         match trans with
-                                                         | Transaction (a, n) ->
-                                                            Transaction((evalNumberObs obs env) * a, n)::updatedDay
-                                                      ) List.empty day
-                            Array.set acc (Array.IndexOf(newTrans, day)) scaledDay
-                            acc
-                       ) (Array.create (transactions.Length) List.empty) newTrans
+        | Scale(obs, c) ->
+            let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
+            for i in [0..(transactions.Length-(now+1))] do
+                let factor = (evalNumberObs obs (increaseTime i env))
+                let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
+                Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
+            transactions
         | And(c1, c2) -> 
             evalContract env c1 transactions |> ignore
             evalContract env c2 transactions |> ignore
