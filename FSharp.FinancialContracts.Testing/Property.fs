@@ -35,9 +35,20 @@ module Property =
     let countOf filter binop (n:int) : Property = fun _ ts -> binop n (Array.sumBy (fun t -> List.length (List.where filter t)) ts)
     
     //Advanced Combinators
-    let atTime (t:Time) p : Property = fun ts env -> p ts env
-    let forAllTimes p     : Property = fun ts env -> p ts env
-    let forSomeTime p     : Property = fun ts env -> p ts env
+    let atTime (t:Time) p : Property = fun env ts  -> p (increaseTime t env) ts
+    
+    let forAllTimes p : Property = fun env ts -> 
+        match List.tryFind (fun t -> not (p (increaseTime t env) ts)) [0..(Array.length ts)] with 
+        | Some(_) -> false
+        | None -> true 
+    
+    let forSomeTime p : Property = fun env ts -> 
+        match List.tryFind (fun t -> p (increaseTime t env) ts) [0..(Array.length ts)] with 
+        | Some(_) -> true
+        | None -> false 
+        
+    let satisfyBoolObs obs : Property        = fun env ts -> evalBoolObs obs env
+    let satisfyNumObs obs (binOp:BinOp<float>) f : Property = fun env ts -> binOp (evalNumberObs obs env) f
     
     //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)
     
