@@ -21,10 +21,10 @@ module Property =
     val impliesProperty : Property -> Property -> Property
     
     //Syntactic sugar for better readability
-    val (!)  : Property -> Property
-    val (&&) : Property -> Property -> Property
-    val (||) : Property -> Property -> Property
-    val (=>) : Property -> Property -> Property
+    val (|!)  : Property -> Property
+    val (&|&) : Property -> Property -> Property
+    val (|||) : Property -> Property -> Property
+    val (=|>) : Property -> Property -> Property
         
     //Advanced properties
     val sumOf   : Filter -> BinOp<float> -> float -> Property
