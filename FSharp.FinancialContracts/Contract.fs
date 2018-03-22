@@ -119,15 +119,11 @@ module Contract =
             else if t >= 0 && boolValue then evalContract env c1 transactions //If bool value is true and time hasn't gone return 2
             else evalContract (increaseTime 1 env) (If(obs, t-1, c1, c2)) transactions //Else IncreaseEnvironment time and decrease t
         | Give(c) -> 
-            let newTrans = evalContract env c transactions
-            Array.fold (fun acc day -> 
-                            let negatedDay = List.fold (fun updatedDay trans ->
-                                                         match trans with
-                                                         | Transaction(a, n) -> Transaction(-a, n)::updatedDay
-                                                       ) List.empty day
-                            Array.set acc (Array.IndexOf(newTrans, day)) negatedDay
-                            acc
-                       ) (Array.create (transactions.Length) List.empty) newTrans
-    
+            let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
+            for i in [0..(transactions.Length-(now+1))] do
+                let factor = -1.0
+                let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
+                Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
+            transactions
     let evalC (env:Environment) contract : Transaction list [] =
         evalContract env contract (Array.create (getTime env + (getHorizon contract)) List.empty)
