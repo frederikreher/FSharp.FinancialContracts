@@ -13,7 +13,7 @@ open FSharp.FinancialContracts.Contract
 type SimpleContractTests () =
 
     [<TestMethod>]
-    member this.TestIfWithin () =
+    member this.``Test If Within`` () =
         let contract = If(BoolVal("x"),5,One (DKK),One (CNY))
         let gens = [BoolGenerators.BoolTrueAtDate 5;BoolGenerators.BoolTrueAtDate 10;BoolGenerators.BoolTrueAtDate 0;BoolGenerators.BoolTrueAtDate 3]
 
@@ -26,7 +26,7 @@ type SimpleContractTests () =
         Assert.IsTrue(true)
 
     [<TestMethod>]
-    member this.TestAnd () =
+    member this.``Test And`` () =
         let contract = Scale(Const 4.1,And(And(And(One (DKK),One (DKK)),Delay(2,One (GBP))),Delay(2,One (USD))))
 
         let env = EnvironmentGenerators.WithDefaultGenerators contract
@@ -37,7 +37,7 @@ type SimpleContractTests () =
         Assert.IsTrue(true)
     
     [<TestMethod>]
-    member this.TestAndScale () =
+    member this.``Test And Scale`` () =
         let scaleObs : ValueGenerator<float> = fun t -> if t = 0 then 3.0 else if t = 2 then 4.0 else 0.0 
 
         let contract = And(Scale(NumVal("x"),And(And(And(One (DKK),One (DKK)),Delay(2,One (GBP))),Scale(Const 2.0,Delay(2,One (USD))))),Delay(2,One (CZK)))
@@ -50,7 +50,7 @@ type SimpleContractTests () =
         Assert.IsTrue(true)
 
     [<TestMethod>]
-    member this.TestGive() =
+    member this.``Test Give`` () =
         let scaleObs : ValueGenerator<float> = fun t -> if t = 0 then 3.0 else if t = 2 then 4.0 else 0.0 
         let give = Give(Scale(Const 2.0,Delay(2,One (USD))))
         let contract = And(Scale(NumVal("x"),And(And(And(One (DKK),One (DKK)),Delay(2,One (GBP))),give)),Delay(2,One (CZK)))

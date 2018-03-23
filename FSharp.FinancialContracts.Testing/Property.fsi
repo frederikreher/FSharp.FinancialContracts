@@ -21,7 +21,7 @@ module Property =
     val impliesProperty : Property -> Property -> Property
     
     //Syntactic sugar for better readability
-    val (|!)  : Property -> Property
+    val (!!)  : Property -> Property
     val (&|&) : Property -> Property -> Property
     val (|||) : Property -> Property -> Property
     val (=|>) : Property -> Property -> Property
@@ -34,6 +34,7 @@ module Property =
     val atTime         : Time -> Property -> Property
     val forAllTimes    : Property -> Property
     val forSomeTime    : Property -> Property
+    val isZero         : Transaction list[] -> Property
     val satisfyBoolObs : BoolObs -> Property
     val satisfyNumObs  : NumberObs -> BinOp<float> -> float -> Property
     

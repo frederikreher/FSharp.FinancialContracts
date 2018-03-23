@@ -13,7 +13,7 @@ open FSharp.FinancialContracts.Contract
 type GeneratorTests () =
 
     [<TestMethod>]
-    member this.TestNumberWithinRange () =
+    member this.``Test Number Within Range`` () =
         let scale1 = Scale(NumVal("x"),One(CNY))
         let scale2 = Scale(NumVal("y"),One(DKK))
         let c = Delay(200,And(scale1,scale2))
@@ -32,7 +32,7 @@ type GeneratorTests () =
         Assert.IsTrue(p env (Array.create (getHorizon c) List.Empty))
 
     [<TestMethod>]
-    member this.AmericanOption () =
+    member this.``American Option`` () =
         let scale1 = Scale(NumVal("x"),One(CNY))
         let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
@@ -53,7 +53,7 @@ type GeneratorTests () =
         Assert.IsTrue(atDay0 env trans)
         
     [<TestMethod>]
-    member this.AmericanOptionWithRandomEnvironment () =
+    member this.``American Option With Random Environment`` () =
         let scale1 = Scale(NumVal("x"),One(CNY))
         let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
@@ -75,7 +75,7 @@ type GeneratorTests () =
         Assert.IsTrue(atDay0 env trans)
 
     [<TestMethod>]
-    member this.AsianOption () =
+    member this.``Asian Option`` () =
         let scale1 = Scale(NumVal("x"),One(CNY))
         let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)

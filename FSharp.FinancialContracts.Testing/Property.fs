@@ -23,7 +23,7 @@ module Property =
     let impliesProperty p1 p2 : Property = fun env ts -> (orProperty (notProperty p1) p2) env ts
     
     //Syntactic sugar for better readability
-    let (|!)  p     : Property = notProperty p
+    let (!!) p      : Property = notProperty p
     let (&|&) p1 p2 : Property = andProperty p1 p2
     let (|||) p1 p2 : Property = orProperty p1 p2
     let (=|>) p1 p2 : Property = impliesProperty p1 p2
