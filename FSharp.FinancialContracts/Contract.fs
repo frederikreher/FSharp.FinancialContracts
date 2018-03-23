@@ -16,6 +16,7 @@ module Contract =
     // Evaluation of a contract result in a Transaction.
     type Transaction = Transaction of float * Currency
 
+
     // Defines how a contract can be constructed.
     type Contract = 
         | Zero                                          // Contract that has no rights or obligations.
