@@ -37,6 +37,8 @@ module Property =
     
     //Advanced Combinators
     let atTime (t:Time) p : Property = fun env ts  -> p (increaseTime t env) ts
+    //Primitiv atTime
+    //let atTime (t:Time) p : Property = fun env ts  -> p (increaseTime (-1 * (getTime env)) env) ts.[t..(ts.Length-t)]
     
     let forAllTimes p : Property = fun env ts -> 
         match List.tryFind (fun t -> not (p (increaseTime t env) ts)) [0..(Array.length ts)-1] with 
