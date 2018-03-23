@@ -25,11 +25,11 @@ type GeneratorTests () =
         let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty c
         printfn "env is %A" env
         
-        let xProperty = (satisfyNumObs (NumVal "x") (>=) 20.0) &|& (satisfyNumObs (NumVal "x") (<=) 30.0)
+        let xProperty = (satisfyNumObs (NumVal "x") (>=) 20.0) &|& (satisfyNumObs (NumVal "x") (<=) 40.0)
         let yProperty = (satisfyNumObs (NumVal "y") (>=) 40.0) &|& (satisfyNumObs (NumVal "y") (<=) 60.0)
         let p = forAllTimes xProperty &|& yProperty
         
-        Assert.IsTrue(p env Array.empty)
+        Assert.IsTrue(p env (Array.create (getHorizon c) List.Empty))
 
     [<TestMethod>]
     member this.AmericanOption () =

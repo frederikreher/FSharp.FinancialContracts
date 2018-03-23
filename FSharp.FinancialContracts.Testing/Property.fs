@@ -17,17 +17,17 @@ module Property =
     
     //Simple property combinators 
     let notProperty p : Property         = fun env ts -> not (p env ts)
-    let andProperty p1 p2 : Property     = fun env ts -> p1 env ts && p2 env ts
-    let orProperty p1 p2 : Property      = fun env ts -> p1 env ts || p2 env ts
-    let impliesProperty p1 p2 : Property = fun env ts -> (orProperty p1 (notProperty p2)) env ts
+    let andProperty p1 p2 : Property     = fun env ts -> (p1 env ts) && (p2 env ts)
+    let orProperty p1 p2 : Property      = fun env ts -> (p1 env ts) || (p2 env ts)
+    let impliesProperty p1 p2 : Property = fun env ts -> (orProperty (notProperty p1) p2) env ts
     
     //Syntactic sugar for better readability
+    let (|!)  p     : Property = notProperty p
     let (&|&) p1 p2 : Property = andProperty p1 p2
     let (|||) p1 p2 : Property = orProperty p1 p2
     let (=|>) p1 p2 : Property = impliesProperty p1 p2
-    let (|!)  p     : Property = notProperty p
     
-    //Helper function mapping true or false values to value of transaction
+    //Helper function mapping true or false values to value of a transaction
     let sumByFilter filter : Transaction -> float = fun (Transaction(f,c)) -> if filter (Transaction(f,c)) then f else 0.0
     
     //Advanced properties
@@ -47,10 +47,8 @@ module Property =
         | Some(_) -> true
         | None -> false 
         
-    let satisfyBoolObs obs : Property        = fun env ts -> evalBoolObs obs env
-    let satisfyNumObs obs (binOp:BinOp<float>) f : Property = fun env ts -> binOp (evalNumberObs obs env) f
+    let satisfyBoolObs obs : Property        = fun env _ -> evalBoolObs obs env
+    let satisfyNumObs obs (binOp:BinOp<float>) f : Property = fun env _ -> binOp (evalNumberObs obs env) f
     
     //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)
     
-    let sumOf20 = sumOf allTransactions (=) 20.0
-    let sumOf21 = sumOf allTransactions (=) 21.0
