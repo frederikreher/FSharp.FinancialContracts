@@ -38,12 +38,13 @@ module Property =
     let atTime (t:Time) p : Property = fun env ts  -> p (increaseTime t env) ts
     
     let forAllTimes p : Property = fun env ts -> 
-        match List.tryFind (fun t -> not (p (increaseTime t env) ts)) [0..(Array.length ts)] with 
+        match List.tryFind (fun t -> not (p (increaseTime t env) ts)) [0..(Array.length ts)-1] with 
         | Some(_) -> false
         | None -> true 
     
-    let forSomeTime p : Property = fun env ts -> 
-        match List.tryFind (fun t -> p (increaseTime t env) ts) [0..(Array.length ts)] with 
+    let forSomeTime p : Property = fun env ts ->
+        
+        match List.tryFind (fun t -> p (increaseTime t env) ts) [0..(Array.length ts)-1] with 
         | Some(_) -> true
         | None -> false 
         
