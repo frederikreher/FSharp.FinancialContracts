@@ -14,17 +14,17 @@ type TestClass () =
 
     [<TestMethod>]
     member this.TestTestingFramework () =
-        let list = [Transaction(2.0,(Currency DKK))]
+        let list = [Transaction(2.0,(DKK))]
 
-        let sumProperty = sumIs 2.0 (Currency DKK)
+        let sumProperty = sumIs 2.0 (DKK)
         let countProperty = countIs 2
 
         Assert.IsTrue(true)
 
     [<TestMethod>]
     member this.EuropeanOption () =
-        let scale1 = Scale(NumVal("x"),One(Currency CNY))
-        let scale2 = Scale(NumVal("y"),One(Currency DKK))
+        let scale1 = Scale(NumVal("x"),One(CNY))
+        let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
         let europ = european (Bool true) 20 c
 
@@ -44,8 +44,8 @@ type TestClass () =
 
     [<TestMethod>]
     member this.AmericanOption () =
-        let scale1 = Scale(NumVal("x"),One(Currency CNY))
-        let scale2 = Scale(NumVal("y"),One(Currency DKK))
+        let scale1 = Scale(NumVal("x"),One(CNY))
+        let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
         let amer = american (Bool true) 20 c
 
@@ -65,8 +65,8 @@ type TestClass () =
         
     [<TestMethod>]
     member this.AmericanOptionWithRandomEnvironment () =
-        let scale1 = Scale(NumVal("x"),One(Currency CNY))
-        let scale2 = Scale(NumVal("y"),One(Currency DKK))
+        let scale1 = Scale(NumVal("x"),One(CNY))
+        let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
         let amer = american (BoolVal "test") 20 c
 
@@ -87,8 +87,8 @@ type TestClass () =
 
     [<TestMethod>]
     member this.AsianOption () =
-        let scale1 = Scale(NumVal("x"),One(Currency CNY))
-        let scale2 = Scale(NumVal("y"),One(Currency DKK))
+        let scale1 = Scale(NumVal("x"),One(CNY))
+        let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
         let asi = asian (Bool true) (NumVal("x")) 20 5 c
 

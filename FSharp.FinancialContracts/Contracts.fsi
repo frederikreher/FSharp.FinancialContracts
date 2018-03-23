@@ -10,7 +10,7 @@ module Contracts =
     /// <param name="obs"> The amount in a transaction specified using an observable. </param>
     /// <param name="asset"> The asset used in an transaction. </param>
     /// <returns> ... </returns>
-    val zcb : Time -> NumberObs -> Asset -> Contract
+    val zcb : Time -> NumberObs -> Currency -> Contract
     
     /// <summary> American option using an observable. </summary>
     /// <param name="boolObs"> The observable that determines if contract should be evaluated. </param>

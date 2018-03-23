@@ -5,6 +5,7 @@ open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
 
 module Property =
+    open System.Collections.Generic
 
     //Type definitions
     type Property  = (Environment -> Transaction list[] -> bool)
@@ -43,11 +44,23 @@ module Property =
         | None -> true 
     
     let forSomeTime p : Property = fun env ts ->
-        
         match List.tryFind (fun t -> p (increaseTime t env) ts) [0..(Array.length ts)-1] with 
         | Some(_) -> true
         | None -> false 
-        
+    
+    let addSums transactionResults acc : Map<Currency,float> =
+        let addToMap = fun map (Transaction(v,cur)) -> 
+            if Map.containsKey cur map then map.Add (cur,(v+map.[cur]))
+            else map.Add (cur,v)
+        let listFolder = fun acc ts -> List.fold addToMap acc ts
+        Array.fold listFolder acc transactionResults 
+    
+    let isZero ts1 : Property = fun _ ts2 -> 
+        let sums = addSums ts2 (addSums ts1 Map.empty)
+        match Map.tryFindKey (fun k v -> v <> 0.0) sums with
+        | Some(_) -> false
+        | None -> true
+    
     let satisfyBoolObs obs : Property        = fun env _ -> evalBoolObs obs env
     let satisfyNumObs obs (binOp:BinOp<float>) f : Property = fun env _ -> binOp (evalNumberObs obs env) f
     

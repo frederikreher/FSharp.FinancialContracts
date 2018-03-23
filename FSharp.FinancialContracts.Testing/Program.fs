@@ -9,7 +9,7 @@ module program =
      
     [<EntryPoint>]
     let main argv =
-        let c = If(BoolVal("b"),10,Scale(Add(NumVal "x", NumVal "y"),One(Currency DKK)),One(Currency USD))
+        let c = If(BoolVal("b"),10,Scale(Add(NumVal "x", NumVal "y"),One(DKK)),One(USD))
 
         let numGenMap = Map.empty
                             .Add(NumVal "x", fun t -> float t)

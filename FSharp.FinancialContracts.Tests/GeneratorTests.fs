@@ -14,8 +14,8 @@ type GeneratorTests () =
 
     [<TestMethod>]
     member this.TestNumberWithinRange () =
-        let scale1 = Scale(NumVal("x"),One(Currency CNY))
-        let scale2 = Scale(NumVal("y"),One(Currency DKK))
+        let scale1 = Scale(NumVal("x"),One(CNY))
+        let scale2 = Scale(NumVal("y"),One(DKK))
         let c = Delay(200,And(scale1,scale2))
 
         let numGenMap = Map.empty
@@ -33,8 +33,8 @@ type GeneratorTests () =
 
     [<TestMethod>]
     member this.AmericanOption () =
-        let scale1 = Scale(NumVal("x"),One(Currency CNY))
-        let scale2 = Scale(NumVal("y"),One(Currency DKK))
+        let scale1 = Scale(NumVal("x"),One(CNY))
+        let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
         let amer = american (Bool true) 20 c
 
@@ -54,8 +54,8 @@ type GeneratorTests () =
         
     [<TestMethod>]
     member this.AmericanOptionWithRandomEnvironment () =
-        let scale1 = Scale(NumVal("x"),One(Currency CNY))
-        let scale2 = Scale(NumVal("y"),One(Currency DKK))
+        let scale1 = Scale(NumVal("x"),One(CNY))
+        let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
         let amer = american (BoolVal "test") 20 c
 
@@ -76,8 +76,8 @@ type GeneratorTests () =
 
     [<TestMethod>]
     member this.AsianOption () =
-        let scale1 = Scale(NumVal("x"),One(Currency CNY))
-        let scale2 = Scale(NumVal("y"),One(Currency DKK))
+        let scale1 = Scale(NumVal("x"),One(CNY))
+        let scale2 = Scale(NumVal("y"),One(DKK))
         let c = And(scale1,scale2)
         let asi = asian (Bool true) (NumVal("x")) 20 5 c
 

@@ -12,7 +12,7 @@ module Property =
     
     //Default filters:
     val allTransactions     : Filter
-    val transactionsOfAsset : Asset -> Filter
+    val transactionsOfAsset : Currency -> Filter
     
     //Simple property combinators 
     val notProperty     : Property -> Property

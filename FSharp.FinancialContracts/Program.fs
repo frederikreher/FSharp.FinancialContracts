@@ -20,15 +20,15 @@ module program =
         // Add function to add to environments???
         let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
         
-        let c1 = zcb 5 (Const 50.0) (Currency DKK)
-        let c2 = american (Bool true) 5 (One(Currency DKK))
-        let c3 = european (GreaterThan(Const 5.0, Const 2.0)) 5 (Scale((Const 100.0), One(Currency GBP)))
-        let c4 = asian (BoolVal("test")) (NumVal("x")) 5 3 (One(Currency DKK))
+        let c1 = zcb 5 (Const 50.0) DKK
+        let c2 = american (Bool true) 5 (One DKK)
+        let c3 = european (GreaterThan(Const 5.0, Const 2.0)) 5 (Scale((Const 100.0), One GBP))
+        let c4 = asian (BoolVal("test")) (NumVal("x")) 5 3 (One DKK)
 
         // If vs. Or
-        let c7 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One(Currency GBP))
-        let c8 = If(BoolVal("50/50"), 5, One(Currency DKK), Zero)
-        let c9 = If(Not(Bool false), 1, One(Currency DKK), One(Commodity(Gold, KG)))
+        let c7 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One( GBP))
+        let c8 = If(BoolVal("50/50"), 5, One( DKK), Zero)
+        let c9 = If(Not(Bool false), 1, One( DKK), One(GBP))
 
         let generateObservables t hori c : Environment.Environment = 
             let rndBool = (fun () -> (if (new Random()).Next(0,2) = 0 then true else false));
