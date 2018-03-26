@@ -6,7 +6,7 @@ open FSharp.FinancialContracts.Environment
 
 module Property =
     //Type definitions
-    type Property  = (Environment -> Transaction list[] -> bool)
+    type Property  = (Environment -> TransactionResults -> bool)
     type BinOp<'a> = ('a -> 'a -> bool)
     type Filter    = (Transaction -> bool)
     
@@ -29,6 +29,7 @@ module Property =
     //Advanced properties
     val sumOf   : Filter -> BinOp<float> -> float -> Property
     val countOf : Filter -> BinOp<int> -> int -> Property
+    val isZero  : Property
     
     //Advanced combinators
     val atTime         : Time -> Property -> Property

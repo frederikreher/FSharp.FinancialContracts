@@ -15,7 +15,18 @@ module Contract =
 
     // Evaluation of a contract result in a Transaction.
     type Transaction = Transaction of float * Currency
-
+    
+    //Final result of the evaluation of a contract. 
+    type TransactionResults = Time * Transaction list []
+    
+    //TODO maybe remove?
+    let getTransactions (t,ts) : Transaction list [] = 
+        let length = Array.length ts
+        Array.sub ts t (length-t)
+    
+    //TODO implement guard on increasing above length of array
+    let increaseTime (t,ts) td : TransactionResults = (t+td,ts)
+        
     // Defines how a contract can be constructed.
     type Contract = 
         | Zero                                          // Contract that has no rights or obligations.
@@ -30,7 +41,7 @@ module Contract =
         | Give of Contract                              // Contract giving away the provided contract. 
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
 
-
+    let (&-&) c1 c2 = And(c1,c2)
 
     // Return the horizon at which all elements of a contract can be evaluated.
     let rec horizon c (t:Time) : Time =
@@ -75,11 +86,11 @@ module Contract =
         | One(currency) -> 
             Array.set transactions now (Transaction(1.0, currency)::(transactions.[now]))
             transactions
-        | Delay(t, c) -> evalContract (increaseTime t env) c transactions
+        | Delay(t, c) -> evalContract (env|+t) c transactions
         | Scale(obs, c) ->
             let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
             for i in [0..(transactions.Length-(now+1))] do
-                let factor = (evalNumberObs obs (increaseTime i env))
+                let factor = (evalNumberObs obs (env|+i))
                 let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
                 Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
             transactions
@@ -91,7 +102,7 @@ module Contract =
             let boolValue = evalBoolObs obs env
             if t = 0 && not boolValue then evalContract env c2 transactions //Time has gone and boolvalue is false return c2
             else if t >= 0 && boolValue then evalContract env c1 transactions //If bool value is true and time hasn't gone return 2
-            else evalContract (increaseTime 1 env) (If(obs, t-1, c1, c2)) transactions //Else IncreaseEnvironment time and decrease t
+            else evalContract (env|+t) (If(obs, t-1, c1, c2)) transactions //Else IncreaseEnvironment time and decrease t
         | Give(c) -> 
             let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
             for i in [0..(transactions.Length-(now+1))] do
@@ -100,5 +111,5 @@ module Contract =
                 Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
             transactions
     
-    let evalC (env:Environment) contract : Transaction list [] =
-        evalContract env contract (Array.create (getTime env + (getHorizon contract)) List.empty)
+    let evalC (env:Environment) contract : TransactionResults =
+       0,evalContract env contract (Array.create (getTime env + (getHorizon contract)) List.empty)

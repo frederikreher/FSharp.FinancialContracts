@@ -13,6 +13,14 @@ module Contract =
 
     /// <summary> Evaluation of a contract result in a Transaction. </summary>
     type Transaction = Transaction of float * Currency
+    
+    //Final result of the evaluation of a contract. 
+    type TransactionResults = Time * Transaction list []
+    
+    val getTransactions : TransactionResults -> Transaction list []
+        
+    //TODO implement guard on increasing above length of array
+    val increaseTime : TransactionResults -> Time -> TransactionResults
 
     /// <summary> Defines how a contract can be constructed. </summary>
     type Contract = 
@@ -23,7 +31,9 @@ module Contract =
         | And of Contract * Contract
         | If of BoolObs * Time * Contract * Contract
         | Give of Contract 
-
+    
+    val (&-&) : Contract -> Contract -> Contract
+    
     /// <summary> Finds the horizon of a contract. </summary>
     /// <param name="c"> The contract to find a horizon for. </param>
     /// <returns> 
@@ -44,4 +54,4 @@ module Contract =
     /// <param name="env"> The Environment to evaluate the contract in. </param>
     /// <param name="contract"> The contract to evaluate. </param>
     /// <returns> Returns an array of list of Transactions. </returns>
-    val evalC : Environment -> Contract -> Transaction list []
+    val evalC : Environment -> Contract -> TransactionResults

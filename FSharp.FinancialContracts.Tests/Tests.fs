@@ -33,14 +33,14 @@ type TestClass () =
 
         let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty europ
         
-        let trans = evalC env europ 
+        let transResults = evalC env europ 
 
         let allTransactions = fun t -> true
 
         let p = countOf allTransactions (=) 2
         let atDay20 = atTime 20 p
         
-        Assert.IsTrue(atDay20 env trans)
+        Assert.IsTrue(atDay20 env transResults )
 
     [<TestMethod>]
     member this.AmericanOption () =
@@ -54,14 +54,14 @@ type TestClass () =
 
         let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty amer
         
-        let trans = evalC env amer 
+        let transResults = evalC env amer 
 
         let allTransactions = fun t -> true
 
         let p = countOf allTransactions (=) 2
         let atDay0 = atTime 0 p
         
-        Assert.IsTrue(atDay0 env trans)
+        Assert.IsTrue(atDay0 env transResults)
         
     [<TestMethod>]
     member this.AmericanOptionWithRandomEnvironment () =
@@ -72,7 +72,7 @@ type TestClass () =
 
         let env = EnvironmentGenerators.WithDefaultGenerators amer
         
-        let trans = evalC env amer 
+        let transResults = evalC env amer 
 
         let allTransactions = fun _ -> true
         
@@ -83,7 +83,7 @@ type TestClass () =
         let test = boolValAt0 &|& transactionsAt0
         let atDay0 = test =|> boolValAt0
         
-        Assert.IsTrue(atDay0 env trans)
+        Assert.IsTrue(atDay0 env transResults)
 
     [<TestMethod>]
     member this.AsianOption () =
@@ -97,11 +97,11 @@ type TestClass () =
 
         let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty asi
         
-        let trans = evalC env asi 
+        let transResults = evalC env asi 
 
         let allTransactions = fun t -> true
 
         let p = countOf allTransactions (=) 2
         let atDay20 = atTime 20 p
         
-        Assert.IsTrue(atDay20 env trans)
+        Assert.IsTrue(atDay20 env transResults)

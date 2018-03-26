@@ -8,7 +8,7 @@ module Property =
     open System.Collections.Generic
 
     //Type definitions
-    type Property  = (Environment -> Transaction list[] -> bool)
+    type Property  = (Environment -> TransactionResults -> bool)
     type BinOp<'a> = ('a -> 'a -> bool)
     type Filter    = (Transaction -> bool)
     
@@ -32,31 +32,37 @@ module Property =
     let sumByFilter filter : Transaction -> float = fun (Transaction(f,c)) -> if filter (Transaction(f,c)) then f else 0.0
     
     //Advanced properties
-    let sumOf filter binop (f:float) : Property = fun _ ts -> binop f (Array.sumBy (List.sumBy (sumByFilter filter)) ts)
-    let countOf filter binop (n:int) : Property = fun _ ts -> binop n (Array.sumBy (fun t -> List.length (List.where filter t)) ts)
+    let sumOf filter binop (f:float) : Property = fun _ transResults -> binop f (Array.sumBy (List.sumBy (sumByFilter filter)) (getTransactions transResults))
+    let countOf filter binop (n:int) : Property = fun _ transResults -> binop n (Array.sumBy (fun t -> List.length (List.where filter t)) (getTransactions transResults))
     
     //Advanced Combinators
-    let atTime (t:Time) p : Property = fun env ts  -> p (increaseTime t env) ts
+    let atTime (t:Time) p : Property = fun env ts  -> 
+        let ts' = increaseTime ts t
+        p (env|+t) ts'
     
-    let forAllTimes p : Property = fun env ts -> 
-        match List.tryFind (fun t -> not (p (increaseTime t env) ts)) [0..(Array.length ts)-1] with 
+    let forAllTimes p : Property = fun env tsr ->
+        let length = Array.length (snd tsr)
+        let timeNotfulfulling = (fun t -> 
+            let tsr' = increaseTime tsr t
+            not (p (env|+t) tsr'))
+        match List.tryFind timeNotfulfulling [0..length-1] with 
         | Some(_) -> false
         | None -> true 
     
-    let forSomeTime p : Property = fun env ts ->
-        match List.tryFind (fun t -> p (increaseTime t env) ts) [0..(Array.length ts)-1] with 
+    let forSomeTime p : Property = fun env (tst,ts) ->
+        match List.tryFind (fun t -> p (env|+t) (tst,ts)) [0..(Array.length ts)-1] with 
         | Some(_) -> true
         | None -> false 
     
-    let addSums transactionResults acc : Map<Currency,float> =
+    let addSums transactions acc : Map<Currency,float> =
         let addToMap = fun map (Transaction(v,cur)) -> 
             if Map.containsKey cur map then map.Add (cur,(v+map.[cur]))
             else map.Add (cur,v)
-        let listFolder = fun acc ts -> List.fold addToMap acc ts
-        Array.fold listFolder acc transactionResults 
+        List.fold addToMap acc transactions
     
-    let isZero ts1 : Property = fun _ ts2 -> 
-        let sums = addSums ts2 (addSums ts1 Map.empty)
+    let isZero : Property = fun _ transactionResults -> 
+        let transactions = getTransactions transactionResults
+        let sums = addSums transactions.[0] Map.empty
         match Map.tryFindKey (fun k v -> v <> 0.0) sums with
         | Some(_) -> false
         | None -> true
