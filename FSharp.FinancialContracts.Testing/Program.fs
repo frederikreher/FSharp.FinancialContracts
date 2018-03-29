@@ -22,7 +22,7 @@ module program =
         let customEnv = EnvironmentGenerators.WithCustomGenerators numGenMap boolGenMap c
 
         printfn "%A" customEnv
-        let trans = evalC customEnv c
+        let (_,trans) = evalC customEnv c
         let t10 = trans.[0];
 
         //let env = generateObservables t c

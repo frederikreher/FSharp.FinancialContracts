@@ -33,14 +33,14 @@ type TestClass () =
 
         let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty europ
         
-        let trans = evalC env europ 
+        let transResults = evalC env europ 
 
         let allTransactions = fun t -> true
 
         let p = countOf allTransactions (=) 2
         let atDay20 = atTime 20 p
         
-        Assert.IsTrue(atDay20 env trans)
+        Assert.IsTrue(atDay20 env transResults )
 
     [<TestMethod>]
     member this.``American Option`` () =
@@ -54,14 +54,14 @@ type TestClass () =
 
         let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty amer
         
-        let trans = evalC env amer 
+        let transResults = evalC env amer 
 
         let allTransactions = fun t -> true
 
         let p = countOf allTransactions (=) 2
         let atDay0 = atTime 0 p
         
-        Assert.IsTrue(atDay0 env trans)
+        Assert.IsTrue(atDay0 env transResults)
         
     [<TestMethod>]
     member this.``American Option With Random Environment`` () =
@@ -72,7 +72,7 @@ type TestClass () =
 
         let env = EnvironmentGenerators.WithDefaultGenerators amer
         
-        let trans = evalC env amer 
+        let transResults = evalC env amer 
 
         let allTransactions = fun _ -> true
         
@@ -83,7 +83,7 @@ type TestClass () =
         let test = boolValAt0 &|& transactionsAt0
         let atDay0 = test =|> boolValAt0
         
-        Assert.IsTrue(atDay0 env trans)
+        Assert.IsTrue(atDay0 env transResults)
 
     [<TestMethod>]
     member this.``Asian Option`` () =
@@ -97,14 +97,14 @@ type TestClass () =
 
         let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty asi
         
-        let trans = evalC env asi 
+        let transResults = evalC env asi 
 
         let allTransactions = fun t -> true
 
         let p = countOf allTransactions (=) 2
         let atDay20 = atTime 20 p
         
-        Assert.IsTrue(atDay20 env trans)
+        Assert.IsTrue(atDay20 env transResults)
         
     [<TestMethod>]
     member this.``Contracts Are Equal With Constant Values`` () =
@@ -116,7 +116,7 @@ type TestClass () =
         let trans1 = evalC env c1
         let trans2 = evalC env (Give c2)
         
-        let prop = isZero trans1
+        let prop = isZero
 
         Assert.IsTrue(prop env trans2)
 
@@ -132,7 +132,6 @@ type TestClass () =
         let trans2 = evalC env (Give c2)
         let trans3 = evalC env (Give c3)
 
-        let prop = isZero trans2 &|& !! (isZero trans3)
+        let prop = isZero &|& !! (isZero)
 
         Assert.IsTrue(prop env trans1)
-

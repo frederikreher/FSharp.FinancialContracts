@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="GeneratorTests.fs" />
+    <Compile Include="PropertyTests.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="SimpleContractTests.fs" />
     <Compile Include="Program.fs" />

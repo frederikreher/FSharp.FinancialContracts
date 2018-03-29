@@ -6,7 +6,10 @@ module Environment =
 
     /// <summary> Environment contains the value of observables for all times and the current time. </summary>
     type Environment = Time * Map<string, bool> array * Map<string, float> array
-
+    
+    val (|++) : Environment -> Environment
+    val (|+)  : Environment -> Time -> Environment
+    
     /// <summary> Observable of type boolean. </summary>
     type BoolObs =
         | BoolVal of string
@@ -26,11 +29,11 @@ module Environment =
         | If of BoolObs * NumberObs * NumberObs
         | Average of NumberObs * Time
         
-    /// <summary> Pass the time of an Environment. </summary>
-    /// <param name="t1"> The time that the current time of the Environment should be increased. </param>
-    /// <param name="env"> The Environment to increase the time of. </param>
-    /// <returns> The Environment with an updated current time. </returns>
-    val increaseTime : Time -> Environment -> Environment
+//    /// <summary> Pass the time of an Environment. </summary>
+//    /// <param name="t1"> The time that the current time of the Environment should be increased. </param>
+//    /// <param name="env"> The Environment to increase the time of. </param>
+//    /// <returns> The Environment with an updated current time. </returns>
+//    val increaseTime : Time -> Environment -> Environment
     /// <summary> Get the current time of an Environment. </summary>
     /// <param name="env"> The Environment to get the time of. </param>
     /// <returns> The current time of the Environment. </returns>

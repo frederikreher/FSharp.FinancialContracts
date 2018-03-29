@@ -7,7 +7,7 @@ module Environment =
 
     // Environment contains the value of observables for all times and the current time.
     type Environment = Time * Map<string, bool> array * Map<string, float> array
-
+    
     // Observable of type boolean.
     type BoolObs =
         | BoolVal of string
@@ -28,13 +28,17 @@ module Environment =
         | Average of NumberObs * Time
      
     // Pass the time of an Environment.
-    let increaseTime t1 ((t2, obsEnv, numEnv):Environment) : Environment = (t1+t2, obsEnv, numEnv)
+    let increaseEnvTime t1 ((t2, obsEnv, numEnv):Environment) : Environment = (t1+t2, obsEnv, numEnv)
+    
     // Get the current time of an Environment.
     let getTime ((t,_,_):Environment) : Time = t
     // Get the map of boolean observables in an Environment at a specific point in time.
     let getBoolEnv ((_,boolEnv,_):Environment) : Map<string, bool>[] = boolEnv
     // Get the map of numerical observables in an Environment at a specific point in time.
     let getNumEnv ((_,_,numEnv):Environment) : Map<string, float>[] = numEnv
+    
+    let (|++) env : Environment         = increaseEnvTime 1 env
+    let (|+) (t,m1,m2) td : Environment = increaseEnvTime td (t,m1,m2)
    
     // Add a boolean observable to the map of boolean observables.
     let addBoolObs (boolObs, bool) (boolEnv:Map<string, bool>) : Map<string, bool> = 
