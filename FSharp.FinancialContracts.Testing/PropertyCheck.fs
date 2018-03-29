@@ -4,7 +4,7 @@ open System
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
 
-module Property =
+module PropertyCheck =
     open System.Collections.Generic
 
     //Type definitions

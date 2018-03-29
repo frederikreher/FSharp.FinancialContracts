@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FSharp.FinancialContracts\FSharp.FinancialContracts.fsproj" />
     <Compile Include="Property.fsi" />
@@ -13,6 +11,8 @@
     <Compile Include="Properties.fs" />
     <Compile Include="Generators.fsi" />
     <Compile Include="Generators.fs" />
+    <Compile Include="PropertyCheck.fsi" />
+    <Compile Include="PropertyCheck.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>
