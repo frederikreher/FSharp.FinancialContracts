@@ -1,0 +1,3 @@
+(0, Microsoft.FSharp.Collections.FSharpMap`2[System.String,System.Boolean][], Microsoft.FSharp.Collections.FSharpMap`2[System.String,System.Double][])
+Writing
+(0, Microsoft.FSharp.Collections.FSharpList`1[FSharp.FinancialContracts.Contract+Transaction][])

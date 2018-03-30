@@ -13,6 +13,8 @@
     <Compile Include="Generators.fs" />
     <Compile Include="PropertyCheck.fsi" />
     <Compile Include="PropertyCheck.fs" />
+    <Compile Include="TestRunners.fsi" />
+    <Compile Include="TestRunners.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>

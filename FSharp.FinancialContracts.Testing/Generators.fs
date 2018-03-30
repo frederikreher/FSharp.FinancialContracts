@@ -52,7 +52,7 @@ module Generators =
     let genNumValues numObs genMap gen t : Map<string,float>   = List.fold (fun bMap obs -> bMap |> (addNumObs (obs,  ((findGen genMap gen obs) t)))) Map.empty numObs
 
     //Generates enviroment for the entire horizon of contract. Maps contain optional generators for observables
-    let  generateEnvironment numGenMap boolGenMap c : Environment = 
+    let generateEnvironment numGenMap boolGenMap c : Environment = 
         let horizon = getHorizon c
         let (boolObs, numsObs) = getObservables c
        
