@@ -3,9 +3,10 @@
 open System
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
+open System.Collections.Generic
 
 module Property =
-    open System.Collections.Generic
+    
 
     //Type definitions
     type Property  = (Environment -> TransactionResults -> bool)

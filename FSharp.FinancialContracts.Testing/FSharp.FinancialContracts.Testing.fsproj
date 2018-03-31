@@ -11,10 +11,15 @@
     <Compile Include="Properties.fs" />
     <Compile Include="Generators.fsi" />
     <Compile Include="Generators.fs" />
-    <Compile Include="PropertyCheck.fsi" />
-    <Compile Include="PropertyCheck.fs" />
+    <Compile Include="PropertyCheckers.fsi" />
+    <Compile Include="PropertyCheckers.fs" />
     <Compile Include="TestRunners.fsi" />
     <Compile Include="TestRunners.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
   </ItemGroup>
 </Project>

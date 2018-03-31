@@ -32,8 +32,7 @@ type SimpleContractTests () =
         let env = EnvironmentGenerators.WithDefaultGenerators contract
         //printfn "Environment is %A" env   
         printfn "Result of TestAnd is %A" (evalC env contract)
-
-
+        
         Assert.IsTrue(true)
     
     [<TestMethod>]

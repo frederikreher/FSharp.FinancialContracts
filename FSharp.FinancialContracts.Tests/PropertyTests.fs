@@ -7,6 +7,7 @@ open FSharp.FinancialContracts.Contracts
 open FSharp.FinancialContracts.Testing.Properties
 open FSharp.FinancialContracts.Testing.TestRunners
 open FSharp.FinancialContracts.Testing.Property
+open FSharp.FinancialContracts.Testing.PropertyCheckers
 open FSharp.FinancialContracts.Testing.Generators
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open FSharp.FinancialContracts.Contract
@@ -20,15 +21,18 @@ type PropertyTests () =
     member this.``Test That Give And Take Results In Zero Sum`` () =
         //Arrange
         let contract = One DKK
-        let neutralContract = And(contract,Give contract)
+        let neutralContract = And(contract,One GBP)
         let env = EnvironmentGenerators.WithDefaultGenerators neutralContract
         
-        //Act
+        //Act   
         let tsr = evalC env neutralContract
         printfn "result is %A" tsr
         
+        
+        
         //Assert
-        Assert.IsTrue(isZero env tsr)
+       // Assert.IsTrue(isZero env tsr)
+        PropertyCheck.Check neutralContract isZero
 
     [<TestMethod>]
     member this.``Test That Give And Take Results In Zero Sum For All Times`` () =
@@ -53,7 +57,7 @@ type PropertyTests () =
             let observable = NumVal("x")
             let simpleContract = Scale(observable,One DKK)
             let neutralContract = Delay(1,And(simpleContract,Give simpleContract))
-            let contract = Delay(1,neutralContract) &-& Delay(2,neutralContract) &-& Delay(5,neutralContract)
+            let contract = Delay(1,neutralContract) &-& Delay(2,neutralContract) &-& Delay(5,neutralContract) &-& One DKK
             
             let testResult = TestRunners.Runner.RunNTimes 100000 contract (forAllTimes isZero)
             
