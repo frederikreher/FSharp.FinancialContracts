@@ -102,7 +102,7 @@ module Contract =
             let boolValue = evalBoolObs obs env
             if t = 0 && not boolValue then evalContract env c2 transactions //Time has gone and boolvalue is false return c2
             else if t >= 0 && boolValue then evalContract env c1 transactions //If bool value is true and time hasn't gone return 2
-            else evalContract (env|+t) (If(obs, t-1, c1, c2)) transactions //Else IncreaseEnvironment time and decrease t
+            else evalContract (env|+1) (If(obs, t-1, c1, c2)) transactions //Else IncreaseEnvironment time and decrease t
         | Give(c) -> 
             let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
             for i in [0..(transactions.Length-(now+1))] do

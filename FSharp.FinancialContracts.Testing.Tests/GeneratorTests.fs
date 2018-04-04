@@ -8,12 +8,28 @@ open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Testing.Generators
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open FSharp.FinancialContracts.Contract
+open FSharp.FinancialContracts.Testing.PropertyCheckers
 
 [<TestClass>]
 type GeneratorTests () =
+    
+    let notExistingNumber numVal env =
+        try 
+            evalNumberObs numVal env |> ignore
+            false
+        with
+            _ -> true
+                        
+    let notExistingBool boolVal env =
+        try 
+            evalBoolObs boolVal env |> ignore
+            false
+        with
+            _ -> true
+    
 
     [<TestMethod>]
-    member this.``Test Number Within Range`` () =
+    member this.``Test Random Number Within Range 100 times`` () =
         let scale1 = Scale(NumVal("x"),One(CNY))
         let scale2 = Scale(NumVal("y"),One(DKK))
         let c = Delay(200,And(scale1,scale2))
@@ -22,75 +38,42 @@ type GeneratorTests () =
                             .Add(NumVal "x", NumericGenerators.RandomNumberWithinRange 20.0 40.0)
                             .Add(NumVal "y", NumericGenerators.RandomNumberWithinRange 40.0 60.0)
 
-        let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty c
-        printfn "env is %A" env
-        
+        let envGen = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty
         let xProperty = (satisfyNumObs (NumVal "x") (>=) 20.0) &|& (satisfyNumObs (NumVal "x") (<=) 40.0)
         let yProperty = (satisfyNumObs (NumVal "y") (>=) 40.0) &|& (satisfyNumObs (NumVal "y") (<=) 60.0)
         let p = forAllTimes xProperty &|& yProperty
         
-        Assert.IsTrue(p env (0,(Array.create (getHorizon c) List.Empty)))
-
+        let config = {
+            Configuration.Default with 
+                EnvironmentGenerator = envGen
+        }
+        
+        PropertyCheck.CheckWithConfig config c p 
+    
     [<TestMethod>]
-    member this.``American Option`` () =
-        let scale1 = Scale(NumVal("x"),One(CNY))
-        let scale2 = Scale(NumVal("y"),One(DKK))
-        let c = And(scale1,scale2)
-        let amer = american (Bool true) 20 c
-
-        let numGenMap = Map.empty
-                            .Add(NumVal "x", NumericGenerators.RandomNumberWithinRange 20.0 40.0)
-
-        let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty amer
-        
-        let transResults = evalC env amer 
-
-        let allTransactions = fun t -> true
-
-        let p = countOf allTransactions (=) 2
-        let atDay0 = atTime 0 p
-        
-        Assert.IsTrue(atDay0 env transResults)
-        
-    [<TestMethod>]
-    member this.``American Option With Random Environment`` () =
-        let scale1 = Scale(NumVal("x"),One(CNY))
-        let scale2 = Scale(NumVal("y"),One(DKK))
-        let c = And(scale1,scale2)
-        let amer = american (BoolVal "test") 20 c
-
-        let env = EnvironmentGenerators.WithDefaultGenerators amer
-        
-        let transResults = evalC env amer 
-
-        let allTransactions = fun _ -> true
-        
-        let checkBoolVal = fun en _ -> evalBoolObs (BoolVal "test") en
-        let boolValAt0 = atTime 0 checkBoolVal
-        let checkTransactions = countOf allTransactions (=) 2
-        let transactionsAt0 = atTime 0 checkTransactions
-        let test = boolValAt0 &|& transactionsAt0
-        let atDay0 = test =|> boolValAt0
-        
-        Assert.IsTrue(atDay0 env transResults)
-
-    [<TestMethod>]
-    member this.``Asian Option`` () =
-        let scale1 = Scale(NumVal("x"),One(CNY))
-        let scale2 = Scale(NumVal("y"),One(DKK))
-        let c = And(scale1,scale2)
-        let asi = asian (Bool true) (NumVal("x")) 20 5 c
-
-        let numGenMap = Map.empty
-                            .Add(NumVal "x", NumericGenerators.RandomNumberWithinRange 20.0 40.0)
-
-        let env = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty asi
-        
-        let transResults = evalC env asi 
-
-        let allTransactions = fun t -> true
-
-        let p = countOf allTransactions (=) 2
-        let atDay20 = atTime 20 p
-        
-        Assert.IsTrue(atDay20 env transResults)
+        member this.``Test That All Observables Have Values Generated`` () =            
+            let add = Add(NumVal("x"),NumVal("y"))
+            let subScale = Scale(NumVal("t"),One GBP)
+            let c = If(BoolVal("b"),10,Scale(Mult(add,NumVal("z")),One DKK),subScale)
+            
+            let boolValueIsGenerated = fun env _ ->
+                evalBoolObs (BoolVal("b")) env  |> ignore
+                true
+            
+            let numValueIsGenerated = fun env _ ->
+                evalNumberObs (NumVal("x")) env |> ignore
+                evalNumberObs (NumVal("y")) env |> ignore
+                evalNumberObs (NumVal("z")) env |> ignore
+                evalNumberObs (NumVal("t")) env |> ignore
+                true
+                    
+            let valuesAreNotGenerated = fun env _ ->
+                notExistingNumber (NumVal("b")) env &&
+                notExistingBool   (BoolVal("x")) env &&
+                notExistingBool   (BoolVal("y")) env &&
+                notExistingBool   (BoolVal("z")) env &&
+                notExistingBool   (BoolVal("t")) env
+                            
+            let p = forAllTimes(numValueIsGenerated &|& boolValueIsGenerated &|& valuesAreNotGenerated)
+                            
+            PropertyCheck.Check c p 

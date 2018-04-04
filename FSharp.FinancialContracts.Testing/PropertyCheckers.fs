@@ -1,24 +1,39 @@
 ﻿namespace FSharp.FinancialContracts.Testing
-
 open System
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Testing.Generators
 
-module PropertyCheckers =
-
+module PropertyCheckers =   
+    
+    type Configuration = 
+        { 
+            NumberOfTests : int
+            MaxFail : int
+            EnvironmentGenerator : EnvironmentGenerator
+        }
+    
+    type Configuration with
+        static member Default = { NumberOfTests        = 100
+                                  MaxFail              = 0
+                                  EnvironmentGenerator = EnvironmentGenerators.Default
+                                }
+    
     //TODO Determine this on background of chosen testrunner
-    let assertion = fun b -> if b then () else failwith "Property failed"
+    let log = fun prop env tsr  -> 
+        //let s = sprintf "Property failed" prop
+        let s = "Property failed"
+        failwith s
 
-    let checkProperty n (envGen : EnvironmentGenerator) c prop = 
-        for t in [0..n] do
-            let env =  envGen c
+    let checkProperty (conf:Configuration) c prop = 
+        for t in [0..conf.NumberOfTests] do
+            let env =  conf.EnvironmentGenerator c
             let tsr = evalC env c
-            assertion (prop env tsr)
+            if prop env tsr then () else log prop env tsr
             ()
     
     [<Sealed>]
     type PropertyCheck = 
-       static member Check : (Contract -> Property -> unit) = checkProperty 100 EnvironmentGenerators.Default
-       static member CheckNTimes : (int -> EnvironmentGenerator -> Contract -> Property -> unit) = checkProperty
+       static member Check           : (Contract -> Property -> unit) = checkProperty Configuration.Default
+       static member CheckWithConfig : (Configuration -> Contract -> Property -> unit) = checkProperty
