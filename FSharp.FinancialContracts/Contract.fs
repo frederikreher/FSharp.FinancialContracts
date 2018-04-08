@@ -34,6 +34,8 @@ module Contract =
         | Delay of Time * Contract                      // Acquire the contract at the provided time or later.
         | Scale of NumberObs * Contract                 // Acquire the provided contract, but all rights and obligations 
                                                         // is scaled by the provided value.
+        | ScaleNow of NumberObs * Contract              // Acquire the provided contract, but all rights and obligations 
+                                                        // is scaled by the provided observable evualated when contract is aqcuired
         | And of Contract * Contract                    // Immediately acquire both contracts.
         | If of BoolObs * Time * Contract * Contract    // Acquire the first contract if the observable is true 
                                                         // else acquire the second contract. Either contract 
@@ -50,6 +52,7 @@ module Contract =
         | One(currency) -> max t 0 
         | Delay(t1, c) -> t1 + (horizon c t)
         | Scale(obs, c1) -> horizon c1 t
+        | ScaleNow(obs, c1) -> horizon c1 t
         | And(c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> t1 + (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
@@ -66,6 +69,9 @@ module Contract =
         | Scale(obs, c1) -> 
             let (boolAcc1,numAcc1) = (numberObs obs boolAcc numAcc)
             observables c1 boolAcc1 numAcc1
+        | ScaleNow(obs, c1) -> 
+                    let (boolAcc1,numAcc1) = (numberObs obs boolAcc numAcc)
+                    observables c1 boolAcc1 numAcc1
         | And(c1, c2) -> 
             let (boolAcc1, numAcc1) = (observables c2 boolAcc numAcc)
             observables c1 boolAcc1 numAcc1
@@ -94,6 +100,13 @@ module Contract =
                 let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
                 Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
             transactions
+        | ScaleNow(obs, c) ->
+                    let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
+                    let factor = (evalNumberObs obs (env))
+                    for i in [0..(transactions.Length-(now+1))] do
+                        let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
+                        Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
+                    transactions
         | And(c1, c2) -> 
             evalContract env c1 transactions |> ignore
             evalContract env c2 transactions |> ignore
@@ -105,7 +118,11 @@ module Contract =
             else evalContract (env|+1) (If(obs, t-1, c1, c2)) transactions    //Else IncreaseEnvironment time and decrease t
         | Give(c) -> 
             let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
-            Array.map (multiplyTransactions -1.0) newTrans
+            let factor = -1.0
+            for i in [0..(transactions.Length-(now+1))] do
+                let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
+                Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
+            transactions
     
     let evalC (env:Environment) contract : TransactionResults =
        0,evalContract env contract (Array.create (getTime env + (getHorizon contract)) List.empty)

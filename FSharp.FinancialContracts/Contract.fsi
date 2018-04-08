@@ -28,6 +28,7 @@ module Contract =
         | One of Currency
         | Delay of Time * Contract
         | Scale of NumberObs * Contract
+        | ScaleNow of NumberObs * Contract
         | And of Contract * Contract
         | If of BoolObs * Time * Contract * Contract
         | Give of Contract 
