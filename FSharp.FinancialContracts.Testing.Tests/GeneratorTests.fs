@@ -8,7 +8,9 @@ open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Testing.Generators
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open FSharp.FinancialContracts.Contract
+open FSharp.FinancialContracts.Testing
 open FSharp.FinancialContracts.Testing.PropertyCheckers
+open FSharp.FinancialContracts.Testing.PropertyCheckerInternal
 
 [<TestClass>]
 type GeneratorTests () =
@@ -44,11 +46,13 @@ type GeneratorTests () =
         let p = forAllTimes xProperty &|& yProperty
         
         let config = {
-            Configuration.Default with 
-                EnvironmentGenerator = envGen
-        }
+                   Configuration.Default with 
+                        EnvironmentGenerator = envGen
+                        MaxFail = 3
+                        FailSilently = false
+                }
         
-        PropertyCheck.CheckWithConfig config c p 
+        PropertyCheck.CheckWithConfig config c p  
     
     [<TestMethod>]
         member this.``Test That All Observables Have Values Generated`` () =            
