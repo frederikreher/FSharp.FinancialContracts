@@ -4,8 +4,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="PropertyTests.fs" />
+    <Compile Include="TestDelay.fs" />
     <Compile Include="TestIfWithin.fs" />
+    <Compile Include="TestScaleAndScaleNow.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -34,11 +34,13 @@ module Property =
     val satisfyNumObs  : NumberObs -> BinOp<float> -> float -> Property
     val hasTransaction : Transaction -> Property
     
+    
     //Advanced combinators
-    val atTime         : Time -> Property -> Property
-    val forAllTimes    : Property -> Property
-    val forSomeTime    : Property -> Property
-    val forOneTime     : Property -> Property
-    val isZero         : Property
+    val atTime            : Time -> Property -> Property
+    val forAllTimes       : Property -> Property
+    val forSomeTime       : Property -> Property
+    val forOneTime        : Property -> Property
+    val isZero            : Property
+    val hasNoTransactions : Property
     
     //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)

@@ -30,7 +30,7 @@ module Contract =
     // Defines how a contract can be constructed.
     type Contract = 
         | Zero                                          // Contract that has no rights or obligations.
-        | One of Currency                                  // Contract paying one unit of the provided currency.
+        | One of Currency                               // Contract paying one unit of the provided currency.
         | Delay of Time * Contract                      // Acquire the contract at the provided time or later.
         | Scale of NumberObs * Contract                 // Acquire the provided contract, but all rights and obligations 
                                                         // is scaled by the provided value.

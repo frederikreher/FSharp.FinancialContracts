@@ -86,9 +86,6 @@ module Property =
         | Some(_) -> false
         | None -> true
     
-    
-   
-    
     let satisfyBoolObs obs : Property                       = fun env _ -> evalBoolObs obs env
     let satisfyNumObs obs (binOp:BinOp<float>) f : Property = fun env _ -> binOp (evalNumberObs obs env) f
     
@@ -96,6 +93,10 @@ module Property =
     let hasTransaction trans : Property = fun _ transactionResults -> 
         let transactions = getTransactions transactionResults
         List.contains trans transactions.[0] 
+        
+    let hasNoTransactions : Property = fun _ transactionResults -> 
+       let transactions = getTransactions transactionResults
+       (List.length transactions.[0]) <= 0
     
     //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)
     
