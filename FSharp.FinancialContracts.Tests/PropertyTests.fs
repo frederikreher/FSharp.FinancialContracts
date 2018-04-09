@@ -4,7 +4,6 @@ open System
 open System.IO
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Contracts
-open FSharp.FinancialContracts.Testing.Properties
 open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Testing.PropertyCheckers
 open FSharp.FinancialContracts.Testing.Generators

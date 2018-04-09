@@ -28,15 +28,17 @@ module Property =
     val (=|>) : Property -> Property -> Property
         
     //Advanced properties
-    val sumOf   : Filter -> BinOp<float> -> float -> Property
-    val countOf : Filter -> BinOp<int> -> int -> Property
+    val sumOf          : Filter -> BinOp<float> -> float -> Property
+    val countOf        : Filter -> BinOp<int> -> int -> Property
     val satisfyBoolObs : BoolObs -> Property
     val satisfyNumObs  : NumberObs -> BinOp<float> -> float -> Property
+    val hasTransaction : Transaction -> Property
     
     //Advanced combinators
     val atTime         : Time -> Property -> Property
     val forAllTimes    : Property -> Property
     val forSomeTime    : Property -> Property
+    val forOneTime     : Property -> Property
     val isZero         : Property
     
     //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)

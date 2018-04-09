@@ -15,7 +15,7 @@ module PropertyCheckers =
         failwith s
     
     let logSuccess : LogFunction = fun i _ _ _ _ -> printfn "Succesfully tested Property %A" i
-    let logFailed  : LogFunction = fun i _ _ env tsr -> printfn "Failed on iteration: %A tested Property" i
+    let logFailed  : LogFunction = fun i _ _ env tsr -> printfn "Failed on iteration %A with tsr %A" i tsr
     
     let noLog  : LogFunction = fun _ _ _ _ _ -> ()
     

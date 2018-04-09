@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="PropertyTests.fs" />
-    <Compile Include="SimpleContractTests.fs" />
+    <Compile Include="TestIfWithin.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

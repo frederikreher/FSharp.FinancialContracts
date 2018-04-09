@@ -7,8 +7,6 @@
     <ProjectReference Include="..\FSharp.FinancialContracts\FSharp.FinancialContracts.fsproj" />
     <Compile Include="Property.fsi" />
     <Compile Include="Property.fs" />
-    <Compile Include="Properties.fsi" />
-    <Compile Include="Properties.fs" />
     <Compile Include="Generators.fsi" />
     <Compile Include="Generators.fs" />
     <Compile Include="PropertyCheckerInternal.fsi" />

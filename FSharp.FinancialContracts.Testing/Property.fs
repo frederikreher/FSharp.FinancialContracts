@@ -62,6 +62,15 @@ module Property =
         match List.tryFind timefulfilling [0..length-1] with 
         | Some(_) -> true
         | None -> false 
+        
+    let forOneTime p : Property = fun env tsr ->
+            let length = Array.length (snd tsr)
+                            
+            let timefulfilling = (fun t -> 
+                let tsr' = increaseTime tsr t
+                p (env|+t) tsr')
+                
+            1 = List.length (List.where timefulfilling [0..length-1])
     
     let addSums transactions acc : Map<Currency,float> =
         let addToMap = fun map (Transaction(v,cur)) -> 
@@ -77,8 +86,16 @@ module Property =
         | Some(_) -> false
         | None -> true
     
+    
+   
+    
     let satisfyBoolObs obs : Property                       = fun env _ -> evalBoolObs obs env
     let satisfyNumObs obs (binOp:BinOp<float>) f : Property = fun env _ -> binOp (evalNumberObs obs env) f
+    
+    //Check if transactions of current day contains specific transaction
+    let hasTransaction trans : Property = fun _ transactionResults -> 
+        let transactions = getTransactions transactionResults
+        List.contains trans transactions.[0] 
     
     //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)
     
