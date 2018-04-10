@@ -85,44 +85,31 @@ module Contract =
     let multiplyTransactions f ts : Transaction list = List.map (fun (Transaction(v,ass)) -> Transaction(f*v,ass)) ts
 
     // Evaluates a contract and returns an array of list of Transactions.
-    let rec evalContract (env:Environment) contract transactions : Transaction list [] = 
+    let rec evalContract factor (env:Environment) contract transactions : Transaction list [] = 
         let now = getTime env
         match contract with
         | Zero -> transactions
         | One(currency) -> 
-            Array.set transactions now (Transaction(1.0, currency)::(transactions.[now]))
+            Array.set transactions now (Transaction((evalNumberObs factor env) * 1.0, currency)::(transactions.[now]))
             transactions
-        | Delay(t, c) -> evalContract (env|+t) c transactions
-        | Scale(obs, c) ->
-            let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
-            for i in [0..(transactions.Length-(now+1))] do
-                let factor = (evalNumberObs obs (env|+i))
-                let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
-                Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
-            transactions
+        | Delay(t, c) -> evalContract factor (env|+t) c transactions
+        | Scale(obs, c) -> evalContract (Mult(obs,factor)) env c transactions
         | ScaleNow(obs, c) ->
-                    let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
-                    let factor = (evalNumberObs obs (env))
-                    for i in [0..(transactions.Length-(now+1))] do
-                        let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
-                        Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
-                    transactions
+                    let currentFactor = (evalNumberObs obs (env))
+                    evalContract (Mult(Const currentFactor,factor)) env c transactions
         | And(c1, c2) -> 
-            evalContract env c1 transactions |> ignore
-            evalContract env c2 transactions |> ignore
+            evalContract factor env c1 transactions |> ignore
+            evalContract factor env c2 transactions |> ignore
             transactions
         | If(obs, t, c1, c2) -> 
             let boolValue = evalBoolObs obs env
-            if t = 0 && not boolValue then evalContract env c2 transactions   //Time has gone and boolvalue is false return c2
-            else if t >= 0 && boolValue then evalContract env c1 transactions //If bool value is true and time hasn't gone return 2
-            else evalContract (env|+1) (If(obs, t-1, c1, c2)) transactions    //Else IncreaseEnvironment time and decrease t
-        | Give(c) -> 
-            let newTrans = evalContract env c (Array.create (transactions.Length) List.empty)
-            let factor = -1.0
-            for i in [0..(transactions.Length-(now+1))] do
-                let updatedTransactions = multiplyTransactions factor newTrans.[now+i]
-                Array.set transactions (now+i) (updatedTransactions@(transactions.[now+i]))
-            transactions
+            if t = 0 && not boolValue then evalContract factor env c2 transactions   //Time has gone and boolvalue is false return c2
+            else if t >= 0 && boolValue then evalContract factor env c1 transactions //If bool value is true and time hasn't gone return 2
+            else evalContract factor (env|+1) (If(obs, t-1, c1, c2)) transactions    //Else IncreaseEnvironment time and decrease t
+        | Give(c) -> evalContract (Mult(Const -1.0,factor)) env c transactions
     
     let evalC (env:Environment) contract : TransactionResults =
-       0,evalContract env contract (Array.create (getTime env + (getHorizon contract)) List.empty)
+       0,evalContract (C
+       
+       
+       0) env contract (Array.create (getTime env + (getHorizon contract)) List.empty)
