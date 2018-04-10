@@ -20,11 +20,13 @@ type TestDelay () =
         
         let contract = Delay(tc,One DKK)
         
-        let targetTransaction = Transaction(1.0, DKK)       
+        let targetMap = Map.empty<int, Transaction list>
+                            .Add(tc, [Transaction(1.0, DKK)])
         
-        let property = atTime tc (hasTransaction targetTransaction)
+        let transactionProperty = forAllTimes (hasTransactions targetMap)
+        let amountProperty = countOf allTransactions (=) 1
         
-        PropertyCheck.Check contract property
+        PropertyCheck.Check contract (transactionProperty &|& amountProperty)
         
     [<TestMethod>]
     member this.``Test that nested delays are equal to one larger`` () =

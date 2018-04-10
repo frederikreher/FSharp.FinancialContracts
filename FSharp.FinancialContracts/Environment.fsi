@@ -69,7 +69,7 @@ module Environment =
     /// <summary> Evaluation of boolean observable, returns a boolean value. </summary>
     /// <param name="obs"> The observable to evaluate. </param>
     /// <param name="t"> Determines the point in time where the value of NumVal objects will be looked up. </param>
-    /// <param name="env"> Environment for numerical values, used to look up NumVal objects. </par
+    /// <param name="env"> Environment for numerical values, used to look up NumVal objects. </param>
     /// <returns> A float value representing the value of the evaluated observable. </returns>
     val evalNumberObs : NumberObs -> Environment -> float
     

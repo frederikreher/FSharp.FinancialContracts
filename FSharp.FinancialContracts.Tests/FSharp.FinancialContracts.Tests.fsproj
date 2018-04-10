@@ -5,8 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="TestAnd.fs" />
+    <Compile Include="TestComplexContracts.fs" />
     <Compile Include="TestDelay.fs" />
     <Compile Include="TestGetHorizon.fs" />
+    <Compile Include="TestGive.fs" />
     <Compile Include="TestIfWithin.fs" />
     <Compile Include="TestScaleAndScaleNow.fs" />
     <Compile Include="Program.fs" />

@@ -15,26 +15,26 @@ open FSharp.FinancialContracts.Testing.PropertyCheckerInternal
 type TestAnd () =
 
     [<TestMethod>]
-    member this.``Test that scale evaluates both contracts`` () =        
+    member this.``Test that 'And' evaluates both contracts`` () = 
         let contract = And(One DKK,One CNY)
         
-        let targetTransaction = Transaction(1.0, DKK)
-        let targetTransaction2 = Transaction(1.0, CNY)              
+        let targetMap = Map.empty<int, Transaction list>
+                            .Add(0, [Transaction(1.0, DKK); Transaction(1.0, CNY)])
         
-        let property = (hasTransaction targetTransaction) &|& (hasTransaction targetTransaction2)
-                
-        PropertyCheck.Check contract property
+        let transactionProperty = (hasTransactions targetMap)
+        let amountProperty = countOf allTransactions (=) 2
+
+        PropertyCheck.Check contract (transactionProperty &|& amountProperty)
         
     [<TestMethod>]
-    member this.``Test that scale evaluates both nested contracts`` () =        
+    member this.``Test that 'And' evaluates nested contracts`` () =        
         let contract = And(And(One EUR,One USD),And(One CNY,One GBP))
         
-        let targetTransaction = Transaction(1.0, EUR)
-        let targetTransaction2 = Transaction(1.0, USD) 
-        let targetTransaction3 = Transaction(1.0, CNY)
-        let targetTransaction4 = Transaction(1.0, GBP)              
+        let targetMap = Map.empty<int, Transaction list>
+                            .Add(0, [Transaction(1.0, EUR); Transaction(1.0, USD); 
+                                     Transaction(1.0, CNY); Transaction(1.0, GBP)])
         
-        let property = (hasTransaction targetTransaction) &|& (hasTransaction targetTransaction2)
-                       &|& (hasTransaction targetTransaction3) &|& (hasTransaction targetTransaction4)
-                
-        PropertyCheck.Check contract property
+        let transactionProperty = (hasTransactions targetMap)
+        let amountProperty = countOf allTransactions (=) 4
+
+        PropertyCheck.Check contract (transactionProperty &|& amountProperty)

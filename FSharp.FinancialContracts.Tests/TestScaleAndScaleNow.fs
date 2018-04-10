@@ -21,17 +21,19 @@ type TestScaleAndScaleNow () =
         
         let contract = Scale(NumVal("x"),Delay(tc, One DKK))
         
-        let targetTransaction = Transaction(factor, DKK)       
+        let targetMap = Map.empty<int, Transaction list>
+                            .Add(tc, [Transaction(factor, DKK)])
         
-        let property = atTime tc (hasTransaction targetTransaction)
+        let transactionProperty = forAllTimes (hasTransactions targetMap)
+        let amountProperty = countOf allTransactions (=) 1
         
         let numGenMap = Map.empty
-                                            .Add(NumVal "x", fun t -> if t = tc then factor else NumericGenerators.RandomNumber t)
+                            .Add(NumVal "x", fun t -> if t = tc then factor else NumericGenerators.RandomNumber t)
         
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty }
-        
-        PropertyCheck.CheckWithConfig config contract property
-    
+
+        PropertyCheck.CheckWithConfig config contract (transactionProperty &|& amountProperty)
+
     [<TestMethod>]
     member this.``Test that ScaleNow evaulates from current time`` () =
         let tc = 10
@@ -39,16 +41,18 @@ type TestScaleAndScaleNow () =
         
         let contract = ScaleNow(NumVal("x"),Delay(tc, One DKK))
         
-        let targetTransaction = Transaction(factor, DKK)       
+        let targetMap = Map.empty<int, Transaction list>
+                            .Add(tc, [Transaction(factor, DKK)])
         
-        let property = atTime tc (hasTransaction targetTransaction)
+        let transactionProperty = forAllTimes (hasTransactions targetMap)
+        let amountProperty = countOf allTransactions (=) 1
         
         let numGenMap = Map.empty
-                                            .Add(NumVal "x", fun t -> if t = 0 then factor else NumericGenerators.RandomNumber t)
+                            .Add(NumVal "x", fun t -> if t = 0 then factor else NumericGenerators.RandomNumber t)
         
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty }
         
-        PropertyCheck.CheckWithConfig config contract property
+        PropertyCheck.CheckWithConfig config contract (transactionProperty &|& amountProperty)
         
     [<TestMethod>]
     member this.``Test that nested delay produces same result as unnested delay for Scale`` () =

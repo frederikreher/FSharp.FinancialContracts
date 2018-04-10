@@ -15,13 +15,14 @@ type TestIfWithin () =
 
     [<TestMethod>]
     member this.``Test If boolean is never true c1 is never evaluated and c2 is always evaluated`` () =
-        let contract = If(BoolVal("x"),5,One (DKK),One (CNY))
+        let tc = 5
+        let contract = If(BoolVal("x"),tc,One (DKK),One (CNY))
         let targetTransaction1 = Transaction(1.0, DKK)       
         let targetTransaction2 = Transaction(1.0, CNY)       
         
         let property = (forAllTimes (!!(hasTransaction targetTransaction1))) &|& forSomeTime (hasTransaction targetTransaction2)
         let boolGenMap = Map.empty
-                                            .Add(BoolVal "x", fun _ -> false)
+                            .Add(BoolVal "x", fun _ -> false)
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators Map.empty boolGenMap}
         
         PropertyCheck.CheckWithConfig config contract property
@@ -57,5 +58,5 @@ type TestIfWithin () =
         let contract = If(BoolVal("x"),t,c1,One (CNY))
         let targetTransaction1 = Transaction(1.0, DKK)   
         
-        let property = (forSomeTime (satisfyBoolObs (BoolVal("x"))) =|> forOneTime (hasTransaction (Transaction(1.0, DKK))))
+        let property = (forSomeTime (satisfyBoolObs (BoolVal("x"))) =|> forOneTime (hasTransaction targetTransaction1))
         PropertyCheck.Check contract property 
