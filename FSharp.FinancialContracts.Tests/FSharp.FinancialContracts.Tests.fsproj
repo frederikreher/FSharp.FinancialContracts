@@ -6,6 +6,7 @@
   <ItemGroup>
     <Compile Include="TestAnd.fs" />
     <Compile Include="TestDelay.fs" />
+    <Compile Include="TestGetHorizon.fs" />
     <Compile Include="TestIfWithin.fs" />
     <Compile Include="TestScaleAndScaleNow.fs" />
     <Compile Include="Program.fs" />
