@@ -98,5 +98,16 @@ module Property =
        let transactions = getTransactions transactionResults
        (List.length transactions.[0]) <= 0
     
+    
+    let hasTransactions (trans:Map<int,Transaction list>) : Property = fun env transactionResults -> 
+        let property = fun env (tsr:TransactionResults) ->
+            let t = getTime env
+            
+            List.forall (fun tr -> List.contains tr (snd tsr).[t]) trans.[t]
+
+        forAllTimes property env transactionResults
+    
+    
+        
     //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)
     
