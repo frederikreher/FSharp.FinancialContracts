@@ -108,8 +108,5 @@ module Contract =
             else evalContract factor (env|+1) (If(obs, t-1, c1, c2)) transactions    //Else IncreaseEnvironment time and decrease t
         | Give(c) -> evalContract (Mult(Const -1.0,factor)) env c transactions
     
-    let evalC (env:Environment) contract : TransactionResults =
-       0,evalContract (C
-       
-       
-       0) env contract (Array.create (getTime env + (getHorizon contract)) List.empty)
+    let evalC (env:Environment) contract : TransactionResults =       
+       0, evalContract (Const 1.0) env contract (Array.create (getTime env + (getHorizon contract)) List.empty)
