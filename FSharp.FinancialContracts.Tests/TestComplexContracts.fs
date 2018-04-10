@@ -15,7 +15,7 @@ open FSharp.FinancialContracts.Testing.PropertyCheckerInternal
 type TestComplexContracts () =
 
     [<TestMethod>]
-    member this.``Test Horizon of Complex Contract`` () = 
+    member this.``Test horizon of Complex Contract`` () = 
         let Zcb = zcb 0 (Const 1.0) DKK
         let American c = american (BoolVal "x") 30 (Scale(NumVal "y", c))
         let Asian = asian (BoolVal "x") (NumVal "y") 120 30
@@ -26,3 +26,25 @@ type TestComplexContracts () =
         let horizon = getHorizon cc
         
         Assert.AreEqual(331, horizon);
+
+    [<TestMethod>]
+    member this.``Test sum of transactions of Complex Contract`` () = 
+        let Zcb = zcb 0 (Const 1.0) DKK
+        let American = Delay(1, american (BoolVal "x") 3 (Scale(NumVal "y", Zcb)))
+        let Asian = asian (BoolVal "x") (NumVal "y") 12 3 American
+        let European = european (LessThan(NumVal "a", NumVal "b")) 18 Asian
+
+        let cc = European
+
+        let numGenMap = Map.empty
+                            .Add(NumVal "y", fun t -> if t = 33 then 50.0 else 20.0)
+                            .Add(NumVal "a", fun _ -> 5.0)
+                            .Add(NumVal "b", fun _ -> 10.0)
+        let boolGenMap = Map.empty
+                            .Add(BoolVal "x", fun t -> if (t = 30 || t = 33) then true else false)
+        
+        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators numGenMap boolGenMap }
+
+        let sumProperty = sumOf allTransactions (=) 1000.0
+
+        PropertyCheck.CheckWithConfig config cc sumProperty

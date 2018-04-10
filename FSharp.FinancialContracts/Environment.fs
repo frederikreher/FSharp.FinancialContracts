@@ -80,7 +80,8 @@ module Environment =
             if t > (getTime env) then
                 failwith "The observable period cannot exceed the horizon of the contract"
             else
-                let res = List.fold (fun sum time -> sum + (evalNumberObs num env)) 0.0 [0..(t-1)]
+                //let res = List.fold (fun sum time -> sum + (evalNumberObs num env)) 0.0 [0..(t-1)]
+                let res = List.fold (fun sum _ -> sum + (evalNumberObs num (increaseEnvTime -1 env))) 0.0 [0..(t-1)]
                 res / float(t)
 
     // Identifies the observables, that the provided boolean observable depends on.
