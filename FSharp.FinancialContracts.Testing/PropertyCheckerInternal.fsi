@@ -13,6 +13,7 @@ module PropertyCheckerInternal =
             MaxFail              : int
             EnvironmentGenerator : EnvironmentGenerator
             FailSilently         : bool
+            ContractEvaluator    : Environment -> Contract -> TransactionResults
         }
             
         

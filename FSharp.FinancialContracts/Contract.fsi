@@ -31,7 +31,8 @@ module Contract =
         | ScaleNow of NumberObs * Contract
         | And of Contract * Contract
         | If of BoolObs * Time * Contract * Contract
-        | Give of Contract 
+        | Give of Contract
+        | RepeatUntil of Time * Contract
     
     val (&-&) : Contract -> Contract -> Contract
     

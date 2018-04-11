@@ -42,6 +42,7 @@ module Contract =
                                                         // is acquired at the provided time or later.
         | Give of Contract                              // Contract giving away the provided contract. 
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
+        | RepeatUntil of Time * Contract
 
     let (&-&) c1 c2 = And(c1,c2)
 
@@ -56,6 +57,7 @@ module Contract =
         | And(c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> t1 + (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
+        | RepeatUntil(t1, c) -> t1 + (horizon c t)
 
     let getHorizon c : Time = (horizon c 0)+1
 
@@ -80,6 +82,7 @@ module Contract =
             let (boolAcc2,numAcc2) = observables c1 boolAcc1 numAcc1
             observables c2 boolAcc2 numAcc2
         | Give(c) -> observables c boolAcc numAcc
+        | RepeatUntil(_, c) -> observables c boolAcc numAcc
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
 
     let multiplyTransactions f ts : Transaction list = List.map (fun (Transaction(v,ass)) -> Transaction(f*v,ass)) ts
@@ -107,6 +110,13 @@ module Contract =
             else if t >= 0 && boolValue then evalContract factor env c1 transactions //If bool value is true and time hasn't gone return 2
             else evalContract factor (env|+1) (If(obs, t-1, c1, c2)) transactions    //Else IncreaseEnvironment time and decrease t
         | Give(c) -> evalContract (Mult(Const -1.0,factor)) env c transactions
+        | RepeatUntil(t, c) -> 
+            if t = 0 then 
+                evalContract factor env c transactions
+            else if t > 0 then 
+                evalContract factor env c transactions |> ignore
+                evalContract factor (env|+1) (RepeatUntil(t-1, c)) transactions
+            else transactions
     
     let evalC (env:Environment) contract : TransactionResults =       
        0, evalContract (Const 1.0) env contract (Array.create (getTime env + (getHorizon contract)) List.empty)

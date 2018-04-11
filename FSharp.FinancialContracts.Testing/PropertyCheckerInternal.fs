@@ -3,9 +3,10 @@
 open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
+open FSharp.FinancialContracts.Documentation.ContractEvaluation
 open FSharp.FinancialContracts.Testing.Generators
 
-module PropertyCheckerInternal =
+module PropertyCheckerInternal =   
 
     type Configuration = 
         { 
@@ -13,6 +14,7 @@ module PropertyCheckerInternal =
             MaxFail              : int
             EnvironmentGenerator : EnvironmentGenerator
             FailSilently         : bool
+            ContractEvaluator    : Environment -> Contract -> TransactionResults
         }
         
         
@@ -21,6 +23,7 @@ module PropertyCheckerInternal =
                                   MaxFail              = 0
                                   EnvironmentGenerator = EnvironmentGenerators.Default
                                   FailSilently         = true
+                                  ContractEvaluator    = fun env c -> (0,(Array.ofList (evaluateContract env c)))
                                 }
     
     type TestData = 
@@ -48,9 +51,9 @@ module PropertyCheckerInternal =
     let checkSuite (conf:Configuration) onSuccess onFail contract (prop:Property) : TestData option =
         let checkProp : int -> unit -> bool = fun i () ->
                 let env = conf.EnvironmentGenerator contract
-                let tsr = evalC env contract
+                let tsr = conf.ContractEvaluator env contract
                 
-                let res = prop env tsr            
+                let res = (prop env tsr)            
                 if res then (onSuccess i contract prop env tsr)
                 else (onFail i contract prop env tsr)
                 res

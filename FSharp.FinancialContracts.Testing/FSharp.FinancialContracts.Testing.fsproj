@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FSharp.FinancialContracts.Documentation\FSharp.FinancialContracts.Documentation.fsproj" />
     <ProjectReference Include="..\FSharp.FinancialContracts\FSharp.FinancialContracts.fsproj" />
     <Compile Include="Property.fsi" />
     <Compile Include="Property.fs" />
