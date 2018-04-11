@@ -27,7 +27,7 @@ type TestDelay () =
         PropertyCheck.Check contract property
         
     [<TestMethod>]
-    member this.``Test that nested delays are equal to one longer`` () =
+    member this.``Test that nested delays are equal to one larger`` () =
         let tc = 10
         
         let c1 = Delay(tc*2,One DKK)

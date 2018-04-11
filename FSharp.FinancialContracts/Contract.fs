@@ -91,23 +91,25 @@ module Contract =
     let increaseTimeOfTrans n trans = (listOfLength n)@trans
 
     // Evaluates a contract and returns an array of list of Transactions.
-    let rec evalContract factor (env:Environment) contract : Transaction list list = 
+    let rec evalContract factor (env:Environment) contract transactions : Transaction list list = 
         let now = getTime env
         match contract with
-            | Zero -> []
-            | One(currency) -> [[Transaction((evalNumberObs factor env) * 1.0, currency)]]
-            | Delay(t, c) -> evalContract factor (env|+t) c (increaseTimeOfTrans t transactions)
-            | Scale(obs, c) -> evalContract (Mult(obs,factor)) env c transactions
-            | ScaleNow(obs, c) ->
-                        let currentFactor = (evalNumberObs obs (env))
-                        evalContract (Mult(Const currentFactor,factor)) env c transactions
-            | And(c1, c2) -> evalContract factor env c1 (evalContract factor env c2 transactions)
-            | If(obs, t, c1, c2) -> 
-                let boolValue = evalBoolObs obs env
-                if t = 0 && not boolValue then evalContract factor env c2 transactions   //Time has gone and boolvalue is false return c2
-                else if t >= 0 && boolValue then evalContract factor env c1 transactions //If bool value is true and time hasn't gone return 2
-                else evalContract factor (env|+1) (If(obs, t-1, c1, c2)) ([]::transactions)    //Else IncreaseEnvironment time and decrease t
-            | Give(c) -> evalContract (Mult(Const -1.0,factor)) env c transactions
+        | Zero -> transactions
+        | One(currency) -> 
+            let transaction = (Transaction((evalNumberObs factor env) * 1.0, currency))
+            List.mapi (fun i elem -> if i = now then transaction::elem else elem ) transactions
+        | Delay(t, c) -> evalContract factor (env|+t) c transactions
+        | Scale(obs, c) -> evalContract (Mult(obs,factor)) env c transactions
+        | ScaleNow(obs, c) ->
+                    let currentFactor = (evalNumberObs obs (env))
+                    evalContract (Mult(Const currentFactor,factor)) env c transactions
+        | And(c1, c2) -> evalContract factor env c1 (evalContract factor env c2 transactions)
+        | If(obs, t, c1, c2) -> 
+            let boolValue = evalBoolObs obs env
+            if t = 0 && not boolValue then evalContract factor env c2 transactions   //Time has gone and boolvalue is false return c2
+            else if t >= 0 && boolValue then evalContract factor env c1 transactions //If bool value is true and time hasn't gone return 2
+            else evalContract factor (env|+1) (If(obs, t-1, c1, c2)) transactions    //Else IncreaseEnvironment time and decrease t
+        | Give(c) -> evalContract (Mult(Const -1.0,factor)) env c transactions
     let evalC (env:Environment) contract : TransactionResults =       
-       let tsr = evalContract (Const 1.0) env contract listOfLength horizon
+       let tsr = evalContract (Const 1.0) env contract (listOfLength (getHorizon contract))
        0, Array.ofList tsr
