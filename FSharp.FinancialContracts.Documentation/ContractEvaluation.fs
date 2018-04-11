@@ -15,7 +15,6 @@ module ContractEvaluation =
 
     // Evaluates a contract and returns an array of list of Transactions.
     let rec evaluateContract environment contract : Transaction list list = 
-        let now = getTime environment
         match contract with
             | Zero -> [[]]
             | One(currency) -> [[Transaction(1.0,currency)]]

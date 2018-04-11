@@ -42,6 +42,7 @@ module Contract =
                                                         // is acquired at the provided time or later.
         | Give of Contract                              // Contract giving away the provided contract. 
                                                         // E.g. X acquiring c from Y, implies that Y 'give c'.
+        | RepeatUntil of Time * Contract
 
     let (&-&) c1 c2 = And(c1,c2)
 
@@ -56,6 +57,7 @@ module Contract =
         | And(c1, c2) -> max (horizon c1 t) (horizon c2 t)
         | If(obs, t1, c1, c2) -> t1 + (max (horizon c1 t) (horizon c2 t))
         | Give(c) -> horizon c t
+        | RepeatUntil of Time * Contract
 
     let getHorizon c : Time = (horizon c 0)+1
 
