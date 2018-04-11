@@ -18,10 +18,9 @@ type TestAnd () =
     member this.``Test that 'And' evaluates both contracts`` () = 
         let contract = And(One DKK,One CNY)
         
-        let targetMap = Map.empty<int, Transaction list>
-                            .Add(0, [Transaction(1.0, DKK); Transaction(1.0, CNY)])
+        let targetList = [Transaction(1.0, DKK); Transaction(1.0, CNY)]
         
-        let transactionProperty = (hasTransactions targetMap)
+        let transactionProperty = (hasTransactions targetList)
         let amountProperty = countOf allTransactions (=) 2
 
         PropertyCheck.Check contract (transactionProperty &|& amountProperty)
@@ -30,11 +29,10 @@ type TestAnd () =
     member this.``Test that 'And' evaluates nested contracts`` () =        
         let contract = And(And(One EUR,One USD),And(One CNY,One GBP))
         
-        let targetMap = Map.empty<int, Transaction list>
-                            .Add(0, [Transaction(1.0, EUR); Transaction(1.0, USD); 
-                                     Transaction(1.0, CNY); Transaction(1.0, GBP)])
+        let targetList = [Transaction(1.0, EUR); Transaction(1.0, USD); 
+                          Transaction(1.0, CNY); Transaction(1.0, GBP)]
         
-        let transactionProperty = (hasTransactions targetMap)
+        let transactionProperty = (hasTransactions targetList)
         let amountProperty = countOf allTransactions (=) 4
 
         PropertyCheck.Check contract (transactionProperty &|& amountProperty)

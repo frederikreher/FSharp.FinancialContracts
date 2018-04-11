@@ -7,7 +7,6 @@ open System.Collections.Generic
 
 module Property =
     
-
     //Type definitions
     type Property  = (Environment -> TransactionResults -> bool)
     type BinOp<'a> = ('a -> 'a -> bool)
@@ -90,20 +89,11 @@ module Property =
     let satisfyNumObs obs (binOp:BinOp<float>) f : Property = fun env _ -> binOp (evalNumberObs obs env) f
     
     //Check if transactions of current day contains specific transaction
-    let hasTransaction trans : Property = fun _ transactionResults -> 
+    let hasTransactions trans : Property = fun _ transactionResults -> 
         let transactions = getTransactions transactionResults
-        List.contains trans transactions.[0] 
+        List.forall (fun tr -> List.contains tr transactions.[0]) trans
         
     let hasNoTransactions : Property = fun _ transactionResults -> 
        let transactions = getTransactions transactionResults
        (List.length transactions.[0]) <= 0
-    
-    let hasTransactions (trans:Map<int,Transaction list>) : Property = fun env tsr ->
-            let t = getTime env
-            let transactions = getTransactions tsr
-
-            let list = if Map.containsKey t trans then trans.[t] else []
-            List.forall (fun tr -> List.contains tr transactions.[0]) list
-    
-    //And, Or, Implies, Not, IsZero, AtTime, ForAllTimes, ForSomeTime, (Satisfy BoolObs)
     

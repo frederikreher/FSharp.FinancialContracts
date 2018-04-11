@@ -21,10 +21,9 @@ type TestScaleAndScaleNow () =
         
         let contract = Scale(NumVal("x"),Delay(tc, One DKK))
         
-        let targetMap = Map.empty<int, Transaction list>
-                            .Add(tc, [Transaction(factor, DKK)])
+        let targetList = [Transaction(factor, DKK)]
         
-        let transactionProperty = forAllTimes (hasTransactions targetMap)
+        let transactionProperty = atTime tc (hasTransactions targetList)
         let amountProperty = countOf allTransactions (=) 1
         
         let numGenMap = Map.empty
@@ -41,10 +40,9 @@ type TestScaleAndScaleNow () =
         
         let contract = ScaleNow(NumVal("x"),Delay(tc, One DKK))
         
-        let targetMap = Map.empty<int, Transaction list>
-                            .Add(tc, [Transaction(factor, DKK)])
+        let targetList = [Transaction(factor, DKK)]
         
-        let transactionProperty = forAllTimes (hasTransactions targetMap)
+        let transactionProperty = atTime tc (hasTransactions targetList)
         let amountProperty = countOf allTransactions (=) 1
         
         let numGenMap = Map.empty

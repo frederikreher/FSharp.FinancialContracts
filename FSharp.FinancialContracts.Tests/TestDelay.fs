@@ -20,10 +20,9 @@ type TestDelay () =
         
         let contract = Delay(tc,One DKK)
         
-        let targetMap = Map.empty<int, Transaction list>
-                            .Add(tc, [Transaction(1.0, DKK)])
+        let targetList = [Transaction(1.0, DKK)]
         
-        let transactionProperty = forAllTimes (hasTransactions targetMap)
+        let transactionProperty = atTime tc (hasTransactions targetList)
         let amountProperty = countOf allTransactions (=) 1
         
         PropertyCheck.Check contract (transactionProperty &|& amountProperty)

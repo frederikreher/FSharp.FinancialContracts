@@ -83,7 +83,7 @@ module Contract =
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
 
     let multiplyTransactions f ts : Transaction list = List.map (fun (Transaction(v,ass)) -> Transaction(f*v,ass)) ts
-
+    
     // Evaluates a contract and returns an array of list of Transactions.
     let rec evalContract factor (env:Environment) contract transactions : Transaction list [] = 
         let now = getTime env

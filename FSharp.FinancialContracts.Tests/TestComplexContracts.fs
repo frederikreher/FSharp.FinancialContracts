@@ -15,7 +15,7 @@ open FSharp.FinancialContracts.Testing.PropertyCheckerInternal
 type TestComplexContracts () =
 
     [<TestMethod>]
-    member this.``Test horizon of Complex Contract`` () = 
+    member this.``Test horizon`` () = 
         let Zcb = zcb 0 (Const 1.0) DKK
         let American c = american (BoolVal "x") 30 (Scale(NumVal "y", c))
         let Asian = asian (BoolVal "x") (NumVal "y") 120 30
@@ -28,7 +28,7 @@ type TestComplexContracts () =
         Assert.AreEqual(331, horizon);
 
     [<TestMethod>]
-    member this.``Test sum of transactions in Complex Contract`` () = 
+    member this.``Test sum of transactions`` () = 
         let Zcb = zcb 0 (Const 1.0) DKK
         let American = Delay(1, american (BoolVal "x") 3 (Scale(NumVal "y", Zcb)))
         let Asian = asian (BoolVal "x") (NumVal "y") 12 3 American
@@ -50,7 +50,7 @@ type TestComplexContracts () =
         PropertyCheck.CheckWithConfig config cc sumProperty
 
     [<TestMethod>]
-    member this.``Test number of transactions in Complex Contract`` () = 
+    member this.``Test number of transactions`` () = 
         let ZcbDKK = zcb 0 (Const 1.0) DKK
         let ZcbEUR = zcb 0 (Const 7.5) EUR
         let am1 = american (BoolVal "x") 5 (Scale(NumVal "y", ZcbDKK))
@@ -73,3 +73,45 @@ type TestComplexContracts () =
         let amountProperty = countOf allTransactions (=) 2
 
         PropertyCheck.CheckWithConfig config cc amountProperty
+
+    [<TestMethod>]
+    member this.``Test number of transactions with random generators`` () = 
+        let dkkEUR = LessThan(NumVal "DKK/EUR", Const 7.0)
+        let buy100EUR = Scale(Const 100.0, One EUR)
+        let buy500DKK = Scale(Const 500.0, One DKK)
+        let c0 = And(If(BoolVal "x", 10, 
+                        Give(ScaleNow(Mult(NumVal "x", Const 100.0), One DKK)), 
+                        Give(Scale(Sub(NumVal "y", NumVal "x"), One EUR))),
+                     One CNY)
+        let c1 = Delay(100, c0)
+        let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), 60, buy500DKK, c1)
+        let c3 = If(dkkEUR, 30, buy100EUR, c2)
+        let contract = And(c3, 
+                           And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR)))
+
+        let property = countOf allTransactions (=) 3 ||| countOf allTransactions (=) 4
+
+        PropertyCheck.Check contract property
+    
+    [<TestMethod>]
+    member this.``Test number of transactions with implies`` () = 
+        let dkkEUR = LessThan(NumVal "DKK/EUR", Const 7.0)
+        let buy100EUR = Scale(Const 100.0, One EUR)
+        let buy500DKK = Scale(Const 500.0, One DKK)
+        let c0 = And(If(BoolVal "x", 10, 
+                        Give(ScaleNow(Mult(NumVal "x", Const 100.0), One DKK)), 
+                        Give(Scale(Sub(NumVal "y", NumVal "x"), One EUR))),
+                     One CNY)
+        let c1 = Delay(100, c0)
+        let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), 60, buy500DKK, c1)
+        let c3 = If(dkkEUR, 30, buy100EUR, c2)
+        let contract = And(c3, 
+                           And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR)))
+
+        let property = 
+            atTime 0 (hasTransactions [Transaction(1000.0, DKK); Transaction(1000.0, EUR)]) &|&
+            (forSomeTime (satisfyBoolObs dkkEUR)) =|> 
+                (forOneTime (satisfyBoolObs dkkEUR &|& 
+                             hasTransactions [Transaction(100.0, EUR)]))
+
+        PropertyCheck.Check contract property
