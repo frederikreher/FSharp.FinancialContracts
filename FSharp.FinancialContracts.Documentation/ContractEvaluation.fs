@@ -5,6 +5,8 @@ open FSharp.FinancialContracts.Contract
 
 module ContractEvaluation =
 
+    let listOfLength n : Transaction list list = List.init n (fun i -> [])
+
     let multiply t f = List.map (fun (Transaction(x,c)) -> Transaction(x*(f()),c)) t
     
     //https://stackoverflow.com/questions/4100251/merge-two-lists-in-f-recursively
@@ -19,9 +21,9 @@ module ContractEvaluation =
             | Zero -> [[]]
             | One(currency) -> [[Transaction(1.0,currency)]]
             | Delay(t, c) -> 
-                if t > 0 then []::(evaluateContract (environment |+ 1) (Delay((t-1),c)))
-                else evaluateContract environment c
-                //listOfLength t @ evaluateContract environment c
+                //if t > 0 then []::(evaluateContract (environment |+ 1) (Delay((t-1),c)))
+                //else evaluateContract environment c
+                listOfLength t @ evaluateContract environment c
             | Scale(obs, c) -> 
                 let subTransactions = evaluateContract environment c
                 List.mapi (fun i transactions -> multiply transactions (fun () -> evalNumberObs obs (environment |+ i))) subTransactions

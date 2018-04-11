@@ -24,7 +24,7 @@ module program =
                              And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR))),
                            Delay(365, One DKK))
                            
-        let contract = Delay(3650, contract1)
+        let contract = RepeatUntil(365, contract1)
 
         let run = 100
 
