@@ -21,8 +21,9 @@ module ContractEvaluation =
             | Zero -> [[]]
             | One(currency) -> [[Transaction(1.0,currency)]]
             | Delay(t, c) -> 
-                if t > 0 then (listOfLength t) @ (evaluateContract (environment |+ 1) (Delay((t-1),c)))
+                if t > 0 then [] :: (evaluateContract (environment |+ 1) (Delay((t-1),c)))
                 else evaluateContract environment c
+                //listOfLength t @ evaluateContract environment c
             | Scale(obs, c) -> 
                 let subTransactions = evaluateContract environment c
                 List.mapi (fun i transactions -> multiply transactions (fun () -> evalNumberObs obs (environment |+ i))) subTransactions
@@ -39,3 +40,9 @@ module ContractEvaluation =
             | Give(c) -> 
                 let subTransactions = evaluateContract environment c
                 List.map (fun transactions -> multiply transactions (fun () -> -1.0)) subTransactions
+            | RepeatUntil(t, c) ->
+                if t <= 0 then 
+                    evaluateContract environment c
+                else
+                    union (evaluateContract environment c) (evaluateContract (environment|+1) (RepeatUntil(t-1, c)))
+                

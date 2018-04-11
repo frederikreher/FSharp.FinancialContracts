@@ -6,7 +6,7 @@ open FSharp.FinancialContracts.Testing.Generators
 open FSharp.FinancialContracts.Contract
 
 module program =
-    open FSharp.FinancialContracts.Documentation 
+    open FSharp.FinancialContracts.Documentation
      
     [<EntryPoint>]
     let main argv =
@@ -20,28 +20,28 @@ module program =
         let c1 = Delay(100, c0)
         let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), 60, buy500DKK, c1)
         let c3 = If(dkkEUR, 30, buy100EUR, c2)
-        let contract = And(And(c3, 
-                            And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR))),
+        let contract1 = And(And(c3, 
+                             And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR))),
                            Delay(365, One DKK))
                            
-
-        let contract = Delay(365, One DKK)
+        let contract = Delay(3650, contract1)
 
         let run = 100
 
+        let stopWatch = System.Diagnostics.Stopwatch.StartNew()  
         let envList = List.init run (fun _ -> EnvironmentGenerators.Default contract)
+        printfn "Generated environments in %f" stopWatch.Elapsed.TotalSeconds
 
         let stopWatch1 = System.Diagnostics.Stopwatch.StartNew()  
-
         for env in envList do
-            evalC env contract |> ignore
+            (evalC env contract) |> ignore
         stopWatch1.Stop()
-        printfn "Evaluated using EvalC in %f" stopWatch1.Elapsed.TotalMilliseconds
+        printfn "Evaluated using EvalC in %f" stopWatch1.Elapsed.TotalSeconds
         
         let stopWatch2 = System.Diagnostics.Stopwatch.StartNew()
         for env in envList do
-            ContractEvaluation.evaluateContract env contract |> ignore
+            (ContractEvaluation.evaluateContract env contract) |> ignore
         stopWatch2.Stop()
-        printfn "Evaluated using evaluateContract in %f" stopWatch2.Elapsed.TotalMilliseconds
+        printfn "Evaluated using evaluateContract in %f" stopWatch2.Elapsed.TotalSeconds
         
         0 // return an integer exit code
