@@ -6,7 +6,7 @@ open FSharp.FinancialContracts.Testing.Generators
 open FSharp.FinancialContracts.Contract
 
 module program =
-    open FSharp.FinancialContracts.Documentation
+    open FSharp.FinancialContracts.Documentation 
      
     [<EntryPoint>]
     let main argv =
