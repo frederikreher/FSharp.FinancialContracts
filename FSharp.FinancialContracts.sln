@@ -9,6 +9,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.FinancialContracts.T
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.FinancialContracts.Testing.Tests", "FSharp.FinancialContracts.Testing.Tests\FSharp.FinancialContracts.Testing.Tests.fsproj", "{CF1958E1-E902-4128-8ED3-FD4A03DFE46D}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.FinancialContracts.Documentation", "FSharp.FinancialContracts.Documentation\FSharp.FinancialContracts.Documentation.fsproj", "{D382F8B5-454C-4238-97CA-8F7EF4C16218}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,5 +33,9 @@ Global
 		{CF1958E1-E902-4128-8ED3-FD4A03DFE46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF1958E1-E902-4128-8ED3-FD4A03DFE46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF1958E1-E902-4128-8ED3-FD4A03DFE46D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D382F8B5-454C-4238-97CA-8F7EF4C16218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D382F8B5-454C-4238-97CA-8F7EF4C16218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D382F8B5-454C-4238-97CA-8F7EF4C16218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D382F8B5-454C-4238-97CA-8F7EF4C16218}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
