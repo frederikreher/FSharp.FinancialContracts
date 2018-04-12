@@ -9,12 +9,13 @@ module Property =
     
     //Type definitions
     type Property  = (Environment -> TransactionResults -> bool)
-    type BinOp<'a> = ('a -> 'a -> bool)
     type Filter    = (Transaction -> bool)
+    type BinOp<'a> = ('a -> 'a -> bool)
+    
     
     //Default filters:
-    let allTransactions : Filter       = fun t -> true
-    let transactionsOfAsset a : Filter = fun (Transaction(f,ass)) -> a = ass
+    let allTransactions : Filter        = fun t -> true
+    let transactionsOfCurrency a : Filter = fun (Transaction(f,ass)) -> a = ass
     
     //Simple property combinators 
     let notProperty p : Property         = fun env ts -> not (p env ts)
@@ -32,44 +33,30 @@ module Property =
     let sumByFilter filter : Transaction -> float = fun (Transaction(f,c)) -> if filter (Transaction(f,c)) then f else 0.0
     
     //Advanced properties
-    let sumOf filter binop (f:float) : Property = fun _ transResults -> binop f (Array.sumBy (List.sumBy (sumByFilter filter)) (getTransactions transResults))
-    let countOf filter binop (n:int) : Property = fun _ transResults -> binop n (Array.sumBy (fun t -> List.length (List.where filter t)) (getTransactions transResults))
+    let sumOf filter compare (f:float) : Property = fun _ transResults -> compare f (Array.sumBy (List.sumBy (sumByFilter filter)) (getTransactions transResults))
+    let countOf filter compare (n:int) : Property = fun _ transResults -> compare n (Array.sumBy (fun t -> List.length (List.where filter t)) (getTransactions transResults))
+    
+    let sumOfDKKAre20  : Property = sumOf (transactionsOfCurrency DKK) (=) 20.0
+    let countOfAllAre1 : Property = countOf allTransactions (=) 2
     
     //Advanced Combinators
     let atTime (t:Time) p : Property = fun env ts  -> 
         let ts' = increaseTime ts t
         p (env|+t) ts'
     
-    let forAllTimes p : Property = fun env tsr ->
-        let length = Array.length (snd tsr)
-        
-        let timeNotfulfilling = (fun t -> 
-            let tsr' = increaseTime tsr t
-            not (p (env|+t) tsr'))
-            
-        match List.tryFind timeNotfulfilling [0..length-1] with 
-        | Some(_) -> false
-        | None -> true 
+    let listOfTransactionTimes (_,tsr) = 
+        let length = Array.length tsr
+        [0..length-1]
     
-    let forSomeTime p : Property = fun env tsr ->
-        let length = Array.length (snd tsr)
-                
-        let timefulfilling = (fun t -> 
-            let tsr' = increaseTime tsr t
-            p (env|+t) tsr')
-            
-        match List.tryFind timefulfilling [0..length-1] with 
-        | Some(_) -> true
-        | None -> false 
+    let timefulfilling = (fun p tsr env t -> 
+                    let tsr' = increaseTime tsr t
+                    p (env|+t) tsr')
+    
+    let forAllTimes p : Property = fun env tsr -> List.forall (timefulfilling p tsr env)  (listOfTransactionTimes tsr)
+    
+    let forSomeTime p : Property = fun env tsr -> List.exists (timefulfilling p tsr env) (listOfTransactionTimes tsr)
         
-    let forOneTime p : Property = fun env tsr ->
-            let length = Array.length (snd tsr)
-                            
-            let timefulfilling = (fun t -> 
-                let tsr' = increaseTime tsr t
-                p (env|+t) tsr')
-                
-            1 = List.length (List.where timefulfilling [0..length-1])
+    let forOneTime p  : Property = fun env tsr -> 1 = List.length (List.where (timefulfilling p tsr env) (listOfTransactionTimes tsr))
     
     let addSums transactions acc : Map<Currency,float> =
         let addToMap = fun map (Transaction(v,cur)) -> 

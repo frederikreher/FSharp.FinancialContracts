@@ -34,7 +34,13 @@ module Contract =
         | Give of Contract
         | RepeatUntil of Time * Contract
     
-    val (&-&) : Contract -> Contract -> Contract
+    /// <summary> Creates a new contract equal to the conjuction of the two contracts.</summary>
+    /// <param name="c1"> The first contract</param>
+    /// <param name="c2"> The second contract</param>
+    /// <returns> 
+    /// A contract equal to And(c1,c2) 
+    /// </returns>
+    val (&-&): c1:Contract -> c2:Contract -> Contract
     
     /// <summary> Finds the horizon of a contract. </summary>
     /// <param name="c"> The contract to find a horizon for. </param>
@@ -42,7 +48,7 @@ module Contract =
     /// A Time object representing the point in time needed to ensure that all elements 
     /// of a contract can be evaluated.
     /// </returns>
-    val getHorizon : Contract -> Time
+    val getHorizon: contract:Contract -> Time
 
     /// <summary> Identifies all the  observables in a contract. </summary>
     /// <param name="c"> The contract to isolate observables for. </param>

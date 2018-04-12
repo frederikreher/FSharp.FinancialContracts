@@ -13,8 +13,7 @@ module Generators =
     /// <summary> Wrapper for map from either BoolObs or NumberObs to generators </summary>
     type ValueGenerators<'a,'b> when 'a : comparison = Map<'a,ValueGenerator<'b>>
 
-    /// <summary> Represents a function for generating enviroments for a contract </summary>
-    /// <returns> A function which takes contract as parameter and returns the environment</returns>
+    /// <summary> Represents a function that takes a contract and generates a environment. </summary>
     type EnvironmentGenerator = Contract -> Environment
 
     /// <summary> Wrapper type for holding predefined bool generators </summary>
