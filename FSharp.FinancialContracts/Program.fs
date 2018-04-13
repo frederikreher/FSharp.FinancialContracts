@@ -1,10 +1,11 @@
 ﻿// Learn more about F# at http://fsharp.org
 namespace FSharp.FinancialContracts
 
-open System.Threading
-open Environment
-open Contract
-open Contracts
+open FSharp.FinancialContracts.Environment
+open FSharp.FinancialContracts.Time
+open FSharp.FinancialContracts.Observables
+open FSharp.FinancialContracts.Contract
+open FSharp.FinancialContracts.Contracts
 open System
 
 module program = 

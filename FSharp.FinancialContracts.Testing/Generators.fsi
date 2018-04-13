@@ -1,8 +1,11 @@
 ﻿namespace FSharp.FinancialContracts.Testing
 
 open System
-open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
+open FSharp.FinancialContracts.Contract
+open FSharp.FinancialContracts.Time
+open FSharp.FinancialContracts.Observables
+
 
 module Generators =
 

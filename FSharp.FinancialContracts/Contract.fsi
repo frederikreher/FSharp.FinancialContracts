@@ -1,6 +1,8 @@
 ﻿namespace FSharp.FinancialContracts
 
-open Environment
+open FSharp.FinancialContracts.Time
+open FSharp.FinancialContracts.Environment
+open FSharp.FinancialContracts.Observables
 
 module Contract =
     

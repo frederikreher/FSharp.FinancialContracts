@@ -4,6 +4,7 @@ open System
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Contracts
 open FSharp.FinancialContracts.Testing.Property
+open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Testing.Generators
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open FSharp.FinancialContracts.Contract

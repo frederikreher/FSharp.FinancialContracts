@@ -3,6 +3,8 @@
 open System
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
+open FSharp.FinancialContracts.Observables
+open FSharp.FinancialContracts.Time
 
 module Property =
 

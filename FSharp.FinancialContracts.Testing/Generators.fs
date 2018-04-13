@@ -3,6 +3,8 @@
 open System
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Contract
+open FSharp.FinancialContracts.Time
+open FSharp.FinancialContracts.Observables
 
 module Generators =
     let random = new Random()

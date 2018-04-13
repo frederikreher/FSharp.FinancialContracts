@@ -5,12 +5,17 @@
     <DocumentationFile>.\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Time.fsi" />
+    <Compile Include="Time.fs" />
+    <Compile Include="Observables.fsi" />
+    <Compile Include="Observables.fs" />
     <Compile Include="Environment.fsi" />
     <Compile Include="Environment.fs" />
     <Compile Include="Contract.fsi" />
     <Compile Include="Contract.fs" />
     <Compile Include="Contracts.fsi" />
     <Compile Include="Contracts.fs" />
+    
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 open System
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Testing.Generators
+open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Contract
 
 module program =

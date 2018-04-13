@@ -1,9 +1,12 @@
 ﻿namespace FSharp.FinancialContracts.Testing
 
 open System
+open System.Collections.Generic
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
-open System.Collections.Generic
+open FSharp.FinancialContracts.Observables
+open FSharp.FinancialContracts.Time
+
 
 module Property =
     

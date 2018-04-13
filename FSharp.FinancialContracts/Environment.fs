@@ -1,44 +1,23 @@
 ﻿namespace FSharp.FinancialContracts
 
-module Environment =
-            
-    // Type representing time.
-    type Time = int
+open FSharp.FinancialContracts.Time
+open FSharp.FinancialContracts.Observables
 
+module Environment =
+    
     // Environment contains the value of observables for all times and the current time.
     type Environment = Time * Map<string, bool> array * Map<string, float> array
     
-    // Observable of type boolean.
-    type BoolObs =
-        | BoolVal of string
-        | Bool of bool
-        | And of BoolObs * BoolObs
-        | Or of BoolObs * BoolObs
-        | GreaterThan of NumberObs * NumberObs
-        | LessThan of NumberObs * NumberObs
-        | Not of BoolObs
-    // Observable of type float.
-    and NumberObs =
-        | NumVal of string
-        | Const of float
-        | Add of NumberObs * NumberObs
-        | Sub of NumberObs * NumberObs
-        | Mult of NumberObs * NumberObs
-        | If of BoolObs * NumberObs * NumberObs
-        | Average of NumberObs * Time
-     
-    // Pass the time of an Environment.
     let increaseEnvTime t1 ((t2, obsEnv, numEnv):Environment) : Environment = (t1+t2, obsEnv, numEnv)
+    let (|+) (t,m1,m2) td : Environment = increaseEnvTime td (t,m1,m2)   
     
-    // Get the current time of an Environment.
+     // Get the current time of an Environment.
     let getTime ((t,_,_):Environment) : Time = t
     // Get the map of boolean observables in an Environment at a specific point in time.
     let getBoolEnv ((_,boolEnv,_):Environment) : Map<string, bool>[] = boolEnv
     // Get the map of numerical observables in an Environment at a specific point in time.
     let getNumEnv ((_,_,numEnv):Environment) : Map<string, float>[] = numEnv
     
-    let (|+) (t,m1,m2) td : Environment = increaseEnvTime td (t,m1,m2)
-   
     // Add a boolean observable to the map of boolean observables.
     let addBoolObs (boolObs, bool) (boolEnv:Map<string, bool>) : Map<string, bool> = 
         match boolObs with 
