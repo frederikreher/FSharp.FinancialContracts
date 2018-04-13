@@ -1,12 +1,12 @@
 namespace FSharp.FinancialContracts.Tests
 
 open System
+open Microsoft.VisualStudio.TestTools.UnitTesting
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Contracts
 open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Testing.Generators
-open Microsoft.VisualStudio.TestTools.UnitTesting
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Testing
 open FSharp.FinancialContracts.Testing.PropertyCheckers
@@ -36,11 +36,11 @@ type GeneratorTests () =
         let scale2 = Scale(NumVal("y"),One(DKK))
         let c = Delay(200,And(scale1,scale2))
 
-        let numGenMap = Map.empty
-                            .Add(NumVal "x", NumericGenerators.RandomNumberWithinRange 20.0 40.0)
-                            .Add(NumVal "y", NumericGenerators.RandomNumberWithinRange 40.0 60.0)
+        let genMap = Map.empty
+                            .Add("x", NumericGenerators.RandomNumberWithinRange 20.0 40.0)
+                            .Add("y", NumericGenerators.RandomNumberWithinRange 40.0 60.0)
 
-        let envGen = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty
+        let envGen = EnvironmentGenerators.WithCustomGenerators genMap
         let xProperty = (satisfyNumObs (NumVal "x") (>=) 20.0) &|& (satisfyNumObs (NumVal "x") (<=) 40.0)
         let yProperty = (satisfyNumObs (NumVal "y") (>=) 40.0) &|& (satisfyNumObs (NumVal "y") (<=) 60.0)
         let p = forAllTimes xProperty &|& yProperty

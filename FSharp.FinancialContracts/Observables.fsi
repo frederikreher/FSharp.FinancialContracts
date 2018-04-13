@@ -11,6 +11,7 @@ module Observables =
         | Or of BoolObs * BoolObs
         | GreaterThan of NumberObs * NumberObs
         | LessThan of NumberObs * NumberObs
+        | Equal of NumberObs * NumberObs
         | Not of BoolObs
     /// <summary> Observable of type float. </summary>
     and NumberObs =
@@ -21,7 +22,11 @@ module Observables =
         | Mult of NumberObs * NumberObs
         | If of BoolObs * NumberObs * NumberObs
         | Average of NumberObs * Time
-        
+    
+    type ObservableValue = 
+        | BoolValue   of bool
+        | NumberValue of float
+
     /// <summary> Identifies the observables, that the provided boolean observable depends on. </summary>
     /// <param name="obs"> The observable to find dependent observables for. </param>
     /// <param name="boolAcc"> Accumulator for dependent boolean observables. </param>

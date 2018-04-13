@@ -83,24 +83,24 @@ module Contract =
     // Evaluates a contract and returns an array of list of Transactions.   
     let evaluateContract environment contract : TransactionResults =       
         let transactions = Array.create (getTime environment + (getHorizon contract)) List.empty
-        let (ct,boolObs,numObs) = environment
+        let (ct,observables) = environment
         
         let rec evalContract now factor c : unit = 
             match c with
             | Zero -> ()
             | One(currency) -> 
-                let transaction = Transaction((evalNumberObs factor (now,boolObs,numObs)) * 1.0,currency)
+                let transaction = Transaction((evalNumberObs factor (now,observables)) * 1.0,currency)
                 transactions.[now] <- transaction::(transactions.[now])
             | Delay(t, c) -> evalContract (now+t) factor c
             | Scale(obs, c) -> evalContract now (Mult(obs,factor)) c
             | ScaleNow(obs, c) ->
-                        let currentFactor = (evalNumberObs obs (now,boolObs,numObs))
+                        let currentFactor = (evalNumberObs obs (now,observables))
                         evalContract now (Mult(Const currentFactor,factor)) c
             | And(c1, c2) -> 
                 evalContract now factor c1
                 evalContract now factor c2
             | If(obs, t, c1, c2) -> 
-                let boolValue = evalBoolObs obs (now,boolObs,numObs)
+                let boolValue = evalBoolObs obs (now,observables)
                 if t = 0 && not boolValue then evalContract now factor c2   //Time has gone and boolvalue is false return c2
                 else if t >= 0 && boolValue then evalContract now factor c1 //If bool value is true and time hasn't gone return 2
                 else evalContract (now+1) factor (If(obs, t-1, c1, c2))    //Else IncreaseEnvironment time and decrease t

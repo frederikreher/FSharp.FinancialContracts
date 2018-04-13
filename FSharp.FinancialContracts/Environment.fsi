@@ -6,7 +6,7 @@ open FSharp.FinancialContracts.Observables
 module Environment =
     
     /// <summary> Environment contains the value of observables for all times and the current time. </summary>
-    type Environment = Time * Map<string, bool> array * Map<string, float> array
+    type Environment = Time * Map<string,ObservableValue> array
     
     val (|+)  : Environment -> Time -> Environment
     
@@ -14,17 +14,6 @@ module Environment =
     /// <param name="env"> The Environment to get the time of. </param>
     /// <returns> The current time of the Environment. </returns>
     val getTime: env:Environment -> Time
-    
-    /// <summary> Get the map of boolean observables in an Environment at a specific point in time. </summary>
-    /// <param name="t"> The time to get the map at. </param>
-    /// <param name="env"> The Environment to get the map of observables from. </param>
-    /// <returns> The map of boolean observables at the specific point in time. </returns>
-    val getBoolEnv: env:Environment -> Map<string, bool> []
-    /// <summary> Get the map of numerical observables in an Environment at a specific point in time. </summary>
-    /// <param name="t"> The time to get the map at. </param>
-    /// <param name="env"> The Environment to get the map of observables from. </param>
-    /// <returns> The map of numerical observables at the specific point in time. </returns>
-    val getNumEnv : Environment -> Map<string, float> []
     
     /// <summary> Add a boolean observable to the map of boolean observables. </summary>
     /// <param name="(boolObs, bool)"> The tuple of a boolean observables and a boolean value, to add to the map. </param>
@@ -37,6 +26,8 @@ module Environment =
     /// <param name="numEnv"> The map of numerical observables to extend. </param>
     /// <returns> The updated map of numerical observables. </returns>
     val addNumObs : NumberObs * float -> Map<string, float> -> Map<string, float>
+    
+    val addObservable : (string*ObservableValue) -> Map<string, ObservableValue> -> Map<string, ObservableValue>
     
     /// <summary> Evaluation of boolean observable, returns a boolean value. </summary>
     /// <param name="obs"> The observable to evaluate. </param>

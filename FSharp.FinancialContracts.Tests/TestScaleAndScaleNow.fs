@@ -27,10 +27,10 @@ type TestScaleAndScaleNow () =
         let transactionProperty = atTime tc (hasTransactions targetList)
         let amountProperty = countOf allTransactions (=) 1
         
-        let numGenMap = Map.empty
-                            .Add(NumVal "x", fun t -> if t = tc then factor else NumericGenerators.RandomNumber t)
+        let genMap = Map.empty
+                            .Add( "x", fun t -> if t = tc then NumberValue factor else NumericGenerators.RandomNumber t)
         
-        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty }
+        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap }
 
         PropertyCheck.CheckWithConfig config contract (transactionProperty &|& amountProperty)
 
@@ -46,10 +46,10 @@ type TestScaleAndScaleNow () =
         let transactionProperty = atTime tc (hasTransactions targetList)
         let amountProperty = countOf allTransactions (=) 1
         
-        let numGenMap = Map.empty
-                            .Add(NumVal "x", fun t -> if t = 0 then factor else NumericGenerators.RandomNumber t)
+        let genMap = Map.empty
+                            .Add("x", fun t -> if t = 0 then NumberValue factor else NumericGenerators.RandomNumber t)
         
-        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators numGenMap Map.empty }
+        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap }
         
         PropertyCheck.CheckWithConfig config contract (transactionProperty &|& amountProperty)
         

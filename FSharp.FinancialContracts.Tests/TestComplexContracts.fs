@@ -37,14 +37,13 @@ type TestComplexContracts () =
 
         let cc = European
 
-        let numGenMap = Map.empty
-                            .Add(NumVal "y", fun t -> if t = 33 then 50.0 else 20.0)
-                            .Add(NumVal "a", fun _ -> 5.0)
-                            .Add(NumVal "b", fun _ -> 10.0)
-        let boolGenMap = Map.empty
-                            .Add(BoolVal "x", fun t -> if (t = 30 || t = 33) then true else false)
+        let genMap = Map.empty
+                            .Add("y", fun t -> NumberValue(if t = 33 then 50.0 else 20.0))
+                            .Add("a", fun _ -> NumberValue(5.0))
+                            .Add("b", fun _ -> NumberValue(10.0))
+                            .Add("x", fun t -> BoolValue(if (t = 30 || t = 33) then true else false))
         
-        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators numGenMap boolGenMap }
+        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap }
 
         let sumProperty = sumOf allTransactions (=) 1000.0
 
@@ -62,14 +61,16 @@ type TestComplexContracts () =
 
         let cc = European
 
-        let numGenMap = Map.empty
-                            .Add(NumVal "y", fun t -> if t = 33 then 50.0 else 20.0)
-                            .Add(NumVal "a", fun _ -> 5.0)
-                            .Add(NumVal "b", fun _ -> 10.0)
-        let boolGenMap = Map.empty
-                            .Add(BoolVal "x", fun t -> if (t = 30 || t = 33) then true else false)
+        let genMap = Map.empty
+                                    .Add("y", fun t -> NumberValue(if t = 33 then 50.0 else 20.0))
+                                    .Add("a", fun _ -> NumberValue(5.0))
+                                    .Add("b", fun _ -> NumberValue(10.0))
+                                    .Add("x", fun t -> BoolValue(if (t = 30 || t = 33) then true else false))
         
-        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators numGenMap boolGenMap }
+        let boolObsX = Or((Equal(NumVal("t"),Const(30.0))),(Equal(NumVal("t"),Const(33.0))))
+        
+        
+        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap }
 
         let amountProperty = countOf allTransactions (=) 2
 

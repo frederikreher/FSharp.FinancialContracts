@@ -22,9 +22,9 @@ type TestIfWithin () =
         let targetTransaction2 = [Transaction(1.0, CNY)]
         
         let property = (forAllTimes (!!(hasTransactions targetTransaction1))) &|& forSomeTime (hasTransactions targetTransaction2)
-        let boolGenMap = Map.empty
-                            .Add(BoolVal "x", fun _ -> false)
-        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators Map.empty boolGenMap}
+        let genMap = Map.empty
+                            .Add("x", fun _ -> BoolValue(false))
+        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}
         
         PropertyCheck.CheckWithConfig config contract property
     
@@ -34,10 +34,10 @@ type TestIfWithin () =
         let contract = If(BoolVal("x"),t,One (DKK),One (CNY))
         
         let property = atTime t (hasTransactions [Transaction(1.0, DKK)]) &|& !!(atTime (t-1) (hasTransactions [Transaction(1.0, DKK)]))
-        let boolGenMap = Map.empty
-                                                    .Add(BoolVal "x", BoolGenerators.BoolTrueAtDate 5)
+        let genMap = Map.empty
+                                                    .Add("x", BoolGenerators.BoolTrueAtDate 5)
                                                     
-        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators Map.empty boolGenMap}  
+        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}  
         PropertyCheck.CheckWithConfig config contract property                                                  
         
     [<TestMethod>]
@@ -46,10 +46,10 @@ type TestIfWithin () =
         let contract = If(BoolVal("x"),t,One (DKK),One (CNY))
                 
         let property = atTime t (hasTransactions [Transaction(1.0, CNY)]) &|& !!(atTime (t-1) (hasTransactions [Transaction(1.0, CNY)]))
-        let boolGenMap = Map.empty
-                                                    .Add(BoolVal "x", fun _ -> false)
+        let genMap = Map.empty
+                                                    .Add("x", fun _ -> BoolValue(false))
                                                     
-        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators Map.empty boolGenMap}  
+        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}  
         PropertyCheck.CheckWithConfig config contract property   
         
     [<TestMethod>]

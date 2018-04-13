@@ -11,17 +11,21 @@ module Observables =
         | Or of BoolObs * BoolObs
         | GreaterThan of NumberObs * NumberObs
         | LessThan of NumberObs * NumberObs
+        | Equal of NumberObs * NumberObs
         | Not of BoolObs
     // Observable of type float.
     and NumberObs =
-        | NumVal of string
-        | Const of float
-        | Add of NumberObs * NumberObs
-        | Sub of NumberObs * NumberObs
-        | Mult of NumberObs * NumberObs
-        | If of BoolObs * NumberObs * NumberObs
+        | NumVal  of string
+        | Const   of float
+        | Add     of NumberObs * NumberObs
+        | Sub     of NumberObs * NumberObs
+        | Mult    of NumberObs * NumberObs
+        | If      of BoolObs * NumberObs * NumberObs
         | Average of NumberObs * Time
      
+    type ObservableValue = 
+        | BoolValue   of bool
+        | NumberValue of float
 
     // Identifies the observables, that the provided boolean observable depends on.
     let rec boolObs (obs:BoolObs) boolAcc numAcc : (BoolObs list * NumberObs list) =
@@ -42,6 +46,9 @@ module Observables =
             let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
             numberObs num2 boolAcc1 numAcc1
         | LessThan(num1, num2) -> 
+            let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
+            numberObs num2 boolAcc1 numAcc1
+        | Equal(num1, num2) -> 
             let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
             numberObs num2 boolAcc1 numAcc1
         | Not(bool) -> boolObs bool boolAcc numAcc
