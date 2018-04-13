@@ -37,7 +37,6 @@ module Environment =
     // Get the map of numerical observables in an Environment at a specific point in time.
     let getNumEnv ((_,_,numEnv):Environment) : Map<string, float>[] = numEnv
     
-    let (|++) env : Environment         = increaseEnvTime 1 env
     let (|+) (t,m1,m2) td : Environment = increaseEnvTime td (t,m1,m2)
    
     // Add a boolean observable to the map of boolean observables.

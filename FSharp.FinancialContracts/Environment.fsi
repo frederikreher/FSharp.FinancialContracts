@@ -7,7 +7,6 @@ module Environment =
     /// <summary> Environment contains the value of observables for all times and the current time. </summary>
     type Environment = Time * Map<string, bool> array * Map<string, float> array
     
-    val (|++) : Environment -> Environment
     val (|+)  : Environment -> Time -> Environment
     
     /// <summary> Observable of type boolean. </summary>

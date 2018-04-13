@@ -19,12 +19,10 @@ module Contract =
     //Final result of the evaluation of a contract. 
     type TransactionResults = Time * Transaction list []
     
-    //TODO maybe remove?
     let getTransactions (t,ts) : Transaction list [] = 
         let length = Array.length ts
         Array.sub ts t (length-t)
     
-    //TODO implement guard on increasing above length of array
     let increaseTime (t,ts) td : TransactionResults = (t+td,ts)
         
     // Defines how a contract can be constructed.
