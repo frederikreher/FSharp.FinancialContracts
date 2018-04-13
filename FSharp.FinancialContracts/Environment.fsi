@@ -29,20 +29,16 @@ module Environment =
         | If of BoolObs * NumberObs * NumberObs
         | Average of NumberObs * Time
         
-//    /// <summary> Pass the time of an Environment. </summary>
-//    /// <param name="t1"> The time that the current time of the Environment should be increased. </param>
-//    /// <param name="env"> The Environment to increase the time of. </param>
-//    /// <returns> The Environment with an updated current time. </returns>
-//    val increaseTime : Time -> Environment -> Environment
     /// <summary> Get the current time of an Environment. </summary>
     /// <param name="env"> The Environment to get the time of. </param>
     /// <returns> The current time of the Environment. </returns>
-    val getTime : Environment -> Time
+    val getTime: env:Environment -> Time
+    
     /// <summary> Get the map of boolean observables in an Environment at a specific point in time. </summary>
     /// <param name="t"> The time to get the map at. </param>
     /// <param name="env"> The Environment to get the map of observables from. </param>
     /// <returns> The map of boolean observables at the specific point in time. </returns>
-    val getBoolEnv : Environment -> Map<string, bool> []
+    val getBoolEnv: env:Environment -> Map<string, bool> []
     /// <summary> Get the map of numerical observables in an Environment at a specific point in time. </summary>
     /// <param name="t"> The time to get the map at. </param>
     /// <param name="env"> The Environment to get the map of observables from. </param>
@@ -54,6 +50,7 @@ module Environment =
     /// <param name="boolEnv"> The map of boolean observables to extend. </param>
     /// <returns> The updated map of boolean observables. </returns>
     val addBoolObs : BoolObs * bool -> Map<string, bool> -> Map<string, bool>
+    
     /// <summary> Add a float observable to the map of numerical observables. </summary>
     /// <param name="(numObs, value)"> The tuple of a numerical observables and a float value, to add to the map. </param>
     /// <param name="numEnv"> The map of numerical observables to extend. </param>

@@ -32,7 +32,6 @@ module Contract =
         | And of Contract * Contract
         | If of BoolObs * Time * Contract * Contract
         | Give of Contract
-        | RepeatUntil of Time * Contract
     
     /// <summary> Creates a new contract equal to the conjuction of the two contracts.</summary>
     /// <param name="c1"> The first contract</param>
@@ -62,4 +61,4 @@ module Contract =
     /// <param name="env"> The Environment to evaluate the contract in. </param>
     /// <param name="contract"> The contract to evaluate. </param>
     /// <returns> Returns an array of list of Transactions. </returns>
-    val evalC : Environment -> Contract -> TransactionResults
+    val evaluateContract : Environment -> Contract -> TransactionResults

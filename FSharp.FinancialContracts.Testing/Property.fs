@@ -12,7 +12,6 @@ module Property =
     type Filter    = (Transaction -> bool)
     type BinOp<'a> = ('a -> 'a -> bool)
     
-    
     //Default filters:
     let allTransactions : Filter        = fun t -> true
     let transactionsOfCurrency a : Filter = fun (Transaction(f,ass)) -> a = ass
@@ -53,9 +52,7 @@ module Property =
                     p (env|+t) tsr')
     
     let forAllTimes p : Property = fun env tsr -> List.forall (timefulfilling p tsr env)  (listOfTransactionTimes tsr)
-    
     let forSomeTime p : Property = fun env tsr -> List.exists (timefulfilling p tsr env) (listOfTransactionTimes tsr)
-        
     let forOneTime p  : Property = fun env tsr -> 1 = List.length (List.where (timefulfilling p tsr env) (listOfTransactionTimes tsr))
     
     let addSums transactions acc : Map<Currency,float> =

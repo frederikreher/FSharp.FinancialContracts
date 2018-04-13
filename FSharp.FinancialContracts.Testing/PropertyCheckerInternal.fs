@@ -1,10 +1,10 @@
 ﻿namespace FSharp.FinancialContracts.Testing
 
 open FSharp.FinancialContracts.Testing.Property
-open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Documentation.ContractEvaluation
 open FSharp.FinancialContracts.Testing.Generators
+open FSharp.FinancialContracts.Contract
 
 module PropertyCheckerInternal =   
 
@@ -23,7 +23,7 @@ module PropertyCheckerInternal =
                                   MaxFail              = 0
                                   EnvironmentGenerator = EnvironmentGenerators.Default
                                   FailSilently         = true
-                                  ContractEvaluator    = fun env c -> (0,(Array.ofList (evaluateContract env c)))
+                                  ContractEvaluator    = fun env c -> evaluateContract env c
                                 }
     
     type TestData = 

@@ -6,8 +6,7 @@ open FSharp.FinancialContracts.Contract
 module ContractEvaluation =
 
     let listOfLength n : Transaction list list = List.init n (fun i -> [])
-
-    let multiply t f = List.map (fun (Transaction(x,c)) -> Transaction(x*(f()),c)) t
+    let multiply t f = List.map (fun (Transaction(x,c)) -> Transaction(x*(f),c)) t
     
     //https://stackoverflow.com/questions/4100251/merge-two-lists-in-f-recursively
     let rec union l1 l2 = 
@@ -20,17 +19,14 @@ module ContractEvaluation =
         match contract with
             | Zero -> [[]]
             | One(currency) -> [[Transaction(1.0,currency)]]
-            | Delay(t, c) -> 
-                //if t > 0 then []::(evaluateContract (environment |+ 1) (Delay((t-1),c)))
-                //else evaluateContract environment c
-                listOfLength t @ evaluateContract environment c
+            | Delay(t, c) -> listOfLength t @ evaluateContract environment c
             | Scale(obs, c) -> 
                 let subTransactions = evaluateContract environment c
-                List.mapi (fun i transactions -> multiply transactions (fun () -> evalNumberObs obs (environment |+ i))) subTransactions
+                List.mapi (fun i transactions -> multiply transactions (evalNumberObs obs (environment |+ i))) subTransactions
             | ScaleNow(obs, c) ->
                 let subTransactions = evaluateContract environment c
                 let currentFactor = evalNumberObs obs environment
-                List.map (fun transactions -> multiply transactions (fun () -> currentFactor)) subTransactions
+                List.map (fun transactions -> multiply transactions currentFactor) subTransactions
             | And(c1, c2) -> 
                 union (evaluateContract environment c1) (evaluateContract environment c2)
             | If(obs, t, c1, c2) -> 
@@ -39,10 +35,5 @@ module ContractEvaluation =
                 else []::(evaluateContract (environment|+1) (If(obs, t-1, c1, c2)))
             | Give(c) -> 
                 let subTransactions = evaluateContract environment c
-                List.map (fun transactions -> multiply transactions (fun () -> -1.0)) subTransactions
-            | RepeatUntil(t, c) ->
-                if t <= 0 then 
-                    evaluateContract environment c
-                else
-                    union (evaluateContract environment c) (evaluateContract (environment|+1) (RepeatUntil(t-1, c)))
+                List.map (fun transactions -> multiply transactions -1.0) subTransactions
                 

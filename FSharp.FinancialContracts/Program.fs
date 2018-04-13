@@ -53,7 +53,7 @@ module program =
         for i = 0 to (getHorizon c4) do
             let env = (generateObservables i (i + (getHorizon c4)) c4)
             printfn "%A" env
-            printfn "%A" (evalC env c4)
+            printfn "%A" (evaluateContract env c4)
             //Thread.Sleep(1000)
 
         0 // return an integer exit code

@@ -24,7 +24,7 @@ module program =
                              And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR))),
                            Delay(365, One DKK))
                            
-        let contract = RepeatUntil(365, contract1)
+        let contract = Delay(365, contract1)
 
         let run = 100
 
@@ -34,7 +34,7 @@ module program =
 
         let stopWatch1 = System.Diagnostics.Stopwatch.StartNew()  
         for env in envList do
-            (evalC env contract) |> ignore
+            (evaluateContract env contract) |> ignore
         stopWatch1.Stop()
         printfn "Evaluated using EvalC in %f" stopWatch1.Elapsed.TotalSeconds
         
