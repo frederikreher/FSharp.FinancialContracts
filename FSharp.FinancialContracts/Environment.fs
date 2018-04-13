@@ -14,17 +14,6 @@ module Environment =
      // Get the current time of an Environment.
     let getTime ((t,_):Environment) : Time = t
     
-    // Add a boolean observable to the map of boolean observables.
-    let addBoolObs (boolObs, bool) (boolEnv:Map<string, bool>) : Map<string, bool> = 
-        match boolObs with 
-        | BoolVal(s) -> boolEnv.Add(s, bool)
-        | _ -> failwith "Only expects boolVal"
-    // Add a float observable to the map of numerical observables.
-    let addNumObs (numObs, value) (numEnv:Map<string, float>) : Map<string, float> = 
-        match numObs with 
-        | NumVal(s) -> numEnv.Add(s, value)
-        | _ -> failwith "Only expects numVal"
-    
     let addObservable kv (observables:Map<string, ObservableValue>) : Map<string, ObservableValue> = observables.Add kv
     
     let findBoolInEnv s ((t,obs):Environment) = 

@@ -78,6 +78,7 @@ module Contract =
             let (boolAcc2,numAcc2) = observables c1 boolAcc1 numAcc1
             observables c2 boolAcc2 numAcc2
         | Give(c) -> observables c boolAcc numAcc
+    
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
     
     // Evaluates a contract and returns an array of list of Transactions.   

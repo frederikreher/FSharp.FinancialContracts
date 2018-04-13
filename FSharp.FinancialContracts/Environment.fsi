@@ -15,18 +15,10 @@ module Environment =
     /// <returns> The current time of the Environment. </returns>
     val getTime: env:Environment -> Time
     
-    /// <summary> Add a boolean observable to the map of boolean observables. </summary>
+    /// <summary> Add a observable to the map of boolean observables. </summary>
     /// <param name="(boolObs, bool)"> The tuple of a boolean observables and a boolean value, to add to the map. </param>
     /// <param name="boolEnv"> The map of boolean observables to extend. </param>
-    /// <returns> The updated map of boolean observables. </returns>
-    val addBoolObs : BoolObs * bool -> Map<string, bool> -> Map<string, bool>
-    
-    /// <summary> Add a float observable to the map of numerical observables. </summary>
-    /// <param name="(numObs, value)"> The tuple of a numerical observables and a float value, to add to the map. </param>
-    /// <param name="numEnv"> The map of numerical observables to extend. </param>
-    /// <returns> The updated map of numerical observables. </returns>
-    val addNumObs : NumberObs * float -> Map<string, float> -> Map<string, float>
-    
+    /// <returns> The updated map of boolean observables. </returns>   
     val addObservable : (string*ObservableValue) -> Map<string, ObservableValue> -> Map<string, ObservableValue>
     
     /// <summary> Evaluation of boolean observable, returns a boolean value. </summary>

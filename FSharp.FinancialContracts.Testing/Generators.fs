@@ -47,12 +47,29 @@ module Generators =
                               match Map.tryFind obs genMap with
                                  | Some g -> g
                                  | _ -> defGen
-
+    
+//    type Observable = 
+//        | NumberObservable of NumberObs
+//        | BooleanObservable of BoolObs
+//    
+//    let getKeyFromObs obs = 
+//        match obs with 
+//        | NumberObservable numObs -> 
+//            match numObs with 
+//                | NumVal(s) -> s
+//                | _ -> failwith "Attepting"
+//        | BooleanObservable boolObs ->
+//            match boolObs with 
+//                | BoolVal(s) -> s
+//                | _ -> failwith "Attepting"
+    
     //Functions for generating numeric/boolean values to the corresponding observables
     //returns a map containing those values
     let genBoolValues boolObs genMap gen t acc : Map<string,ObservableValue>  = List.fold (fun bMap (BoolVal(obs)) -> bMap |> (addObservable (obs, ((findGen genMap gen obs) t)))) acc boolObs
     let genNumValues numObs genMap gen t acc: Map<string,ObservableValue>   = List.fold (fun bMap (NumVal(obs)) -> bMap |> (addObservable (obs,  ((findGen genMap gen obs) t)))) acc numObs
-
+    
+    //let genObservableValue numObs genMap gen t acc: Map<string,ObservableValue>   = List.fold (fun bMap obs -> bMap |> (addObservable ( (getKeyFromObs obs),  ((findGen genMap gen (getKeyFromObs obs)) t)))) acc numObs
+    
     //Generates enviroment for the entire horizon of contract. Maps contain optional generators for observables
     let generateEnvironment genMap c : Environment = 
         let horizon = getHorizon c
