@@ -8,7 +8,7 @@ open FSharp.FinancialContracts.Contract
 module Contracts =
 
     // Zero-coupon discount bond using an observable.
-    let zcb time obs currency = Delay(time, Scale(obs, One(cur)))
+    let zcb time obs currency = Delay(time, Scale(obs, One(currency)))
     
     // American option using an observable.
     let american boolObs time contract : Contract = If(boolObs, time, contract, Zero)
