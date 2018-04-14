@@ -2,5 +2,5 @@
 
 module Time =
         
-    /// <summary> Type representing time. </summary>
+    //Type representing time.
     type Time = int
