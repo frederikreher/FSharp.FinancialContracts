@@ -9,11 +9,10 @@ open FSharp.FinancialContracts.Observables
 
 module Generators =
 
-    /// <summary> Represents a generic generator function </summary>
-    /// <returns> A function which takes time as parameter and returns the generic type 'a</returns>
+    /// <summary> A function which takes time as parameter and returns and observable value. </summary>
     type ValueGenerator = Time -> ObservableValue
 
-    /// <summary> Wrapper for map from either BoolObs or NumberObs to generators </summary>
+    /// <summary> Holds keys for observables which maps to corresponding valuegenerators </summary>
     type ValueGenerators = Map<string,ValueGenerator>
 
     /// <summary> Represents a function that takes a contract and generates a environment. </summary>
@@ -35,12 +34,12 @@ module Generators =
         /// <summary>Creates a value generator which returns true at a point in time</summary>
         /// <param name="Time">Parameter deciding which day the generator should return <c>true</c></param>
         /// <returns>A valuegenerator producing <c>true</c> at the specified time, and otherwise <c>false</c></returns>
-        static member BoolTrueAtDate    : (Time  -> ValueGenerator)
+        static member BoolTrueAtTime   : (Time  -> ValueGenerator)
 
         /// <summary>Creates a value generator which returns false at a point in time</summary>
         /// <param name="Time">Parameter deciding which day the generator should return <c>false</c></param>
         /// <returns>A valuegenerator producing <c>true</c> at the specified time, and otherwise <c>true</c></returns>
-        static member BoolFalseAtDate   : (Time  -> ValueGenerator)
+        static member BoolFalseAtTime   : (Time  -> ValueGenerator)
 
         /// <summary>Accesses the default value generator for boolean values. Wrapper for <c>RandomBool</c></summary>
         /// <returns>A generator for generating random boolean values</returns>
@@ -52,32 +51,31 @@ module Generators =
 
        /// <summary>Accesses a random numeric generator</summary>
        /// <returns>A generator for generating random numeric values between 0.0 and 1.0</returns>
-       static member RandomNumber            : ValueGenerator
+       static member RandomNumber        : ValueGenerator
 
        /// <summary>Creates a random numeric value generator in range</summary>
        /// <param name="min">Deciding the min of the range</param>
        /// <param name="max">Deciding the max of the range</param>
        /// <returns>A generator for generating random numeric values between min and max</returns>
-       static member RandomNumberWithinRange : (float -> float -> ValueGenerator)
+       static member RandomNumberInRange : (float -> float -> ValueGenerator)
 
        /// <summary>Accesses the default value generator for numeric values. Wrapper for <c>RandomNumberWithinRange 1.0 10.0</c></summary>
        /// <returns>A generator for generating random numeric values between 1.0 and 10.0</returns>
-       static member Default                 : ValueGenerator
+       static member Default             : ValueGenerator
 
     /// <summary> Wrapper type for holding predefined environment generators </summary>
     [<Sealed>] 
     type EnvironmentGenerators =
         /// <summary>Accesses a environment generator</summary>
-        /// <returns>A generator for generating environments with default valueGenerators</returns>
+        /// <returns>A generator for generating environments with default ValueGenerators</returns>
         static member WithDefaultGenerators : EnvironmentGenerator
 
-        /// <summary>Creates environment generator for generating environment with custom valuegenerators</summary>
-        /// <param name="numGenMap">Map containing the generators for the numeric observables</param>
-        /// <param name="boolGenMap">Map containing the generators for the bool observables</param>
+        /// <summary>Creates environment generator for generating environment with custom valuegenerators.</summary>
+        /// <param name="genMap"> Map containing the generators for the observables. Type is ValueGenerators.</param>
         /// <returns>A generator for generating environments with custom valuegenerators. Fallback to default generators.</returns>
-        static member WithCustomGenerators : (ValueGenerators -> EnvironmentGenerator)
+        static member WithCustomGenerators  : (ValueGenerators -> EnvironmentGenerator)
 
         /// <summary>Accesses the default valuegenerator</summary>
         /// <returns>A generator for generating environments with default valueGenerators</returns>
-        static member Default : EnvironmentGenerator
+        static member Default               : EnvironmentGenerator
 

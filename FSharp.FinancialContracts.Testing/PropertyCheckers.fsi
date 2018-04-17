@@ -8,9 +8,11 @@ open FSharp.FinancialContracts.Testing.PropertyCheckerInternal
 open FSharp.FinancialContracts.Testing.Property
 
 module PropertyCheckers =
-
-            
+    
+    /// <summary> A type containing an implemenation of the <c>PropertyCheckerInternal </c>. Both runs checksuites and both raises exceptions if unsuccessfull. </summary>
     [<Sealed>]
     type PropertyCheck = 
-       static member Check       : (Contract  -> Property -> unit)
+       /// <summary>Checks the given contract with the property with the default generators and the default configuration </summary>
+       static member Check           : (Contract  -> Property -> unit)
+       /// <summary>Checks the given contract with the property with custom check suite configuration </summary>
        static member CheckWithConfig : (Configuration -> Contract -> Property -> unit)

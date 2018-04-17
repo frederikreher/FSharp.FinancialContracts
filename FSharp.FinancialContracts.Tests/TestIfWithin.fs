@@ -35,7 +35,7 @@ type TestIfWithin () =
         
         let property = atTime t (hasTransactions [Transaction(1.0, DKK)]) &|& !!(atTime (t-1) (hasTransactions [Transaction(1.0, DKK)]))
         let genMap = Map.empty
-                                                    .Add("x", BoolGenerators.BoolTrueAtDate 5)
+                                                    .Add("x", BoolGenerators.BoolTrueAtTime 5)
                                                     
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}  
         PropertyCheck.CheckWithConfig config contract property                                                  

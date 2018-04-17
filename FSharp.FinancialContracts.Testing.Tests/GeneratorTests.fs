@@ -37,8 +37,8 @@ type GeneratorTests () =
         let c = Delay(200,And(scale1,scale2))
 
         let genMap = Map.empty
-                            .Add("x", NumericGenerators.RandomNumberWithinRange 20.0 40.0)
-                            .Add("y", NumericGenerators.RandomNumberWithinRange 40.0 60.0)
+                            .Add("x", NumericGenerators.RandomNumberInRange 20.0 40.0)
+                            .Add("y", NumericGenerators.RandomNumberInRange 40.0 60.0)
 
         let envGen = EnvironmentGenerators.WithCustomGenerators genMap
         let xProperty = (satisfyNumObs (NumVal "x") (>=) 20.0) &|& (satisfyNumObs (NumVal "x") (<=) 40.0)

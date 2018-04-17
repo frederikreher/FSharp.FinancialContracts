@@ -7,48 +7,50 @@ open FSharp.FinancialContracts.Testing.Generators
 open FSharp.FinancialContracts.Contract
 
 module PropertyCheckerInternal =   
+    //Function that takes the outcome of a single propertycheck and does something with a sideeffect
+    type LogFunction = int -> Contract -> Property -> Environment -> TransactionResults -> unit
 
-    type Configuration = 
-        { 
-            NumberOfTests        : int
-            MaxFail              : int
-            EnvironmentGenerator : EnvironmentGenerator
-            FailSilently         : bool
-            ContractEvaluator    : Environment -> Contract -> TransactionResults
-        }
-        
+    //Configuration types used to run check suites
+    type Configuration = { 
+        NumberOfTests        : int
+        MaxFail              : int
+        EnvironmentGenerator : EnvironmentGenerator
+        FailSilently         : bool
+        ContractEvaluator    : Environment -> Contract -> TransactionResults }
         
     type Configuration with
-        static member Default = { NumberOfTests        = 100
-                                  MaxFail              = 0
-                                  EnvironmentGenerator = EnvironmentGenerators.Default
-                                  FailSilently         = true
-                                  ContractEvaluator    = fun env c -> evaluateContract env c
-                                }
+        static member Default = { 
+            NumberOfTests        = 100
+            MaxFail              = 0
+            EnvironmentGenerator = EnvironmentGenerators.Default
+            FailSilently         = true
+            ContractEvaluator    = fun env c -> evaluateContract env c }
     
-    type TestData = 
-            { 
-                TestsRun      : int
-                TestsFailed   : int
-                InTime        : float
-                InAverageTime : float
-            }
-    
+    //Type used to store the results of the tests
+    type TestData = { 
+        Passed        : bool
+        TestsRun      : int
+        TestsFailed   : int
+        InTime        : float
+        InAverageTime : float }
+        
     type TestData with
-            static member Empty = { TestsRun = 0
-                                    TestsFailed = 0
-                                    InTime = 0.0
-                                    InAverageTime = 0.0 }
-                
+        static member Empty = { 
+            Passed = false
+            TestsRun = 0
+            TestsFailed = 0
+            InTime = 0.0
+            InAverageTime = 0.0 }
     
-    type LogFunction = int -> Contract -> Property -> Environment -> TransactionResults -> unit
-    
+    //A function used to time the call of a property
     let timedCall f = 
         let stopWatch = System.Diagnostics.Stopwatch.StartNew()
         let res = f ()
         (res,stopWatch.Elapsed.TotalMilliseconds)
-     
-    let checkSuite (conf:Configuration) onSuccess onFail contract (prop:Property) : TestData option =
+    
+    //Function for running a suite of propertychecks according to the configuration. 
+    let checkSuite (conf:Configuration) onSuccess onFail contract (prop:Property) : TestData =
+        //Internal function used to check a single property
         let checkProp : int -> unit -> bool = fun i () ->
                 let env = conf.EnvironmentGenerator contract
                 let tsr = conf.ContractEvaluator env contract
@@ -57,7 +59,8 @@ module PropertyCheckerInternal =
                 if res then (onSuccess i contract prop env tsr)
                 else (onFail i contract prop env tsr)
                 res
-                
+        
+        //Internal function for running the checks according to the configuration        
         let rec check (data:TestData) c =
             if c >= conf.NumberOfTests || (data.TestsFailed > conf.MaxFail && not conf.FailSilently) then 
                 data 
@@ -74,5 +77,4 @@ module PropertyCheckerInternal =
         
         let testRes = check TestData.Empty 0
         printfn "Failed tests are %A" testRes.TestsFailed
-        if testRes.TestsFailed > conf.MaxFail then None
-        else Some testRes
+        { testRes with Passed = testRes.TestsFailed > conf.MaxFail }
