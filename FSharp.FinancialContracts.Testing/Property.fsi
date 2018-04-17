@@ -66,21 +66,30 @@ module Property =
     /// <summary>A property that negates the property given</summary>
     /// <param name="p">The property to be negated</param>
     /// <returns> A property that returns true if p is false</returns>
-    val (!!)  : p: Property -> Property
+    val notProperty     : p: Property -> Property
     /// <summary>A property that combines two properties into their conjuction</summary>
     /// <param name="p1">The first property</param>
     /// <param name="p2">The second property</param>
     /// <returns> A property that returns true if both p1 and p2 are true</returns>
-    val (&|&) : p1: Property -> p2: Property -> Property
+    val andProperty     : p1: Property -> p2: Property -> Property
     /// <summary>A property that combines two properties into their disjunction</summary>
     /// <param name="p1">The first property</param>
     /// <param name="p2">The second property</param>
     /// <returns> A property that returns true if one of p1 and p2 are true</returns>
-    val (|||) : p1: Property -> p2: Property -> Property
+    val orProperty      : p1: Property -> p2: Property -> Property
     /// <summary>A property that combines two properties into their implication</summary>
     /// <param name="p1">The property that first part of the implication consists of </param>
     /// <param name="p2">The second property</param>
     /// <returns> A property that returns true if p1 is false and if p1 and p2 is true</returns>
+    val impliesProperty : p1: Property -> p2: Property -> Property
+    //Syntactic sugar for simple property combinators
+    /// <summary>Syntactic sugar for <c>notProperty</c></summary>
+    val (!!)  : p: Property -> Property
+    /// <summary>Syntactic sugar for <c>andProperty</c></summary>
+    val (&|&) : p1: Property -> p2: Property -> Property
+    /// <summary>Syntactic sugar for <c>orProperty</c></summary>
+    val (|||) : p1: Property -> p2: Property -> Property
+    /// <summary>Syntactic sugar for <c>impliesProperty</c></summary>
     val (=|>) : p1: Property -> p2: Property -> Property
     
     //Advanced combinators
