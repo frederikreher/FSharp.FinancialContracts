@@ -5,6 +5,7 @@ open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Testing.Generators
 open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Contract
+open FSharp.FinancialContracts.Testing.Property
 
 module program =
     open FSharp.FinancialContracts.Documentation
@@ -27,6 +28,15 @@ module program =
                            
         let contract = Delay(365, contract1)
 
+        let ifEven : ValueGenerator = fun t -> BoolValue(t%2=0)
+        let currentTime : ValueGenerator = fun t -> NumberValue(float t)
+    
+        let c1 = If(BoolVal "b", 5, One DKK, Zero)
+        let c2 = If(BoolVal "b", 5, Zero, One DKK)
+        
+        let property = forAllTimes 
+                            !!(satisfyBoolObs (BoolVal "b")) =|> hasNoTransactions
+    
         let run = 100
 
         let stopWatch = System.Diagnostics.Stopwatch.StartNew()  

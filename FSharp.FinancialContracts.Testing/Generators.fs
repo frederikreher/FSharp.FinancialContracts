@@ -57,11 +57,11 @@ module Generators =
     let genNumValues numObs generators defaultGenerator t observableValues   : Map<string,ObservableValue> = List.fold (fun bMap (NumVal(obs))  -> bMap |> (addObservable (obs, ((findGenerator generators defaultGenerator obs) t)))) observableValues numObs
     
     //Generates enviroment for the entire horizon of contract. Maps contain optional generators for observables
-    let generateEnvironment genMap c : Environment = 
-        let horizon = getHorizon c
-        let (boolObservables, numberObservables) = getObservables c
+    let generateEnvironment generators contract : Environment = 
+        let horizon = getHorizon contract
+        let (boolObservables, numberObservables) = getObservables contract
         
-        let generateObservablesForTime t = (genBoolValues boolObservables genMap BoolGenerators.Default t Map.empty) |> genNumValues numberObservables genMap NumericGenerators.Default t
+        let generateObservablesForTime t = (genBoolValues boolObservables generators BoolGenerators.Default t Map.empty) |> genNumValues numberObservables generators NumericGenerators.Default t
         
         let observables = Array.init horizon generateObservablesForTime
         (0, observables)
