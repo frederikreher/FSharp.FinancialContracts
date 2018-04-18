@@ -14,7 +14,11 @@
     <Compile Include="PropertyCheckerInternal.fs" />
     <Compile Include="PropertyCheckers.fsi" />
     <Compile Include="PropertyCheckers.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="PerformanceChecker.fsi" />
+    <Compile Include="PerformanceChecker.fs" />
+    <Compile Include="Program.fs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />

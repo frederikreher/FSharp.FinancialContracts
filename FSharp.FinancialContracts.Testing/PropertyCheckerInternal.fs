@@ -77,4 +77,4 @@ module PropertyCheckerInternal =
         
         let testRes = check TestData.Empty 0
         printfn "Failed tests are %A" testRes.TestsFailed
-        { testRes with Passed = testRes.TestsFailed > conf.MaxFail }
+        { testRes with Passed = not (testRes.TestsFailed > conf.MaxFail) }

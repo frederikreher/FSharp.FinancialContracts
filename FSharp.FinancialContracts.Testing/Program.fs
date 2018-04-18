@@ -38,21 +38,10 @@ module program =
                             !!(satisfyBoolObs (BoolVal "b")) =|> hasNoTransactions
     
         let run = 100
-
-        let stopWatch = System.Diagnostics.Stopwatch.StartNew()  
-        let envList = List.init run (fun _ -> EnvironmentGenerators.Default contract)
-        printfn "Generated environments in %f" stopWatch.Elapsed.TotalSeconds
-
-        let stopWatch1 = System.Diagnostics.Stopwatch.StartNew()  
-        for env in envList do
-            (evaluateContract env contract) |> ignore
-        stopWatch1.Stop()
-        printfn "Evaluated using EvalC in %f" stopWatch1.Elapsed.TotalSeconds
         
-        let stopWatch2 = System.Diagnostics.Stopwatch.StartNew()
-        for env in envList do
-            (ContractEvaluation.evaluateContract env contract) |> ignore
-        stopWatch2.Stop()
-        printfn "Evaluated using evaluateContract in %f" stopWatch2.Elapsed.TotalSeconds
+        let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c |> ignore)
+        let simpleEvaluation = ("simpleEvaluation", fun env c -> ContractEvaluation.evaluateContract env c |> ignore)
+        
+        PerformanceChecker.checkPerformance [contract] fastEvaluation simpleEvaluation
         
         0 // return an integer exit code
