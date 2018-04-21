@@ -9,6 +9,9 @@ open FSharp.FinancialContracts.Testing.Property
 
 module program =
     open FSharp.FinancialContracts.Documentation
+    open Generators
+    open Generators
+    open Generators
      
     [<EntryPoint>]
     let main argv =
@@ -42,6 +45,30 @@ module program =
         let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c |> ignore)
         let simpleEvaluation = ("simpleEvaluation", fun env c -> ContractEvaluation.evaluateContract env c |> ignore)
         
-        PerformanceChecker.checkPerformance [contract] fastEvaluation simpleEvaluation
+        //PerformanceChecker.checkPerformance [contract] fastEvaluation simpleEvaluation
+        
+        let sumOfDKKAre20  : Property = 
+            sumOf (transactionsOfCurrency DKK) (=) 20.0
+        let countOfAllAre1 : Property = countOf allTransactions (=) 2
+        
+        let bIsTrue = satisfyBoolObs (BoolVal "b")
+        let sumAndCount = (sumOfDKKAre20 &|& countOfAllAre1)
+        let bImpliesSumAndCount = bIsTrue =|> sumAndCount
+        printfn "lol"
+        let bImpliesSumAndCountOnce = 
+            forSomeTime bIsTrue =|> 
+                forOneTime (bIsTrue &|& sumAndCount)
+                    
+        let contract = If(BoolVal "b",5,One DKK, One GBP)
+        
+        let env = EnvironmentGenerators.WithCustomGenerators ((Map.empty).Add("b",(BoolGenerators.BoolTrueAtTime 4))) contract
+        
+        let tsr = (evaluateContract env contract)
+        
+        let prop = (bImpliesSumAndCountOnce env tsr)
+        
+        printfn "%A result was with env %A and transactions %A" prop env tsr
+                        
+
         
         0 // return an integer exit code

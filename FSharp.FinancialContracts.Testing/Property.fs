@@ -42,8 +42,16 @@ module Property =
     //Helper function mapping true or false values to value of a transaction
     let sumByFilter filter : Transaction -> float = fun (Transaction(f,c)) -> if filter (Transaction(f,c)) then f else 0.0
     
-    let sumOf filter compare (f:float) : Property = fun _ transResults -> compare f (Array.sumBy (List.sumBy (sumByFilter filter)) (getTransactions transResults))
-    let countOf filter compare (n:int) : Property = fun _ transResults -> compare n (Array.sumBy (fun t -> List.length (List.where filter t)) (getTransactions transResults))
+    let sumOf filter compare (f:float) : Property = fun _ transactionResults -> 
+        let transactions = getTransactions transactionResults
+        compare f (List.sumBy (sumByFilter filter) transactions.[0])
+    
+    let countOf filter compare (n:int) : Property = fun _ transactionResults -> 
+        let transactions = getTransactions transactionResults
+        compare n (List.length (List.where filter transactions.[0]))
+    
+    let sumOfAllTimes filter compare (f:float) : Property = fun _ transResults -> compare f (Array.sumBy (List.sumBy (sumByFilter filter)) (getTransactions transResults))
+    let countOfAllTimes filter compare (n:int) : Property = fun _ transResults -> compare n (Array.sumBy (fun t -> List.length (List.where filter t)) (getTransactions transResults))
     
     //Check if transactions of current day contains specific transaction
     let hasTransactions trans : Property = fun _ transactionResults -> 
@@ -79,6 +87,6 @@ module Property =
                     let tsr' = increaseTime tsr t
                     p (env|+t) tsr')
     
-    let forAllTimes p : Property = fun env tsr -> List.forall (timefulfilling p tsr env)  (listOfTransactionTimes tsr)
+    let forAllTimes p : Property = fun env tsr -> List.forall (timefulfilling p tsr env) (listOfTransactionTimes tsr)
     let forSomeTime p : Property = fun env tsr -> List.exists (timefulfilling p tsr env) (listOfTransactionTimes tsr)
     let forOneTime p  : Property = fun env tsr -> 1 = List.length (List.where (timefulfilling p tsr env) (listOfTransactionTimes tsr))
