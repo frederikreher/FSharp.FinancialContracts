@@ -47,7 +47,7 @@ type TestScaleAndScaleNow () =
         let amountProperty = accumulatedCountOf allTransactions (=) 1
         
         let genMap = Map.empty
-                            .Add("x", fun t -> if t = 0 then NumberValue factor else NumericGenerators.RandomNumber t)
+                        .Add("x", fun t -> if t = 0 then NumberValue factor else NumericGenerators.RandomNumber t)
         
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap }
         

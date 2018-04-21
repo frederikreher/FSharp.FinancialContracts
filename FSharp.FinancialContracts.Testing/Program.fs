@@ -49,7 +49,7 @@ module program =
         
         let sumOfDKKAre20  : Property = 
             sumOf (transactionsOfCurrency DKK) (=) 20.0
-        let countOfAllAre1 : Property = countOf allTransactions (=) 2
+        let countOfAllAre1 : Property = countOf allTransactions (=) 1
         
         let bIsTrue = satisfyBoolObs (BoolVal "b")
         let sumAndCount = (sumOfDKKAre20 &|& countOfAllAre1)
@@ -59,15 +59,12 @@ module program =
             forSomeTime bIsTrue =|> 
                 forOneTime (bIsTrue &|& sumAndCount)
                     
-        let contract = If(BoolVal "b",5,One DKK, One GBP)
+        let contract = If(BoolVal "b",5,Scale(Const 20.0, One DKK), Give(And(One GBP,One USD)))
+        let environment = EnvironmentGenerators.WithDefaultGenerators contract
+        let transactions = evaluateContract environment contract
+        let propertyIsFulfilled = bImpliesSumAndCountOnce environment transactions
         
-        let env = EnvironmentGenerators.WithCustomGenerators ((Map.empty).Add("b",(BoolGenerators.BoolTrueAtTime 4))) contract
-        
-        let tsr = (evaluateContract env contract)
-        
-        let prop = (bImpliesSumAndCountOnce env tsr)
-        
-        printfn "%A result was with env %A and transactions %A" prop env tsr
+        printfn "%A result was with env %A and transactions %A" propertyIsFulfilled environment transactions
                         
 
         

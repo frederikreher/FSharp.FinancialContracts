@@ -101,7 +101,7 @@ module Property =
     val (&|&) : p1: Property -> p2: Property -> Property
     /// <summary>Syntactic sugar for <c>orProperty</c></summary>
     val (|||) : p1: Property -> p2: Property -> Property
-    /// <summary>Syntactic sugar for <c>impliesProperty</c></summary>
+    /// <summary>Syntactic sugar for <c>impliesProperty</c></summary>   
     val (=|>) : p1: Property -> p2: Property -> Property
     
     //Advanced combinators

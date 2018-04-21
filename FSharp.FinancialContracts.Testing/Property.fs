@@ -36,7 +36,7 @@ module Property =
     
     let hasNoTransactions : Property = fun _ transactionResults -> 
            let transactions = getTransactions transactionResults
-           (List.length transactions.[0]) <= 0
+           (List.length transactions.[0]) = 0
     
     //Advanced properties
     //Helper function mapping true or false values to value of a transaction
