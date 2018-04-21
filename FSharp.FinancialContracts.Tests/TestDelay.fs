@@ -23,7 +23,7 @@ type TestDelay () =
         let targetList = [Transaction(1.0, DKK)]
         
         let transactionProperty = atTime tc (hasTransactions targetList)
-        let amountProperty = countOf allTransactions (=) 1
+        let amountProperty = accumulatedCountOf allTransactions (=) 1
         
         PropertyCheck.Check contract (transactionProperty &|& amountProperty)
         

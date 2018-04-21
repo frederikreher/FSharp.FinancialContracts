@@ -31,8 +31,8 @@ type TestGive () =
         let c2 = And(Scale(Const 25.0, One DKK), Delay(10, Scale(Const 75.0, One DKK)))
         let contract = c1 &-& (Give c2)
         
-        let transactionProperty = sumOf allTransactions (=) 0.0 
-        let amountProperty = countOf allTransactions (=) 3
+        let transactionProperty = accumulatedSumOf allTransactions (=) 0.0 
+        let amountProperty = accumulatedCountOf allTransactions (=) 3
         
         PropertyCheck.Check contract (transactionProperty &|& amountProperty)
 

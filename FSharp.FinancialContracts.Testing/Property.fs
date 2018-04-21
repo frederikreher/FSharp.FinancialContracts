@@ -50,8 +50,8 @@ module Property =
         let transactions = getTransactions transactionResults
         compare n (List.length (List.where filter transactions.[0]))
     
-    let sumOfAllTimes filter compare (f:float) : Property = fun _ transResults -> compare f (Array.sumBy (List.sumBy (sumByFilter filter)) (getTransactions transResults))
-    let countOfAllTimes filter compare (n:int) : Property = fun _ transResults -> compare n (Array.sumBy (fun t -> List.length (List.where filter t)) (getTransactions transResults))
+    let accumulatedSumOf filter compare (f:float) : Property = fun _ transResults -> compare f (Array.sumBy (List.sumBy (sumByFilter filter)) (getTransactions transResults))
+    let accumulatedCountOf filter compare (n:int) : Property = fun _ transResults -> compare n (Array.sumBy (fun t -> List.length (List.where filter t)) (getTransactions transResults))
     
     //Check if transactions of current day contains specific transaction
     let hasTransactions trans : Property = fun _ transactionResults -> 

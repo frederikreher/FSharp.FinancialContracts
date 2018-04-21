@@ -38,25 +38,25 @@ module Property =
     /// <param name="compare"> Binary operator comparing the sumOf the transactions to f. </param>
     /// <param name="f"> The value that the sum must be compared with. </param>
     /// <returns> A property which are fulfilled if the sum successfully compares with f</returns>
-    val sumOf           : filter:Filter  -> compare:BinOp<float> -> f:float -> Property
+    val sumOf              : filter:Filter  -> compare:BinOp<float> -> f:float -> Property
     /// <summary> A property comparing the count of the transactions at current time fulfilling the filter to the constant </summary>
     /// <param name="filter"> The filter that the transactions must pass. </param>
     /// <param name="compare"> Binary operator comparing the count of the transactions to n. </param>
     /// <param name="n"> The value that the count must be compared with. </param>
     /// <returns> A property which are fulfilled if the count successfully compares with n. </returns>
-    val countOf         : filter:Filter  -> compare:BinOp<int>   -> n:int   -> Property
+    val countOf            : filter:Filter  -> compare:BinOp<int>   -> n:int   -> Property
     /// <summary> A property comparing the sum of the transactions of all times fulfilling the filter to the constant </summary>
     /// <param name="filter"> The filter that the transactions must pass. </param>
     /// <param name="compare"> Binary operator comparing the sumOf the transactions to f </param>
     /// <param name="f"> The value that the sum must be compared with</param>
     /// <returns> A property which are fulfilled if the sum successfully compares with f</returns>
-    val sumOfAllTimes   : filter:Filter  -> compare:BinOp<float> -> f:float -> Property
+    val accumulatedSumOf : filter:Filter  -> compare:BinOp<float> -> f:float -> Property
     /// <summary> A property comparing the count of the transactions of all times fulfilling the filter to the constant </summary>
     /// <param name="filter"> The filter that the transactions must pass. </param>
     /// <param name="compare"> Binary operator comparing the count of the transactions to n </param>
     /// <param name="n"> The value that the count must be compared with</param>
     /// <returns> A property which are fulfilled if the count successfully compares with n</returns>
-    val countOfAllTimes : filter:Filter  -> compare:BinOp<int>   -> n:int   -> Property
+    val accumulatedCountOf : filter:Filter  -> compare:BinOp<int>   -> n:int   -> Property
     /// <summary> A property that checks if the current time contains all the transactions in transactions </summary>
     /// <param name="transactions"> A list of transactions</param>
     /// <returns> A property that checks if the current time contains all the transactions in transactions </returns>   

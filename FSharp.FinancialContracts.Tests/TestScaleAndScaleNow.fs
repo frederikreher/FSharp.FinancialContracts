@@ -25,7 +25,7 @@ type TestScaleAndScaleNow () =
         let targetList = [Transaction(factor, DKK)]
         
         let transactionProperty = atTime tc (hasTransactions targetList)
-        let amountProperty = countOf allTransactions (=) 1
+        let amountProperty = accumulatedCountOf allTransactions (=) 1
         
         let genMap = Map.empty
                             .Add( "x", fun t -> if t = tc then NumberValue factor else NumericGenerators.RandomNumber t)
@@ -44,7 +44,7 @@ type TestScaleAndScaleNow () =
         let targetList = [Transaction(factor, DKK)]
         
         let transactionProperty = atTime tc (hasTransactions targetList)
-        let amountProperty = countOf allTransactions (=) 1
+        let amountProperty = accumulatedCountOf allTransactions (=) 1
         
         let genMap = Map.empty
                             .Add("x", fun t -> if t = 0 then NumberValue factor else NumericGenerators.RandomNumber t)

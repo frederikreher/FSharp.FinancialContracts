@@ -45,7 +45,7 @@ type TestComplexContracts () =
         
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap }
 
-        let sumProperty = sumOf allTransactions (=) 1000.0
+        let sumProperty = accumulatedSumOf allTransactions (=) 1000.0
 
         PropertyCheck.CheckWithConfig config cc sumProperty
 
@@ -72,7 +72,7 @@ type TestComplexContracts () =
         
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap }
 
-        let amountProperty = countOf allTransactions (=) 2
+        let amountProperty = accumulatedCountOf allTransactions (=) 2
 
         PropertyCheck.CheckWithConfig config cc amountProperty
 
@@ -91,7 +91,7 @@ type TestComplexContracts () =
         let contract = And(c3, 
                            And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR)))
 
-        let property = countOf allTransactions (=) 3 ||| countOf allTransactions (=) 4
+        let property = accumulatedCountOf allTransactions (=) 3 ||| countOf allTransactions (=) 4
 
         PropertyCheck.Check contract property
     
