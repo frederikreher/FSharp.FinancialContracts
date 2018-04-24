@@ -9,8 +9,10 @@ module Environment =
     /// <summary> An Environment contains the current time and the value of observables for all times. </summary>
     type Environment = Time * Map<string,ObservableValue> array
     
-    /// <summary> </summary>
-    val getAndClearAccessLog : int -> (string * ObservableValue * Time) list 
+    /// <summary> Retrieves the access log of a thread and then removes it from the dict of logs. </summary>
+    /// <param name="id"> The id of the thread whose access log should be retrieved. </param>
+    /// <returns> The list of observables that has been accessed by the specified string </returns>
+    val getAndClearAccessLog: id:int -> (string * ObservableValue * Time) list 
     
     /// <summary> Increases the current time of an Environment. </summary>
     /// <param name="env"> The Environment to increase the time of. </param>
