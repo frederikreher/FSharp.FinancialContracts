@@ -64,7 +64,7 @@ module Generators =
         let generateObservablesForTime t = (genBoolValues boolObservables generators BoolGenerators.Default t Map.empty) |> genNumValues numberObservables generators NumericGenerators.Default t
         
         let observables = Array.init horizon generateObservablesForTime
-        (0, observables)
+        (0, observables,fun _ _ _ -> ())
     
     //Wrapper type for accessing numeric generators
     [<Sealed>] 

@@ -95,24 +95,24 @@ module Contract =
     // Evaluates a contract and returns an array of list of Transactions.   
     let evaluateContract environment contract : TransactionResults =       
         let transactions = Array.create (getTime environment + (getHorizon contract)) List.empty
-        let (ct,observables) = environment
+        let (ct,observables,f) = environment
         
         let rec evalContract now factor c : unit = 
             match c with
             | Zero               -> ()
-            | One(currency)      -> let transaction = Transaction((evalNumberObs factor (now,observables)) * 1.0,currency)
+            | One(currency)      -> let transaction = Transaction((evalNumberObs factor (now,observables,f)) * 1.0,currency)
                                     transactions.[now] <- transaction::(transactions.[now])
             | Delay(t, c)        -> let t' = evalTimeObs t environment
                                     if t' >= 0 then evalContract (now+t') factor c
                                     else failwith "Can only delay with non-negative integers"
             | Scale(obs, c)      -> evalContract now (Mult(obs,factor)) c
-            | ScaleNow(obs, c)   -> let currentFactor = (evalNumberObs obs (now,observables))
+            | ScaleNow(obs, c)   -> let currentFactor = (evalNumberObs obs (now,observables,f))
                                     evalContract now (Mult(Const currentFactor,factor)) c
             | And(c1, c2)        -> evalContract now factor c1
                                     evalContract now factor c2
             | If(obs, t, c1, c2) -> let t' = evalTimeObs t environment
                                     if t' >= 0 then
-                                        let boolValue = evalBoolObs obs (now,observables)
+                                        let boolValue = evalBoolObs obs (now,observables,f)
                                         if t' = 0 && not boolValue then evalContract now factor c2   //Time has gone and boolvalue is false return c2
                                         else if boolValue then evalContract now factor c1 //If bool value is true and time hasn't gone return 2
                                         else evalContract (now+1) factor (If(obs, TimeObs.Const(t'-1), c1, c2))    //Else IncreaseEnvironment time and decrease t

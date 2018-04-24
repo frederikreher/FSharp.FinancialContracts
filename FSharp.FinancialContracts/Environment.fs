@@ -7,58 +7,36 @@ open System.Collections.Generic
 module Environment =
     
     // Environment contains the value of observables for all times and the current time.
-    type Environment = Time * Map<string,ObservableValue> array
-    
-    // Dict containing the logs of the observables accessed by each thread.
-    let accessLog = new Dictionary<int, (string * ObservableValue * Time) list> ()
-
-    // Updates the list of accessed observables for a thread.
-    let updateAccessLog id obs =
-        if accessLog.ContainsKey id then
-            //printfn "Update:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
-            accessLog.[id] <- (obs :: (accessLog.Item id))
-        else
-            accessLog.Add(id, [obs])
-
-    // Retrieves the access log of a thread and removes it from the dict of log.
-    let getAndClearAccessLog id = 
-        if accessLog.ContainsKey id then 
-            let res = accessLog.Item id
-            accessLog.Remove id |> ignore
-            res
-        else []
+    type Environment = Time * Map<string,ObservableValue> array * (string -> ObservableValue -> Time -> unit)
     
     // Increases the time of the provided environment by the provided value.
-    let increaseEnvTime t1 ((t2, obs):Environment) : Environment = 
+    let increaseEnvTime t1 ((t2, obs,f):Environment) : Environment = 
         let newTime = t1 + t2
         if newTime >= obs.Length then failwith "The current time of the environment cannot exceed the horizon of the contract"
-        else (newTime, obs)
+        else (newTime, obs,f)
     let (|+) env t : Environment = increaseEnvTime t env
     
      // Get the current time of an Environment.
-    let getTime ((t,_):Environment) : Time = t
+    let getTime ((t,_,_):Environment) : Time = t
     
     // Add the provided observable to the map of observables.
     let addObservable kv (observables:Map<string, ObservableValue>) : Map<string, ObservableValue> 
         = observables.Add kv
-    
-    let threadId = fun () -> (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
+
     // Find the current value of a BoolVal observable in the environment.
-    let findBoolInEnv s ((t,obs):Environment) = 
+    let findBoolInEnv s ((t,obs,f):Environment) = 
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
-            | Some(BoolValue boolValue) -> updateAccessLog (threadId())  (s, BoolValue boolValue, t) 
-                                           printfn "threadId is %A" (threadId())
+            | Some(BoolValue boolValue) -> f s (BoolValue boolValue) t
                                            boolValue
             | None                      -> failwith (sprintf "Boolean Observable %A doesn't exist in environment" s)
             | _                         -> failwith "Expected boolean observable"
     
     // Find the current value of a NumVal observable in the environment.
-    let findNumberInEnv s ((t,obs):Environment) = 
+    let findNumberInEnv s ((t,obs,f):Environment) = 
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
-            | Some(NumberValue numValue) -> updateAccessLog (threadId()) (s, NumberValue numValue, t)
-                                            printfn "threadId is %A" (threadId())
+            | Some(NumberValue numValue) -> f s (NumberValue numValue) t
                                             numValue
             | None                       -> failwith (sprintf "Numeric Observable %A doesn't exist in environment" s)
             | _                          -> failwith "Expected numbervalue observable"

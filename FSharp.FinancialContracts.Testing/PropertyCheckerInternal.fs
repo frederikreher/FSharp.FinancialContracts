@@ -28,7 +28,7 @@ module PropertyCheckerInternal =
             EnvironmentGenerator = EnvironmentGenerators.Default
             FailSilently         = true
             ContractEvaluator    = fun env c -> evaluateContract env c
-            RunInParallel        = true }
+            RunInParallel        = false }
     
     //Type used to store the results of the tests
     type TestData = { 
@@ -61,8 +61,8 @@ module PropertyCheckerInternal =
     //Function for running a suite of propertychecks according to the configuration. 
     let checkSuite (conf:Configuration) onSuccess onFail contract (prop:Property) : TestData =
         
+        //Collect testdata from parallel Invokation.
         let rec collectTestData i output data : TestData = 
-            
             if i >= conf.NumberOfTests || i >= Array.length output|| (data.TestsFailed > conf.MaxFail && not conf.FailSilently) then
                 data
             else 
@@ -75,10 +75,10 @@ module PropertyCheckerInternal =
                 else 
                     collectTestData (i+1) output { nData with TestsFailed = data.TestsFailed+1 }               
         
-        let threadId = fun () -> (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
         //Internal function used to check a single property
-        let checkProp :  int -> unit -> bool = fun i () ->
-                let env = conf.EnvironmentGenerator contract
+        let checkProp : (string -> ObservableValue -> Time -> unit) -> int -> unit -> bool = fun f i () ->
+                let (t,obs,_) = conf.EnvironmentGenerator contract
+                let env = (t,obs,f)
                 let tsr = conf.ContractEvaluator env contract
                 
                 let res = (prop env tsr)            
@@ -86,29 +86,42 @@ module PropertyCheckerInternal =
                 else (onFail i contract prop env tsr)
                 res
         
-        let parallelCheck =
+        let parallelCheck () =
+            printfn "Parallel was called"
             let output = Array.Parallel.init conf.NumberOfTests (fun i -> 
-                
-                (timedCall (checkProp i)),  
-                getAndClearAccessLog (threadId())) 
+                let mutable accessLog = []
+                let updateLog = fun s obsval t ->
+                    accessLog <- (s,obsval,t)::accessLog
+                    ()
+
+                ((timedCall (checkProp updateLog i)),accessLog))
             
             collectTestData 0 output TestData.Empty
         
         //Internal function for running the checks according to the configuration        
         let rec check (data:TestData) c =
+            printfn "Simple was called"
             if c >= conf.NumberOfTests || (data.TestsFailed > conf.MaxFail && not conf.FailSilently) then 
                 data 
             else 
-                let (fullFillsProperty,timeSpent) = timedCall (checkProp c)           
+                let mutable accessLog = []
+                let updateLog = fun s obsval t ->
+                    accessLog <- (s,obsval,t)::accessLog
+                    ()
+                    
+                let (fullFillsProperty,timeSpent) = timedCall (checkProp updateLog c )           
                 //printfn "Internal:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
                 let timeSpentAcc = data.InTime + timeSpent
-                let nData = { data with TestsRun = data.TestsRun+1; InTime = timeSpentAcc; InAverageTime = (timeSpentAcc/(float (data.TestsRun+1))); AccessLog = (getAndClearAccessLog (threadId ()))::data.AccessLog   }
+                let nData = { data with TestsRun = data.TestsRun+1; InTime = timeSpentAcc; InAverageTime = (timeSpentAcc/(float (data.TestsRun+1))); AccessLog = accessLog::data.AccessLog  }
                 
                 if fullFillsProperty then
                     check nData (c+1) 
                 else 
-                    check { nData with TestsFailed = data.TestsFailed+1 } (c+1)
+                    check { nData with TestsFailed = data.TestsFailed+1 } (c+1)        
         
-        let testRes = if conf.RunInParallel then parallelCheck else check TestData.Empty 0
-        printfn "Failed tests are %A" testRes.TestsFailed
+        let testRes = if conf.RunInParallel 
+                        then parallelCheck ()
+                        else check TestData.Empty 0
+        
+        //printfn "Failed tests are %A" testRes.TestsFailed
         { testRes with Passed = not (testRes.TestsFailed > conf.MaxFail) }
