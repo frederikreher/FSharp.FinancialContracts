@@ -39,6 +39,7 @@ module program =
         let property = forAllTimes 
                             !!(satisfyBoolObs (BoolVal "b")) =|> hasNoTransactions
     
+        
         let run = 100
         
         let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c |> ignore)
@@ -66,5 +67,5 @@ module program =
         printfn "%A result was with env %A and transactions %A" propertyIsFulfilled environment transactions
                         
 
-        
+        let tttt = If(BoolVal "b", TimeObs.Const 5, Zero, One DKK)
         0 // return an integer exit code

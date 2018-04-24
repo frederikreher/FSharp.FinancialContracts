@@ -2,12 +2,16 @@
 
 open FSharp.FinancialContracts.Time
 open FSharp.FinancialContracts.Observables
+open System.Collections.Generic
 
 module Environment =
     
     /// <summary> An Environment contains the current time and the value of observables for all times. </summary>
     type Environment = Time * Map<string,ObservableValue> array
     
+    /// <summary> </summary>
+    val accessLog: Dictionary<int, (string * ObservableValue) list>
+
     /// <summary> Increases the current time of an Environment. </summary>
     /// <param name="env"> The Environment to increase the time of. </param>
     /// <param name="t"> The amount of time the current time should be increased by. </param>

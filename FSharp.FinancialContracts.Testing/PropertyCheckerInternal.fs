@@ -3,9 +3,11 @@
 open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Testing.Generators
+open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Contract
 
 module PropertyCheckerInternal =   
+
     //Function that takes the outcome of a single propertycheck and does something with a sideeffect
     type LogFunction = int -> Contract -> Property -> Environment -> TransactionResults -> unit
 
@@ -31,7 +33,8 @@ module PropertyCheckerInternal =
         TestsRun      : int
         TestsFailed   : int
         InTime        : float
-        InAverageTime : float }
+        InAverageTime : float 
+        AccessLog     : (string * ObservableValue) list }
         
     type TestData with
         static member Empty = { 
@@ -39,7 +42,8 @@ module PropertyCheckerInternal =
             TestsRun = 0
             TestsFailed = 0
             InTime = 0.0
-            InAverageTime = 0.0 }
+            InAverageTime = 0.0 
+            AccessLog = [] }
     
     //A function used to time the call of a property
     let timedCall f = 
@@ -66,9 +70,9 @@ module PropertyCheckerInternal =
                 data 
             else 
                 let (fullFillsProperty,timeSpent) = timedCall (checkProp c)           
-                
+                printfn "Internal:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
                 let timeSpentAcc = data.InTime + timeSpent
-                let nData = { data with TestsRun = data.TestsRun+1; InTime = timeSpentAcc; InAverageTime = (timeSpentAcc/(float (data.TestsRun+1)))  }
+                let nData = { data with TestsRun = data.TestsRun+1; InTime = timeSpentAcc; InAverageTime = (timeSpentAcc/(float (data.TestsRun+1))); AccessLog = accessLog.[(System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id]  }
                 
                 if fullFillsProperty then
                     check nData (c+1) 
@@ -77,4 +81,5 @@ module PropertyCheckerInternal =
         
         let testRes = check TestData.Empty 0
         printfn "Failed tests are %A" testRes.TestsFailed
+        printfn "%A" testRes
         { testRes with Passed = not (testRes.TestsFailed > conf.MaxFail) }
