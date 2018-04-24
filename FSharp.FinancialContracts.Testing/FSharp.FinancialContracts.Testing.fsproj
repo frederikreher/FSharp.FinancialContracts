@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FSharp.FinancialContracts.Documentation\FSharp.FinancialContracts.Documentation.fsproj" />
     <ProjectReference Include="..\FSharp.FinancialContracts\FSharp.FinancialContracts.fsproj" />
     <Compile Include="Property.fsi" />
     <Compile Include="Property.fs" />
@@ -14,8 +13,6 @@
     <Compile Include="PropertyCheckerInternal.fs" />
     <Compile Include="PropertyCheckers.fsi" />
     <Compile Include="PropertyCheckers.fs" />
-    <Compile Include="PerformanceChecker.fsi" />
-    <Compile Include="PerformanceChecker.fs" />
     <Compile Include="Program.fs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>

@@ -1,4 +1,4 @@
-﻿namespace FSharp.FinancialContracts.Testing
+﻿namespace FSharp.FinancialContracts.Documentation
 
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Environment

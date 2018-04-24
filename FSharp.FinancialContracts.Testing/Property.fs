@@ -45,7 +45,7 @@ module Property =
     let sumOf filter compare (f:float) : Property = fun _ transactionResults -> 
         let transactions = getTransactions transactionResults
         compare f (List.sumBy (sumByFilter filter) transactions.[0])
-    
+           
     let countOf filter compare (n:int) : Property = fun _ transactionResults -> 
         let transactions = getTransactions transactionResults
         compare n (List.length (List.where filter transactions.[0]))
@@ -79,14 +79,9 @@ module Property =
         let ts' = increaseTime ts t
         p (env|+t) ts'
     
-    let listOfTransactionTimes (_,tsr) = 
-        let length = Array.length tsr
-        [0..length-1]
+    let getTransactionTimes (_,tsr) : Time list = [0..(Array.length tsr)-1]
+    let timefulfilling p tsr env t  : bool      = p (env|+t) (increaseTime tsr t)
     
-    let timefulfilling = (fun p tsr env t -> 
-                    let tsr' = increaseTime tsr t
-                    p (env|+t) tsr')
-    
-    let forAllTimes p : Property = fun env tsr -> List.forall (timefulfilling p tsr env) (listOfTransactionTimes tsr)
-    let forSomeTime p : Property = fun env tsr -> List.exists (timefulfilling p tsr env) (listOfTransactionTimes tsr)
-    let forOneTime p  : Property = fun env tsr -> 1 = List.length (List.where (timefulfilling p tsr env) (listOfTransactionTimes tsr))
+    let forAllTimes p : Property = fun env tsr -> List.forall (timefulfilling p tsr env) (getTransactionTimes tsr)
+    let forSomeTime p : Property = fun env tsr -> List.exists (timefulfilling p tsr env) (getTransactionTimes tsr)
+    let forOneTime p  : Property = fun env tsr -> 1 = List.length (List.where (timefulfilling p tsr env) (getTransactionTimes tsr))
