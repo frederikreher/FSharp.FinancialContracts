@@ -9,8 +9,10 @@ module Environment =
     // Environment contains the value of observables for all times and the current time.
     type Environment = Time * Map<string,ObservableValue> array
     
+    // Dict containing the logs of the observables accessed by each thread.
     let accessLog = new Dictionary<int, (string * ObservableValue * Time) list> ()
 
+    // Updates the list of accessed observables for a thread.
     let updateAccessLog id obs =
         if accessLog.ContainsKey id then
             //printfn "Update:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
@@ -18,6 +20,7 @@ module Environment =
         else
             accessLog.Add(id, [obs])
 
+    // Retrieves the access log of a thread and removes it from the dict of log.
     let getAndClearAccessLog id = 
         if accessLog.ContainsKey id then 
             let res = accessLog.Item id
