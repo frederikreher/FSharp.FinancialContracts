@@ -39,11 +39,12 @@ module Environment =
     let addObservable kv (observables:Map<string, ObservableValue>) : Map<string, ObservableValue> 
         = observables.Add kv
     
+    let threadId = fun () -> (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
     // Find the current value of a BoolVal observable in the environment.
     let findBoolInEnv s ((t,obs):Environment) = 
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
-            | Some(BoolValue boolValue) -> updateAccessLog (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id (s, BoolValue boolValue, t) 
+            | Some(BoolValue boolValue) -> updateAccessLog (threadId())  (s, BoolValue boolValue, t) 
                                            boolValue
             | None                      -> failwith (sprintf "Boolean Observable %A doesn't exist in environment" s)
             | _                         -> failwith "Expected boolean observable"
@@ -52,7 +53,7 @@ module Environment =
     let findNumberInEnv s ((t,obs):Environment) = 
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
-            | Some(NumberValue numValue) -> updateAccessLog (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id (s, NumberValue numValue, t)
+            | Some(NumberValue numValue) -> updateAccessLog (threadId()) (s, NumberValue numValue, t)
                                             numValue
             | None                       -> failwith (sprintf "Numeric Observable %A doesn't exist in environment" s)
             | _                          -> failwith "Expected numbervalue observable"
