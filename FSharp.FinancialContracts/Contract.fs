@@ -56,9 +56,11 @@ module Contract =
     let rec horizon c (t:Time) : Time =
         match c with
         | Zero | One(_)                          -> max t 0
-        | Delay(t1, c)                           -> t1 + (horizon c t)
+        | Delay(t1, c)                           -> if t1 >= 0 then t1 + (horizon c t)
+                                                    else failwith "Can only delay with non-negative integers"
         | And(c1, c2)                            -> max (horizon c1 t) (horizon c2 t)
-        | If(_, t1, c1, c2)                      -> t1 + (max (horizon c1 t) (horizon c2 t))
+        | If(_, t1, c1, c2)                      -> if t1 >= 0 then t1 + (max (horizon c1 t) (horizon c2 t))
+                                                    else failwith "The 'within' argument has to be a non-negative integer"
         | Scale(_, c) | ScaleNow(_, c) | Give(c) -> horizon c t
 
     let getHorizon c : Time = (horizon c 0) + 1
@@ -89,16 +91,19 @@ module Contract =
             | Zero               -> ()
             | One(currency)      -> let transaction = Transaction((evalNumberObs factor (now,observables)) * 1.0,currency)
                                     transactions.[now] <- transaction::(transactions.[now])
-            | Delay(t, c)        -> evalContract (now+t) factor c
+            | Delay(t, c)        -> if t >= 0 then evalContract (now+t) factor c
+                                    else failwith "Can only delay with non-negative integers"
             | Scale(obs, c)      -> evalContract now (Mult(obs,factor)) c
             | ScaleNow(obs, c)   -> let currentFactor = (evalNumberObs obs (now,observables))
                                     evalContract now (Mult(Const currentFactor,factor)) c
             | And(c1, c2)        -> evalContract now factor c1
                                     evalContract now factor c2
-            | If(obs, t, c1, c2) -> let boolValue = evalBoolObs obs (now,observables)
-                                    if t = 0 && not boolValue then evalContract now factor c2   //Time has gone and boolvalue is false return c2
-                                    else if t >= 0 && boolValue then evalContract now factor c1 //If bool value is true and time hasn't gone return 2
-                                    else evalContract (now+1) factor (If(obs, t-1, c1, c2))    //Else IncreaseEnvironment time and decrease t
+            | If(obs, t, c1, c2) -> if t >= 0 then
+                                        let boolValue = evalBoolObs obs (now,observables)
+                                        if t = 0 && not boolValue then evalContract now factor c2   //Time has gone and boolvalue is false return c2
+                                        else if boolValue then evalContract now factor c1 //If bool value is true and time hasn't gone return 2
+                                        else evalContract (now+1) factor (If(obs, t-1, c1, c2))    //Else IncreaseEnvironment time and decrease t
+                                    else failwith "The 'within' argument has to be a non-negative integer"
             | Give(c)            -> evalContract now (Mult(Const -1.0,factor)) c
     
         evalContract ct (Const 1.0) contract
