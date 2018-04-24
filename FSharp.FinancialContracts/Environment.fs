@@ -27,7 +27,7 @@ module Environment =
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
             | Some(BoolValue boolValue) -> boolValue
-            | None                      -> failwith "Observable doesn't exist in environment"
+            | None                      -> failwith (sprintf "Boolean Observable %A doesn't exist in environment" s)
             | _                         -> failwith "Expected boolean observable"
     
     // Find the current value of a NumVal observable in the environment.
@@ -35,7 +35,7 @@ module Environment =
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
             | Some(NumberValue numValue) -> numValue
-            | None                       -> failwith "Observable doesn't exist in environment"
+            | None                       -> failwith (sprintf "Numeric Observable %A doesn't exist in environment" s)
             | _                          -> failwith "Expected numbervalue observable"
             
         

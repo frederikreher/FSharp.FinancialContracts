@@ -46,8 +46,7 @@ type TestIfWithin () =
         let contract = If(BoolVal("x"),TimeObs.Const t,One (DKK),One (CNY))
                 
         let property = atTime t (hasTransactions [Transaction(1.0, CNY)]) &|& !!(atTime (t-1) (hasTransactions [Transaction(1.0, CNY)]))
-        let genMap = Map.empty
-                                                    .Add("x", fun _ -> BoolValue(false))
+        let genMap = Map.empty.Add("x", fun _ -> BoolValue(false))
                                                     
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}  
         PropertyCheck.CheckWithConfig config contract property   
@@ -61,3 +60,17 @@ type TestIfWithin () =
         
         let property = (forSomeTime (satisfyBoolObs (BoolVal("x"))) =|> forOneTime (hasTransactions targetTransaction1))
         PropertyCheck.Check contract property 
+        
+    [<TestMethod>]
+    member this.``Test If TimeObs is true then within is correct `` () =
+       let timeObs = TimeObs.If(BoolVal ("b"), TimeObs.Const 20, TimeObs.Const 10)
+       let contract = If(BoolVal("x"),timeObs,One (DKK),Zero)
+       
+       let hasTransactions = (hasTransactions [Transaction(1.0, DKK)])
+       let property = ((satisfyBoolObs (BoolVal "b")) &|& atTime 20 hasTransactions &|& atTime 19 !!hasTransactions)
+                      ||| (!!(satisfyBoolObs (BoolVal "b") &|& forAllTimes hasNoTransactions))
+                    
+       let genMap = Map.empty.Add("x", BoolGenerators.BoolTrueAtTime 20)
+                                                   
+       let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}  
+       PropertyCheck.CheckWithConfig config contract property   

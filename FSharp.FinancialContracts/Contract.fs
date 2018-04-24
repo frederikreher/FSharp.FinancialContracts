@@ -80,8 +80,8 @@ module Contract =
         | And(c1, c2)                        -> let (boolAcc1, numAcc1) = observables c2 boolAcc numAcc
                                                 observables c1 boolAcc1 numAcc1
         | If(obs, tObs, c1, c2)              -> let (boolAcc1,numAcc1) = boolObs obs boolAcc numAcc
-                                                let (boolAcc2,numAcc2) = timeObs tObs boolAcc numAcc
-                                                let (boolAcc3,numAcc3) = observables c1 boolAcc1 numAcc1
+                                                let (boolAcc2,numAcc2) = timeObs tObs boolAcc1 numAcc1
+                                                let (boolAcc3,numAcc3) = observables c1 boolAcc2 numAcc2
                                                 observables c2 boolAcc3 numAcc3
         | Zero | One(_)                      -> (boolAcc, numAcc)
         | Delay(obs, c)                      -> let (boolAcc1,numAcc1) = timeObs obs boolAcc numAcc

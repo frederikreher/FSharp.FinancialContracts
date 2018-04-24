@@ -16,18 +16,33 @@ open FSharp.FinancialContracts.Testing.PropertyCheckerInternal
 type TestDelay () =
 
     [<TestMethod>]
-    member this.``Test that simple contract is delayed by 10`` () =
+    member this.``Test that Delay by constant result in correct time`` () =
         let tc = 10
         
-        let contract = Delay(TimeObs.Const tc,One DKK)
+        let contract = Delay(TimeObs.Const (tc+2),One DKK)
         
         let targetList = [Transaction(1.0, DKK)]
         
         let transactionProperty = atTime tc (hasTransactions targetList)
         let amountProperty = accumulatedCountOf allTransactions (=) 1
         
-        PropertyCheck.Check contract (transactionProperty &|& amountProperty)
+        PropertyCheck.Check contract (atTime 2 transactionProperty &|& amountProperty)
+    
+    [<TestMethod>]
+    member this.``Test that Delay by complex Timeobs result in correct time`` () =
+        //70+(7*("b"?2:3))
+        let timeObs = TimeObs.Add((TimeObs.Const 70),
+                                    TimeObs.Mult(TimeObs.Const 7,
+                                    TimeObs.If(BoolVal "b",TimeObs.Const 2,TimeObs.Const 3)))
         
+        
+        let contract = Delay(timeObs,One DKK)
+                
+        let property = (satisfyBoolObs (BoolVal "b") &|& (atTime 84 (hasTransactions [Transaction(1.0, DKK)]))) 
+                       ||| (atTime 91 (hasTransactions [Transaction(1.0, DKK)]))
+        
+        PropertyCheck.Check contract property
+    
     [<TestMethod>]
     member this.``Test that nested delays are equal to one larger`` () =
         let tc = 10

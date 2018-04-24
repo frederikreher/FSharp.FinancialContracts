@@ -64,5 +64,9 @@ module Observables =
     // Identifies the observables, that the provided time observable depends on.
     and timeObs obs boolAcc numAcc : (BoolObs list * NumberObs list) =
         match obs with
-        | TimeObs.If(b,_,_) -> boolObs b boolAcc numAcc
-        | _ -> (boolAcc, numAcc)
+        | TimeObs.Const _     -> (boolAcc,numAcc)
+        | TimeObs.If(b,_,_)   -> boolObs b boolAcc numAcc
+        | TimeObs.Add(t1,t2)  -> let (boolAcc1, numAcc1) = timeObs t1 boolAcc numAcc
+                                 timeObs t2 boolAcc1 numAcc1
+        | TimeObs.Mult(t1,t2) -> let (boolAcc1, numAcc1) = timeObs t1 boolAcc numAcc
+                                 timeObs t2 boolAcc1 numAcc1

@@ -15,3 +15,15 @@ type TestGetHorizon () =
         let hor = getHorizon contract
         
         Assert.AreEqual(6,hor);
+        
+    [<TestMethod>]
+    member this.``Test that horizon is correct for complex delay`` () =
+        let timeObs = TimeObs.Add((TimeObs.Const 70),
+                                            TimeObs.Mult(TimeObs.Const 7,
+                                            TimeObs.If(BoolVal "b",TimeObs.Const 2,TimeObs.Const 3)))
+        
+        let contract = Delay(timeObs,Delay(timeObs,One DKK))
+              
+        let hor = getHorizon contract
+        
+        Assert.AreEqual(193,hor);
