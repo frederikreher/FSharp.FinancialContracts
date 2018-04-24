@@ -1,6 +1,7 @@
 ﻿namespace FSharp.FinancialContracts.Testing
 
 open FSharp.FinancialContracts.Testing.Property
+open FSharp.FinancialContracts.Time
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Testing.Generators
 open FSharp.FinancialContracts.Observables
@@ -34,7 +35,7 @@ module PropertyCheckerInternal =
         TestsFailed   : int
         InTime        : float
         InAverageTime : float 
-        AccessLog     : (string * ObservableValue) list }
+        AccessLog     : (string * ObservableValue * Time) list list }
         
     type TestData with
         static member Empty = { 
@@ -43,7 +44,7 @@ module PropertyCheckerInternal =
             TestsFailed = 0
             InTime = 0.0
             InAverageTime = 0.0 
-            AccessLog = [] }
+            AccessLog = [[]] }
     
     //A function used to time the call of a property
     let timedCall f = 
@@ -53,6 +54,7 @@ module PropertyCheckerInternal =
     
     //Function for running a suite of propertychecks according to the configuration. 
     let checkSuite (conf:Configuration) onSuccess onFail contract (prop:Property) : TestData =
+        let threadId = (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
         //Internal function used to check a single property
         let checkProp : int -> unit -> bool = fun i () ->
                 let env = conf.EnvironmentGenerator contract
@@ -70,9 +72,9 @@ module PropertyCheckerInternal =
                 data 
             else 
                 let (fullFillsProperty,timeSpent) = timedCall (checkProp c)           
-                printfn "Internal:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
+                //printfn "Internal:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
                 let timeSpentAcc = data.InTime + timeSpent
-                let nData = { data with TestsRun = data.TestsRun+1; InTime = timeSpentAcc; InAverageTime = (timeSpentAcc/(float (data.TestsRun+1))); AccessLog = accessLog.[(System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id]  }
+                let nData = { data with TestsRun = data.TestsRun+1; InTime = timeSpentAcc; InAverageTime = (timeSpentAcc/(float (data.TestsRun+1))); AccessLog = (getAndClearAccessLog threadId)::data.AccessLog   }
                 
                 if fullFillsProperty then
                     check nData (c+1) 
@@ -81,5 +83,4 @@ module PropertyCheckerInternal =
         
         let testRes = check TestData.Empty 0
         printfn "Failed tests are %A" testRes.TestsFailed
-        printfn "%A" testRes
         { testRes with Passed = not (testRes.TestsFailed > conf.MaxFail) }

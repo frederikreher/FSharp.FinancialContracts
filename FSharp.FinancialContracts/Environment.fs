@@ -9,15 +9,22 @@ module Environment =
     // Environment contains the value of observables for all times and the current time.
     type Environment = Time * Map<string,ObservableValue> array
     
-    let accessLog = new Dictionary<int, (string * ObservableValue) list> ()
+    let accessLog = new Dictionary<int, (string * ObservableValue * Time) list> ()
 
     let updateAccessLog id obs =
         if accessLog.ContainsKey id then
-            printfn "Update:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
-            accessLog.Add(id, obs :: (accessLog.Item id))
+            //printfn "Update:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
+            accessLog.[id] <- (obs :: (accessLog.Item id))
         else
             accessLog.Add(id, [obs])
 
+    let getAndClearAccessLog id = 
+        if accessLog.ContainsKey id then 
+            let res = accessLog.Item id
+            accessLog.Remove id |> ignore
+            res
+        else []
+    
     // Increases the time of the provided environment by the provided value.
     let increaseEnvTime t1 ((t2, obs):Environment) : Environment = 
         let newTime = t1 + t2
@@ -36,7 +43,7 @@ module Environment =
     let findBoolInEnv s ((t,obs):Environment) = 
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
-            | Some(BoolValue boolValue) -> updateAccessLog (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id (s, BoolValue boolValue)
+            | Some(BoolValue boolValue) -> updateAccessLog (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id (s, BoolValue boolValue, t) 
                                            boolValue
             | None                      -> failwith (sprintf "Boolean Observable %A doesn't exist in environment" s)
             | _                         -> failwith "Expected boolean observable"
@@ -45,7 +52,7 @@ module Environment =
     let findNumberInEnv s ((t,obs):Environment) = 
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
-            | Some(NumberValue numValue) -> updateAccessLog System.Threading.Thread.CurrentThread.ManagedThreadId (s, NumberValue numValue)
+            | Some(NumberValue numValue) -> updateAccessLog (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id (s, NumberValue numValue, t)
                                             numValue
             | None                       -> failwith (sprintf "Numeric Observable %A doesn't exist in environment" s)
             | _                          -> failwith "Expected numbervalue observable"

@@ -10,8 +10,8 @@ module Environment =
     type Environment = Time * Map<string,ObservableValue> array
     
     /// <summary> </summary>
-    val accessLog: Dictionary<int, (string * ObservableValue) list>
-
+    val getAndClearAccessLog : int -> (string * ObservableValue * Time) list 
+    
     /// <summary> Increases the current time of an Environment. </summary>
     /// <param name="env"> The Environment to increase the time of. </param>
     /// <param name="t"> The amount of time the current time should be increased by. </param>

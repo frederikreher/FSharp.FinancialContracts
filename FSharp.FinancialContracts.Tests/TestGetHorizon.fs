@@ -26,4 +26,4 @@ type TestGetHorizon () =
               
         let hor = getHorizon contract
         
-        Assert.AreEqual(193,hor);
+        Assert.AreEqual(183,hor);

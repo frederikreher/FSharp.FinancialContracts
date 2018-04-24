@@ -3,6 +3,7 @@
 open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Testing.Generators
 open FSharp.FinancialContracts.Environment
+open FSharp.FinancialContracts.Time
 open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Contract
 
@@ -40,7 +41,7 @@ module PropertyCheckerInternal =
         /// <summary>The time that was spent on each iteration in average </summary>
         InAverageTime : float 
         /// <summary>The list of variables that has been accessed </summary>
-        AccessLog     : (string * ObservableValue) list }
+        AccessLog     : (string * ObservableValue * Time) list list }
         
     /// <summary> Runs a suite of checks of the property </summary>
     /// <param name="conf"> The configuration of the suite </param>
