@@ -22,7 +22,8 @@ module PropertyCheckerInternal =
         /// <summary>Determines if the suite should run til the end if the suite fails</summary>
         FailSilently         : bool
         /// <summary>Determines which contract evaluator to use. Likely not changed.</summary>
-        ContractEvaluator    : Environment -> Contract -> TransactionResults }
+        ContractEvaluator    : Environment -> Contract -> TransactionResults
+        RunInParallel        : bool }
             
     /// <summary>A type containing the default configuration for a checksuite</summary>    
     type Configuration with
