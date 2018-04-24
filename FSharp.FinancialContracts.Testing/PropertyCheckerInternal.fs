@@ -77,7 +77,7 @@ module PropertyCheckerInternal =
         
         let threadId = fun () -> (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
         //Internal function used to check a single property
-        let checkProp : int -> unit -> bool = fun i () ->
+        let checkProp :  int -> unit -> bool = fun i () ->
                 let env = conf.EnvironmentGenerator contract
                 let tsr = conf.ContractEvaluator env contract
                 
@@ -88,6 +88,7 @@ module PropertyCheckerInternal =
         
         let parallelCheck =
             let output = Array.Parallel.init conf.NumberOfTests (fun i -> 
+                
                 (timedCall (checkProp i)),  
                 getAndClearAccessLog (threadId())) 
             

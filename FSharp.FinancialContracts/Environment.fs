@@ -45,6 +45,7 @@ module Environment =
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
             | Some(BoolValue boolValue) -> updateAccessLog (threadId())  (s, BoolValue boolValue, t) 
+                                           printfn "threadId is %A" (threadId())
                                            boolValue
             | None                      -> failwith (sprintf "Boolean Observable %A doesn't exist in environment" s)
             | _                         -> failwith "Expected boolean observable"
@@ -54,6 +55,7 @@ module Environment =
         let observableValue = Map.tryFind s obs.[t]
         match observableValue with
             | Some(NumberValue numValue) -> updateAccessLog (threadId()) (s, NumberValue numValue, t)
+                                            printfn "threadId is %A" (threadId())
                                             numValue
             | None                       -> failwith (sprintf "Numeric Observable %A doesn't exist in environment" s)
             | _                          -> failwith "Expected numbervalue observable"
