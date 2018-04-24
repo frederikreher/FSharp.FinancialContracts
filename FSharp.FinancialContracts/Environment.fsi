@@ -32,7 +32,13 @@ module Environment =
     /// <param name="env"> The environment used to look up the value of observables. </param>
     /// <returns> A boolean value representing the current value of the evaluated observable. </returns>
     val evalBoolObs: obs:BoolObs -> env:Environment -> bool
-
+    
+    /// <summary> Evaluation of Time observable, returns a Time value. </summary>
+    /// <param name="obs"> The observable to evaluate. </param>
+    /// <param name="env"> The environment used to look up the value of observables. </param>
+    /// <returns> A Time value representing the value of the evaluated observable. </returns>
+    val evalTimeObs: obs:TimeObs -> env:Environment -> Time
+    
     /// <summary> Evaluation of numerical observable, returns a float value. </summary>
     /// <param name="obs"> The observable to evaluate. </param>
     /// <param name="env"> The environment used to look up the value of observables. </param>

@@ -2,7 +2,6 @@
 
 open FSharp.FinancialContracts.Testing.Property
 open FSharp.FinancialContracts.Environment
-open FSharp.FinancialContracts.Documentation.ContractEvaluation
 open FSharp.FinancialContracts.Testing.Generators
 open FSharp.FinancialContracts.Contract
 
@@ -59,6 +58,7 @@ module PropertyCheckerInternal =
                 if res then (onSuccess i contract prop env tsr)
                 else (onFail i contract prop env tsr)
                 res
+        
         
         //Internal function for running the checks according to the configuration        
         let rec check (data:TestData) c =

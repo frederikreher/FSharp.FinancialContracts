@@ -28,7 +28,7 @@ type TestGive () =
     [<TestMethod>]
     member this.``Test that 'Give' can compare the sum of two contracts`` () = 
         let c1 = Scale(Const 100.0, One DKK)
-        let c2 = And(Scale(Const 25.0, One DKK), Delay(10, Scale(Const 75.0, One DKK)))
+        let c2 = And(Scale(Const 25.0, One DKK), Delay(TimeObs.Const 10, Scale(Const 75.0, One DKK)))
         let contract = c1 &-& (Give c2)
         
         let transactionProperty = accumulatedSumOf allTransactions (=) 0.0 

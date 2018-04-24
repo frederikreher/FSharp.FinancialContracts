@@ -50,17 +50,24 @@ module Environment =
         | LessThan(num1, num2)    -> (evalNumberObs num1 env) < (evalNumberObs num2 env)
         | Equal(num1, num2)       -> (evalNumberObs num1 env) = (evalNumberObs num2 env)
         | Not(bool)               -> not (evalBoolObs bool env)
+    // Evaluation of time observable, returns a Time value.
+    and evalTimeObs obs env : Time = 
+        match obs with 
+        | TimeObs.Const t         -> t
+        | TimeObs.If(bObs,t1,t2)  -> if evalBoolObs bObs env then evalTimeObs t1 env else evalTimeObs t2 env
+        | TimeObs.Add(t1,t2)      -> (evalTimeObs t1 env) + (evalTimeObs t2 env)
+        | TimeObs.Mult(t1,t2)     -> (evalTimeObs t1 env) * (evalTimeObs t2 env)
     // Evaluation of float observable, returns a float value.
     and evalNumberObs obs env : float =
         match obs with
-        | NumVal(s)            -> findNumberInEnv s env
-        | Const(f)             -> f
-        | Add(num1, num2)      -> (evalNumberObs num1 env) + (evalNumberObs num2 env)
-        | Sub(num1, num2)      -> (evalNumberObs num1 env) - (evalNumberObs num2 env)
-        | Mult(num1, num2)     -> (evalNumberObs num1 env) * (evalNumberObs num2 env)
-        | If(bool, num1, num2) -> if (evalBoolObs bool env) then (evalNumberObs num1 env)
-                                  else (evalNumberObs num2 env)
-        | Average(num, t)      -> if t > (getTime env) then failwith "The observable period cannot exceed the horizon of the contract"
-                                  else 
-                                  let res = List.fold (fun sum _ -> sum + (evalNumberObs num (increaseEnvTime -1 env))) 0.0 [0..(t-1)]
-                                  res / float(t)
+        | NumVal(s)               -> findNumberInEnv s env
+        | Const(f)                -> f
+        | Add(num1, num2)         -> (evalNumberObs num1 env) + (evalNumberObs num2 env)
+        | Sub(num1, num2)         -> (evalNumberObs num1 env) - (evalNumberObs num2 env)
+        | Mult(num1, num2)        -> (evalNumberObs num1 env) * (evalNumberObs num2 env)
+        | If(bool, num1, num2)    -> if (evalBoolObs bool env) then (evalNumberObs num1 env)
+                                     else (evalNumberObs num2 env)
+        | Average(num, t)         -> if t > (getTime env) then failwith "The observable period cannot exceed the horizon of the contract"
+                                     else 
+                                     let res = List.fold (fun sum _ -> sum + (evalNumberObs num (increaseEnvTime -1 env))) 0.0 [0..(t-1)]
+                                     res / float(t)

@@ -1,10 +1,10 @@
 ﻿namespace FSharp.FinancialContracts.Documentation
-
+open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Contract
 
 module ContractEvaluation =
-
+    
     // Creates a list with n amount of empty lists.
     let listOfLength n : Transaction list list = List.init n (fun _ -> [])
 
@@ -23,16 +23,17 @@ module ContractEvaluation =
         match contract with
             | Zero               -> [[]]
             | One(currency)      -> [[Transaction(1.0,currency)]]
-            | Delay(t, c)        -> listOfLength t @ evaluateContract environment c
+            | Delay(t, c)        -> listOfLength (evalTimeObs t environment) @ evaluateContract environment c
             | Scale(obs, c)      -> let subTransactions = evaluateContract environment c
                                     List.mapi (fun i transactions -> multiply transactions (evalNumberObs obs (environment |+ i))) subTransactions
             | ScaleNow(obs, c)   -> let subTransactions = evaluateContract environment c
                                     let currentFactor = evalNumberObs obs environment
                                     List.map (fun transactions -> multiply transactions currentFactor) subTransactions
             | And(c1, c2)        -> union (evaluateContract environment c1) (evaluateContract environment c2)
-            | If(obs, t, c1, c2) -> if evalBoolObs obs environment then evaluateContract environment c1
-                                    else if t <= 0 then evaluateContract environment c2
-                                    else []::(evaluateContract (environment|+1) (If(obs, t-1, c1, c2)))
+            | If(obs, t, c1, c2) -> let t' = (evalTimeObs t environment)
+                                    if evalBoolObs obs environment then evaluateContract environment c1
+                                    else if t' <= 0 then evaluateContract environment c2
+                                    else []::(evaluateContract (environment|+1) (If(obs, TimeObs.Const(t'-1), c1, c2)))
             | Give(c)            -> let subTransactions = evaluateContract environment c
                                     List.map (fun transactions -> multiply transactions -1.0) subTransactions
                 

@@ -17,10 +17,10 @@ type TestComplexContracts () =
 
     [<TestMethod>]
     member this.``Test horizon`` () = 
-        let Zcb = zcb 0 (Const 1.0) DKK
-        let American c = american (BoolVal "x") 30 (Scale(NumVal "y", c))
-        let Asian = asian (BoolVal "x") (NumVal "y") 120 30
-        let European = european (LessThan(NumVal "a", NumVal "b")) 180
+        let Zcb = zcb (TimeObs.Const 0) (Const 1.0) DKK
+        let American c = american (BoolVal "x") (TimeObs.Const 30) (Scale(NumVal "y", c))
+        let Asian = asian (BoolVal "x") (NumVal "y") (TimeObs.Const 120) 30
+        let European = european (LessThan(NumVal "a", NumVal "b")) (TimeObs.Const 180)
 
         let cc = Zcb |> American |> Asian |> European
 
@@ -30,10 +30,10 @@ type TestComplexContracts () =
 
     [<TestMethod>]
     member this.``Test sum of transactions`` () = 
-        let Zcb = zcb 0 (Const 1.0) DKK
-        let American = Delay(1, american (BoolVal "x") 3 (Scale(NumVal "y", Zcb)))
-        let Asian = asian (BoolVal "x") (NumVal "y") 12 3 American
-        let European = european (LessThan(NumVal "a", NumVal "b")) 18 Asian
+        let Zcb = zcb (TimeObs.Const 0) (Const 1.0) DKK
+        let American = Delay(TimeObs.Const 1, american (BoolVal "x") (TimeObs.Const 3) (Scale(NumVal "y", Zcb)))
+        let Asian = asian (BoolVal "x") (NumVal "y") (TimeObs.Const 12) 3 American
+        let European = european (LessThan(NumVal "a", NumVal "b")) (TimeObs.Const 18) Asian
 
         let cc = European
 
@@ -51,13 +51,13 @@ type TestComplexContracts () =
 
     [<TestMethod>]
     member this.``Test number of transactions`` () = 
-        let ZcbDKK = zcb 0 (Const 1.0) DKK
-        let ZcbEUR = zcb 0 (Const 7.5) EUR
-        let am1 = american (BoolVal "x") 5 (Scale(NumVal "y", ZcbDKK))
-        let am2 = american (BoolVal "x") 3 (Scale(NumVal "z", ZcbEUR))
-        let American = Delay(1, And(am1, am2))
-        let Asian = asian (BoolVal "x") (NumVal "y") 12 3 American
-        let European = european (LessThan(NumVal "a", NumVal "b")) 18 Asian
+        let ZcbDKK = zcb (TimeObs.Const 0) (Const 1.0) DKK
+        let ZcbEUR = zcb (TimeObs.Const 0) (Const 7.5) EUR
+        let am1 = american (BoolVal "x") (TimeObs.Const 5) (Scale(NumVal "y", ZcbDKK))
+        let am2 = american (BoolVal "x") (TimeObs.Const 3) (Scale(NumVal "z", ZcbEUR))
+        let American = Delay(TimeObs.Const 1, And(am1, am2))
+        let Asian = asian (BoolVal "x") (NumVal "y") (TimeObs.Const 12) 3 American
+        let European = european (LessThan(NumVal "a", NumVal "b")) (TimeObs.Const 18) Asian
 
         let cc = European
 
@@ -81,14 +81,14 @@ type TestComplexContracts () =
         let dkkEUR = LessThan(NumVal "DKK/EUR", Const 7.0)
         let buy100EUR = Scale(Const 100.0, One EUR)
         let buy500DKK = Scale(Const 500.0, One DKK)
-        let c0 = And(If(BoolVal "x", 10, 
+        let c0 = And(If(BoolVal "x", TimeObs.Const 10, 
                         Give(ScaleNow(Mult(NumVal "x", Const 100.0), One DKK)), 
                         Give(Scale(Sub(NumVal "y", NumVal "x"), One EUR))),
                      One CNY)
-        let c1 = Delay(100, c0)
-        let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), 60, buy500DKK, c1)
-        let c3 = If(dkkEUR, 30, buy100EUR, c2)
-        let contract = And(c3, 
+        let c1 = Delay(TimeObs.Const 100, c0)
+        let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), (TimeObs.Const 60), buy500DKK, c1)
+        let c3 = If(dkkEUR, TimeObs.Const 30, buy100EUR, c2)
+        let contract = And(c3,
                            And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR)))
 
         let property = accumulatedCountOf allTransactions (=) 3 ||| countOf allTransactions (=) 4
@@ -100,13 +100,13 @@ type TestComplexContracts () =
         let dkkEUR = LessThan(NumVal "DKK/EUR", Const 7.0)
         let buy100EUR = Scale(Const 100.0, One EUR)
         let buy500DKK = Scale(Const 500.0, One DKK)
-        let c0 = And(If(BoolVal "x", 10, 
+        let c0 = And(If(BoolVal "x", TimeObs.Const 10, 
                         Give(ScaleNow(Mult(NumVal "x", Const 100.0), One DKK)), 
                         Give(Scale(Sub(NumVal "y", NumVal "x"), One EUR))),
                      One CNY)
-        let c1 = Delay(100, c0)
-        let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), 60, buy500DKK, c1)
-        let c3 = If(dkkEUR, 30, buy100EUR, c2)
+        let c1 = Delay(TimeObs.Const 100, c0)
+        let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), (TimeObs.Const 60), buy500DKK, c1)
+        let c3 = If(dkkEUR, TimeObs.Const 30, buy100EUR, c2)
         let contract = And(c3, 
                            And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR)))
 

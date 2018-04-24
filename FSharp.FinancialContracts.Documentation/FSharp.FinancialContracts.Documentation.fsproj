@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="PerformanceChecker.fsi" />
     <Compile Include="PerformanceChecker.fs" />
     <Compile Include="ContractEvaluation.fsi" />
     <Compile Include="ContractEvaluation.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FSharp.FinancialContracts.Testing\FSharp.FinancialContracts.Testing.fsproj" />

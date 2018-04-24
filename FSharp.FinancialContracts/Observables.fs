@@ -13,16 +13,23 @@ module Observables =
         | LessThan    of NumberObs * NumberObs
         | Equal       of NumberObs * NumberObs
         | Not         of BoolObs
+    // Observables representing Time
+    and TimeObs =
+        | Const       of Time
+        | Add         of TimeObs * TimeObs
+        | Mult        of TimeObs * TimeObs
+        | If          of BoolObs * TimeObs * TimeObs
     // Observables returning a float.
     and NumberObs =
-        | NumVal  of string
-        | Const   of float
-        | Add     of NumberObs * NumberObs
-        | Sub     of NumberObs * NumberObs
-        | Mult    of NumberObs * NumberObs
-        | If      of BoolObs   * NumberObs * NumberObs
-        | Average of NumberObs * Time
+        | NumVal      of string
+        | Const       of float
+        | Add         of NumberObs * NumberObs
+        | Sub         of NumberObs * NumberObs
+        | Mult        of NumberObs * NumberObs
+        | If          of BoolObs   * NumberObs * NumberObs
+        | Average     of NumberObs * Time
     
+        
     // Observable values pointed to by BoolVal and NumVal.
     type ObservableValue = 
         | BoolValue   of bool
@@ -54,3 +61,8 @@ module Observables =
         | Add(num1, num2) | Sub(num1, num2) | Mult(num1, num2) -> 
                                   let (boolAcc1, numAcc1) = numberObs num1 boolAcc numAcc
                                   numberObs num2 boolAcc1 numAcc1
+    // Identifies the observables, that the provided time observable depends on.
+    and timeObs obs boolAcc numAcc : (BoolObs list * NumberObs list) =
+        match obs with
+        | TimeObs.If(b,_,_) -> boolObs b boolAcc numAcc
+        | _ -> (boolAcc, numAcc)

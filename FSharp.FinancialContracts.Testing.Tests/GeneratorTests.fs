@@ -34,7 +34,7 @@ type GeneratorTests () =
     member this.``Test Random Number Within Range 100 times`` () =
         let scale1 = Scale(NumVal("x"),One(CNY))
         let scale2 = Scale(NumVal("y"),One(DKK))
-        let c = Delay(200,And(scale1,scale2))
+        let c = Delay(TimeObs.Const 200,And(scale1,scale2))
 
         let genMap = Map.empty
                             .Add("x", NumericGenerators.RandomNumberInRange 20.0 40.0)
@@ -58,7 +58,7 @@ type GeneratorTests () =
         member this.``Test That All Observables Have Values Generated`` () =            
             let add = Add(NumVal("x"),NumVal("y"))
             let subScale = Scale(NumVal("t"),One GBP)
-            let c = If(BoolVal("b"),10,Scale(Mult(add,NumVal("z")),One DKK),subScale)
+            let c = If(BoolVal("b"),TimeObs.Const 10,Scale(Mult(add,NumVal("z")),One DKK),subScale)
             
             let boolValueIsGenerated = fun env _ ->
                 evalBoolObs (BoolVal("b")) env  |> ignore

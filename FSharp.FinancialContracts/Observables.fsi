@@ -13,6 +13,12 @@ module Observables =
         | LessThan    of NumberObs * NumberObs
         | Equal       of NumberObs * NumberObs
         | Not         of BoolObs
+    /// <summary> Observable of type Time. </summary>
+    and TimeObs =
+        | Const       of Time
+        | Add         of TimeObs * TimeObs
+        | Mult        of TimeObs * TimeObs
+        | If          of BoolObs * TimeObs * TimeObs
     /// <summary> Observable of type float. </summary>
     and NumberObs =
         | NumVal  of string
@@ -46,4 +52,14 @@ module Observables =
     /// A tuple containing two list, one for all dependent boolean observables
     /// and one for dependent numerical observables.
     /// </returns>
-    val numberObs: obs:NumberObs -> boolAcc:BoolObs list -> numAcc:NumberObs list -> BoolObs list * NumberObs list 
+    val numberObs: obs:NumberObs -> boolAcc:BoolObs list -> numAcc:NumberObs list -> BoolObs list * NumberObs list
+    
+    /// <summary> Identifies the observables, that the provided Time observable depends on. </summary>
+    /// <param name="obs"> The observable to find dependent observables for. </param>
+    /// <param name="boolAcc"> Accumulator for dependent boolean observables. </param>
+    /// <param name="numAcc"> Accumulator for dependent numerical observables. </param>
+    /// <returns>
+    /// A tuple containing two list, one for all dependent boolean observables
+    /// and one for dependent numerical observables.
+    /// </returns>
+    val timeObs: obs:TimeObs -> boolAcc:BoolObs list -> numAcc:NumberObs list -> BoolObs list * NumberObs list 

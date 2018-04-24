@@ -20,7 +20,7 @@ type TestScaleAndScaleNow () =
         let tc = 10
         let factor = 20.0
         
-        let contract = Scale(NumVal("x"),Delay(tc, One DKK))
+        let contract = Scale(NumVal("x"),Delay(TimeObs.Const tc, One DKK))
         
         let targetList = [Transaction(factor, DKK)]
         
@@ -39,7 +39,7 @@ type TestScaleAndScaleNow () =
         let tc = 10
         let factor = 20.0
         
-        let contract = ScaleNow(NumVal("x"),Delay(tc, One DKK))
+        let contract = ScaleNow(NumVal("x"),Delay(TimeObs.Const tc, One DKK))
         
         let targetList = [Transaction(factor, DKK)]
         
@@ -58,8 +58,8 @@ type TestScaleAndScaleNow () =
         let tc = 10
         let factor = 20.0
         
-        let c1 = Scale(NumVal("x"),Delay(tc, One DKK))
-        let c2 = Delay(tc,Scale(NumVal("x"),One DKK))
+        let c1 = Scale(NumVal("x"),Delay(TimeObs.Const tc, One DKK))
+        let c2 = Delay(TimeObs.Const tc,Scale(NumVal("x"),One DKK))
         let contract = c1 &-& (Give c2)    
         
         let property = forAllTimes isZero
@@ -70,8 +70,8 @@ type TestScaleAndScaleNow () =
     member this.``Test that nested delay doesn't produces same result as unnested delay for ScaleNow`` () =
         let tc = 10
         
-        let c1 = ScaleNow(NumVal("x"),Delay(tc, One DKK))
-        let c2 = Delay(tc,ScaleNow(NumVal("x"),One DKK))
+        let c1 = ScaleNow(NumVal("x"),Delay(TimeObs.Const tc, One DKK))
+        let c2 = Delay(TimeObs.Const tc,ScaleNow(NumVal("x"),One DKK))
         let contract = c1 &-& (Give c2)    
         
         let property = forAllTimes (!!isZero ||| hasNoTransactions ) 
@@ -83,8 +83,8 @@ type TestScaleAndScaleNow () =
     member this.``Test that nested scale produces same result as multiplied obs`` () =
         let tc = 10
         
-        let c1 = Scale(NumVal("y"),Scale(NumVal("x"),Delay(tc, One DKK)))
-        let c2 = Delay(tc,Scale(Mult(NumVal("x"),NumVal("y")),One DKK))
+        let c1 = Scale(NumVal("y"),Scale(NumVal("x"),Delay(TimeObs.Const tc, One DKK)))
+        let c2 = Delay(TimeObs.Const tc,Scale(Mult(NumVal("x"),NumVal("y")),One DKK))
         let contract = c1 &-& (Give c2)    
         
         let property = forAllTimes isZero

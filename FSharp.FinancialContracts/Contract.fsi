@@ -39,11 +39,11 @@ module Contract =
     type Contract = 
         | Zero
         | One      of Currency
-        | Delay    of Time      * Contract
+        | Delay    of TimeObs   * Contract
         | Scale    of NumberObs * Contract
         | ScaleNow of NumberObs * Contract
         | And      of Contract  * Contract
-        | If       of BoolObs   * Time     * Contract * Contract
+        | If       of BoolObs   * TimeObs * Contract * Contract
         | Give     of Contract
     
     /// <summary> Creates a new contract equal to the conjuction of the two provided contracts. </summary>
