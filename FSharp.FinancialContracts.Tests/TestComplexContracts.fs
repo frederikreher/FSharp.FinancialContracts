@@ -38,10 +38,10 @@ type TestComplexContracts () =
         let cc = European
 
         let genMap = Map.empty
-                            .Add("y", fun t -> NumberValue(if t = 33 then 50.0 else 20.0))
-                            .Add("a", fun _ -> NumberValue(5.0))
-                            .Add("b", fun _ -> NumberValue(10.0))
-                            .Add("x", fun t -> BoolValue(if (t = 30 || t = 33) then true else false))
+                            .Add("y", fun _ t -> NumberValue(if t = 33 then 50.0 else 20.0))
+                            .Add("a", fun _ _ -> NumberValue(5.0))
+                            .Add("b", fun _ _ -> NumberValue(10.0))
+                            .Add("x", fun _ t -> BoolValue(if (t = 30 || t = 33) then true else false))
         
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap }
 
@@ -62,10 +62,10 @@ type TestComplexContracts () =
         let cc = European
 
         let genMap = Map.empty
-                                    .Add("y", fun t -> NumberValue(if t = 33 then 50.0 else 20.0))
-                                    .Add("a", fun _ -> NumberValue(5.0))
-                                    .Add("b", fun _ -> NumberValue(10.0))
-                                    .Add("x", fun t -> BoolValue(if (t = 30 || t = 33) then true else false))
+                                    .Add("y", fun _ t -> NumberValue(if t = 33 then 50.0 else 20.0))
+                                    .Add("a", fun _ _ -> NumberValue(5.0))
+                                    .Add("b", fun _ _ -> NumberValue(10.0))
+                                    .Add("x", fun _ t -> BoolValue(if (t = 30 || t = 33) then true else false))
         
         let boolObsX = Or((Equal(NumVal("t"),Const(30.0))),(Equal(NumVal("t"),Const(33.0))))
         

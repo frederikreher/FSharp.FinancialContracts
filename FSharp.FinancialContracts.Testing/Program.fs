@@ -30,8 +30,8 @@ module program =
                            
         let contract = Delay(TimeObs.Const 365, contract1)
 
-        let ifEven : ValueGenerator = fun t -> BoolValue(t%2=0)
-        let currentTime : ValueGenerator = fun t -> NumberValue(float t)
+        let ifEven : ValueGenerator = fun _ t -> BoolValue(t%2=0)
+        let currentTime : ValueGenerator = fun _ t -> NumberValue(float t)
     
         let c1 = If(BoolVal "b", TimeObs.Const 5, One DKK, Zero)
         let c2 = If(BoolVal "b", TimeObs.Const 5, Zero, One DKK)

@@ -8,10 +8,10 @@ open FSharp.FinancialContracts.Observables
 
 module Generators =
     //System.Random to use for generating random values.
-    let random = new Random()
+    let random = fun () -> new Random()
     
     //Generic function type for generating observable values for the government.
-    type ValueGenerator  = Time -> ObservableValue
+    type ValueGenerator  = Random -> Time -> ObservableValue
 
     //Wrapper for a map from map to Value generator. Used to store custom value generators.
     type ValueGenerators = Map<string,ValueGenerator>
@@ -20,10 +20,10 @@ module Generators =
     type EnvironmentGenerator = Contract -> Environment
 
     //Default boolean generators
-    let rndBoolShiftedGen f  : ValueGenerator = fun t -> BoolValue (random.NextDouble() <= f);
-    let rndBoolGen           : ValueGenerator = rndBoolShiftedGen 0.5
-    let boolAtTimeGen t      : ValueGenerator = fun n -> BoolValue (n = t) 
-    let boolNotAtTimeGen t   : ValueGenerator = fun n -> BoolValue (n <> t)
+    let rndBoolShiftedGen f : ValueGenerator = fun r t -> BoolValue (r.NextDouble() <= f);
+    let rndBoolGen          : ValueGenerator = rndBoolShiftedGen 0.5
+    let boolAtTimeGen t     : ValueGenerator = fun _ n -> BoolValue (n = t) 
+    let boolNotAtTimeGen t  : ValueGenerator = fun _ n -> BoolValue (n <> t)
 
     //Wrapper type for accessing bool generators
     [<Sealed>]
@@ -35,8 +35,8 @@ module Generators =
         static member Default           : ValueGenerator            = BoolGenerators.RandomBool
 
     //Numeric Generators
-    let rndNumGen               : ValueGenerator = (fun t -> NumberValue(float(random.NextDouble()))) 
-    let rndNumWithinGen min max : ValueGenerator = (fun t -> NumberValue(min + ((max - min) * float(random.NextDouble()))))
+    let rndNumGen               : ValueGenerator = (fun r t -> NumberValue(float(r.NextDouble()))) 
+    let rndNumWithinGen min max : ValueGenerator = (fun r t -> NumberValue(min + ((max - min) * float(r.NextDouble()))))
     
     //Wrapper type for accessing numeric generators
     [<Sealed>] 
@@ -53,17 +53,18 @@ module Generators =
     
     //Functions for generating numeric/boolean values to the corresponding observables
     //returns a map containing those values
-    let genBoolValues boolObs generators defaultGenerator t observableValues : Map<string,ObservableValue> = List.fold (fun bMap (BoolVal(obs)) -> bMap |> (addObservable (obs, ((findGenerator generators defaultGenerator obs) t)))) observableValues boolObs
-    let genNumValues numObs generators defaultGenerator t observableValues   : Map<string,ObservableValue> = List.fold (fun bMap (NumVal(obs))  -> bMap |> (addObservable (obs, ((findGenerator generators defaultGenerator obs) t)))) observableValues numObs
+    let genBoolValues boolObs generators defaultGenerator t random observableValues  : Map<string,ObservableValue> = List.fold (fun bMap (BoolVal(obs)) -> bMap |> (addObservable (obs, ((findGenerator generators defaultGenerator obs) random t )))) observableValues boolObs
+    let genNumValues numObs generators defaultGenerator t random observableValues    : Map<string,ObservableValue> = List.fold (fun bMap (NumVal(obs))  -> bMap |> (addObservable (obs, ((findGenerator generators defaultGenerator obs) random t )))) observableValues numObs
     
     //Generates enviroment for the entire horizon of contract. Maps contain optional generators for observables
-    let generateEnvironment generators contract : Environment = 
+    let generateEnvironment generators  contract : Environment = 
+        let random = new Random()
         let horizon = getHorizon contract
         let (boolObservables, numberObservables) = getObservables contract
         
-        let generateObservablesForTime t = (genBoolValues boolObservables generators BoolGenerators.Default t Map.empty) |> genNumValues numberObservables generators NumericGenerators.Default t
+        let generateObservablesForTime random t  = (genBoolValues boolObservables generators BoolGenerators.Default t random Map.empty ) |> genNumValues numberObservables generators NumericGenerators.Default t random
         
-        let observables = Array.init horizon generateObservablesForTime
+        let observables = Array.init horizon (generateObservablesForTime random)
         (0, observables,fun _ _ _ -> ())
     
     //Wrapper type for accessing numeric generators

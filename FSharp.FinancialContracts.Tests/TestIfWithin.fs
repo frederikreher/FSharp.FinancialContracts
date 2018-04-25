@@ -23,7 +23,7 @@ type TestIfWithin () =
         
         let property = (forAllTimes (!!(hasTransactions targetTransaction1))) &|& forSomeTime (hasTransactions targetTransaction2)
         let genMap = Map.empty
-                            .Add("x", fun _ -> BoolValue(false))
+                            .Add("x", fun _ _ -> BoolValue(false))
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}
         
         PropertyCheck.CheckWithConfig config contract property
@@ -46,7 +46,7 @@ type TestIfWithin () =
         let contract = If(BoolVal("x"),TimeObs.Const t,One (DKK),One (CNY))
                 
         let property = atTime t (hasTransactions [Transaction(1.0, CNY)]) &|& !!(atTime (t-1) (hasTransactions [Transaction(1.0, CNY)]))
-        let genMap = Map.empty.Add("x", fun _ -> BoolValue(false))
+        let genMap = Map.empty.Add("x", fun _ _ -> BoolValue(false))
                                                     
         let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}  
         PropertyCheck.CheckWithConfig config contract property   

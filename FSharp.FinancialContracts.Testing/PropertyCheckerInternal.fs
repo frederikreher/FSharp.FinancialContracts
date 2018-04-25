@@ -79,7 +79,7 @@ module PropertyCheckerInternal =
         let checkProp : (string -> ObservableValue -> Time -> unit) -> int -> unit -> bool = fun f i () ->
                 let (t,obs,_) = conf.EnvironmentGenerator contract
                 let env = (t,obs,f)
-                printfn "Env is %A" env
+                //printfn "Env is %A" env
                 let tsr = conf.ContractEvaluator env contract
                 
                 let res = (prop env tsr)            
