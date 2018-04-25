@@ -25,7 +25,7 @@ module PerformanceChecker =
             for env in envList do
                 g env contract
             stopWatch2.Stop()
-            
-            if(stopWatch1.Elapsed > stopWatch2.Elapsed) then printfn "%A was faster by %A ms on contract %A" label2 (stopWatch2.ElapsedMilliseconds-stopWatch1.ElapsedMilliseconds) i
-            else printfn "%A was faster by %A ms on contract %A" label1 (stopWatch1.ElapsedMilliseconds-stopWatch2.ElapsedMilliseconds) i
+            let t1 : int = int stopWatch1.ElapsedMilliseconds
+            let t2 : int = int stopWatch2.ElapsedMilliseconds
+            printfn "On contract %A %A run in time %A and %A run in time %A" i label1 t1 label2 t2           
             i <- i+1

@@ -3,6 +3,7 @@ namespace FSharp.FinancialContracts
 
 open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Time
+open FSharp.FinancialContracts.Documentation
 open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Contract
 open FSharp.FinancialContracts.Contracts
@@ -12,49 +13,25 @@ module program =
 
     [<EntryPoint>]
     let main argv =
-//        let boolObservables = [("50/50",true)]
-//
-//        let numObservables = [("one", 1.3);
-//                              ("two", 10.0);
-//                              ("100", 100.0)]
-//
-//        // Add function to add to environments???
-//        //let mutable env1: Environment.Environment = 0, [|(boolObservables |> Map.ofList)|], [|(numObservables |> Map.ofList)|]
-//        
-//        let c1 = zcb 5 (Const 50.0) DKK
-//        let c2 = american (Bool true) 5 (One DKK)
-//        let c3 = european (GreaterThan(Const 5.0, Const 2.0)) 5 (Scale((Const 100.0), One GBP))
-//        let c4 = asian (BoolVal("test")) (NumVal("x")) 5 3 (One DKK)
-//
-//        // If vs. Or
-//        let c7 = Scale(Add(Const 1.0,Mult(NumVal("one"),NumVal("two"))),One( GBP))
-//        let c8 = If(BoolVal("50/50"), 5, One( DKK), Zero)
-//        let c9 = If(Not(Bool false), 1, One( DKK), One(GBP))
-//
-//        let generateObservables t hori c : Environment.Environment = 
-//            let rndBool = (fun () -> (if (new Random()).Next(0,2) = 0 then true else false));
-//            let rndNum = (fun () -> float((new Random()).NextDouble())) 
-//
-//            let (bools, nums) = getObservables c
-//            let array = (Array.create (hori) Map.empty)
-//
-//            let newBoolEnv = List.fold (fun acc index -> 
-//                                         let boolEnv = List.fold (fun acc1 obs -> (addBoolObs (obs, rndBool()) acc1)) Map.empty bools
-//                                         Array.set acc index boolEnv
-//                                         acc
-//                                       ) array [0..(hori - 1)]
-//            let newNumEnv = List.fold (fun acc index -> 
-//                                         let numEnv = List.fold (fun acc1 obs -> (addNumObs (obs, rndNum()) acc1)) Map.empty nums
-//                                         Array.set acc index numEnv
-//                                         acc
-//                                       ) (Array.create (hori) Map.empty) [0..(hori - 1)]
-//            (t, newBoolEnv, newNumEnv)
-//            
-//        printfn "%A" (getHorizon c4)
-//        for i = 0 to (getHorizon c4) do
-//            let env = (generateObservables i (i + (getHorizon c4)) c4)
-//            printfn "%A" env
-//            printfn "%A" (evaluateContract env c4)
-//            //Thread.Sleep(1000)
-
+        let dkkEUR = LessThan(NumVal "DKK/EUR", Const 7.0)
+        let buy100EUR = Scale(Const 100.0, One EUR)
+        let buy500DKK = Scale(Const 500.0, One DKK)
+        let c0 = And(If(BoolVal "x", TimeObs.Const 10, 
+                                Give(ScaleNow(Mult(NumVal "x", Const 100.0), One DKK)), 
+                                Give(Scale(Sub(NumVal "y", NumVal "x"), One EUR))),
+                             One CNY)
+        let c1 = Delay(TimeObs.Const 100, c0)
+        let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), TimeObs.Const 60, buy500DKK, c1)
+        let c3 = If(dkkEUR, TimeObs.Const 30, buy100EUR, c2)
+        let contract = And(And(c3, 
+                                 And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR))),
+                               Delay(TimeObs.Const 365, One DKK))
+                               
+        let contract1 = Delay(TimeObs.Const 365, contract)
+        
+        let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c |> ignore)
+        let simpleEvaluation = ("simpleEvaluation", fun env c -> ContractEvaluation.evaluateContract env c |> ignore)
+                
+        PerformanceChecker.checkPerformance [contract;contract1] fastEvaluation simpleEvaluation
+        
         0 // return an integer exit code
