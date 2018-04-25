@@ -51,21 +51,40 @@ module Generators =
             | Some generator -> generator
             | _ -> defaultGenerator
     
+    let getKeyFromBool obs = 
+        match obs with 
+        | BoolVal k -> k
+        | _ -> failwith "only expecting BoolVal in observables from contracts"
+    
+    let getKeyFromNum obs = 
+        match obs with 
+        | NumVal k -> k
+        | _ -> failwith "only expecting NumVal in observables from contracts"
+    
     //Functions for generating numeric/boolean values to the corresponding observables
-    //returns a map containing those values
-    let genBoolValues boolObs generators defaultGenerator t random observableValues  : Map<string,ObservableValue> = List.fold (fun bMap (BoolVal(obs)) -> bMap |> (addObservable (obs, ((findGenerator generators defaultGenerator obs) random t )))) observableValues boolObs
-    let genNumValues numObs generators defaultGenerator t random observableValues    : Map<string,ObservableValue> = List.fold (fun bMap (NumVal(obs))  -> bMap |> (addObservable (obs, ((findGenerator generators defaultGenerator obs) random t )))) observableValues numObs
+    //returns a map containing those values  
+    let generateObservables random time generators (boolObs,numObs) : Map<string,ObservableValue>=
+        let genObs observables getString defaultGenerator observableValues: Map<string,ObservableValue> = 
+                        let generateAndAdd env obs = 
+                            let generate = (findGenerator generators defaultGenerator (getString obs))
+                            addObservable (getString obs, generate random time) env
+                        List.fold generateAndAdd observableValues observables
+    
+        let generatedBools = genObs boolObs getKeyFromBool BoolGenerators.Default Map.empty
+        genObs numObs getKeyFromNum NumericGenerators.Default generatedBools
+        
     
     //Generates enviroment for the entire horizon of contract. Maps contain optional generators for observables
-    let generateEnvironment generators  contract : Environment = 
+    let generateEnvironment generators contract : Environment = 
         let random = new Random()
+        
         let horizon = getHorizon contract
-        let (boolObservables, numberObservables) = getObservables contract
+        let observables = getObservables contract
         
-        let generateObservablesForTime random t  = (genBoolValues boolObservables generators BoolGenerators.Default t random Map.empty ) |> genNumValues numberObservables generators NumericGenerators.Default t random
+        let generateObservablesForTime t = generateObservables random t generators observables 
         
-        let observables = Array.init horizon (generateObservablesForTime random)
-        (0, observables,fun _ _ _ -> ())
+        let observableValues = Array.init horizon generateObservablesForTime
+        (0, observableValues,fun _ _ _ -> ())
     
     //Wrapper type for accessing numeric generators
     [<Sealed>] 

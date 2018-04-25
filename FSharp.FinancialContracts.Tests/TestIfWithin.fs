@@ -74,3 +74,17 @@ type TestIfWithin () =
                                                    
        let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}  
        PropertyCheck.CheckWithConfig config contract property   
+       
+   
+    [<TestMethod>]
+    member this.``Test if nested TimeObs if correctly evaluates`` () =
+      let timeObs = TimeObs.If(BoolVal ("b"), TimeObs.If(BoolVal ("x"),TimeObs.Const 20, TimeObs.Const 11), TimeObs.Const 10)
+      let contract = If(BoolVal("x"),timeObs,One (DKK),Zero)
+      
+      let hasTransactions = (hasTransactions [Transaction(1.0, DKK)])
+      let property = ((satisfyBoolObs (BoolVal "b")) &|& (satisfyBoolObs (BoolVal "x")) &|& atTime 20 hasTransactions &|& atTime 19 !!hasTransactions)
+                     ||| ((!!(satisfyBoolObs (BoolVal "b")) ||| !!(satisfyBoolObs (BoolVal "x"))) &|& forAllTimes hasNoTransactions)                   
+      let genMap = Map.empty.Add("x", BoolGenerators.BoolTrueAtTime 20)
+                                                  
+      let config = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators genMap}  
+      PropertyCheck.CheckWithConfig config contract property  

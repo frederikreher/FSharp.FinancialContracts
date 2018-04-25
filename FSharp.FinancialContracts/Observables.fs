@@ -68,7 +68,6 @@ module Observables =
         | TimeObs.If(b,t1,t2) -> let (boolAcc1, numAcc1) = boolObs b boolAcc numAcc
                                  let (boolAcc2, numAcc2) = timeObs t1 boolAcc1 numAcc1
                                  timeObs t2 boolAcc2 numAcc2
-                                 // check for nested if
         | TimeObs.Add(t1,t2)  -> let (boolAcc1, numAcc1) = timeObs t1 boolAcc numAcc
                                  timeObs t2 boolAcc1 numAcc1
         | TimeObs.Mult(t1,t2) -> let (boolAcc1, numAcc1) = timeObs t1 boolAcc numAcc
