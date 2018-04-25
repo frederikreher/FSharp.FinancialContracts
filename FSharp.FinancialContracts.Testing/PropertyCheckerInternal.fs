@@ -28,7 +28,7 @@ module PropertyCheckerInternal =
             EnvironmentGenerator = EnvironmentGenerators.Default
             FailSilently         = true
             ContractEvaluator    = fun env c -> evaluateContract env c
-            RunInParallel        = false }
+            RunInParallel        = true }
     
     //Type used to store the results of the tests
     type TestData = { 
@@ -79,6 +79,7 @@ module PropertyCheckerInternal =
         let checkProp : (string -> ObservableValue -> Time -> unit) -> int -> unit -> bool = fun f i () ->
                 let (t,obs,_) = conf.EnvironmentGenerator contract
                 let env = (t,obs,f)
+                printfn "Env is %A" env
                 let tsr = conf.ContractEvaluator env contract
                 
                 let res = (prop env tsr)            
@@ -86,7 +87,8 @@ module PropertyCheckerInternal =
                 else (onFail i contract prop env tsr)
                 res
         
-        let parallelCheck () =
+        //Internal function for running the checks according to the configuration in parallel
+        let checkParallel () =
             printfn "Parallel was called"
             let output = Array.Parallel.init conf.NumberOfTests (fun i -> 
                 let mutable accessLog = []
@@ -98,7 +100,7 @@ module PropertyCheckerInternal =
             
             collectTestData 0 output TestData.Empty
         
-        //Internal function for running the checks according to the configuration        
+        //Internal function for running the checks according to the configuration linearly        
         let rec check (data:TestData) c =
             printfn "Simple was called"
             if c >= conf.NumberOfTests || (data.TestsFailed > conf.MaxFail && not conf.FailSilently) then 
@@ -120,7 +122,7 @@ module PropertyCheckerInternal =
                     check { nData with TestsFailed = data.TestsFailed+1 } (c+1)        
         
         let testRes = if conf.RunInParallel 
-                        then parallelCheck ()
+                        then checkParallel ()
                         else check TestData.Empty 0
         
         //printfn "Failed tests are %A" testRes.TestsFailed
