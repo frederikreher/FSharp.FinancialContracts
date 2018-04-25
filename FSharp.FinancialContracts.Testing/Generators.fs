@@ -64,11 +64,13 @@ module Generators =
     //Functions for generating numeric/boolean values to the corresponding observables
     //returns a map containing those values  
     let generateObservables random time generators (boolObs,numObs) : Map<string,ObservableValue>=
+        
         let genObs observables getString defaultGenerator observableValues: Map<string,ObservableValue> = 
-                        let generateAndAdd env obs = 
-                            let generate = (findGenerator generators defaultGenerator (getString obs))
-                            addObservable (getString obs, generate random time) env
-                        List.fold generateAndAdd observableValues observables
+            let generateAndAdd env obs = 
+                let generate = (findGenerator generators defaultGenerator (getString obs))
+                addObservable (getString obs, generate random time) env
+            
+            List.fold generateAndAdd observableValues observables
     
         let generatedBools = genObs boolObs getKeyFromBool BoolGenerators.Default Map.empty
         genObs numObs getKeyFromNum NumericGenerators.Default generatedBools
