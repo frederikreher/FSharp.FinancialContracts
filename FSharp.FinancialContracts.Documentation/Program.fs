@@ -27,7 +27,7 @@ module program =
                                  And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR))),
                                Delay(TimeObs.Const 365, One DKK))
                                
-        let contract1 = Delay(TimeObs.Const 365, contract)
+        let contract1 = Delay(TimeObs.Const 10000, contract)
         
         let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c |> ignore)
         let simpleEvaluation = ("simpleEvaluation", fun env c -> ContractEvaluation.evaluateContract env c |> ignore)

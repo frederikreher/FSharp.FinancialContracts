@@ -23,7 +23,7 @@ module PropertyCheckerInternal =
         
     type Configuration with
         static member Default = { 
-            NumberOfTests        = 100
+            NumberOfTests        = 1000
             MaxFail              = 0
             EnvironmentGenerator = EnvironmentGenerators.Default
             FailSilently         = true
