@@ -29,9 +29,20 @@ module program =
                                
         let contract1 = Delay(TimeObs.Const 10000, contract)
         
+        let contract2 = Delay(TimeObs.Const 100, )
+        let contract3 = One DKK
+        let contract4 = Delay(TimeObs.Const 10,One DKK)
+        let contract5 = Scale(NumVal "x",One DKK)
+        
         let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c |> ignore)
         let simpleEvaluation = ("simpleEvaluation", fun env c -> ContractEvaluation.evaluateContract env c |> ignore)
+        
+        let contracts = [(1000,contract1);
+                         (1000,contract2);
+                         (1000000,contract3);
+                         (1000000,contract4);
+                         (1000000,contract5)]
                 
-        PerformanceChecker.checkPerformance [contract;contract1] fastEvaluation simpleEvaluation
+        PerformanceChecker.checkPerformance contracts fastEvaluation simpleEvaluation
         
         0 // return an integer exit code

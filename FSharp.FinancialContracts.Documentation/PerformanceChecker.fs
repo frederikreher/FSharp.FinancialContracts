@@ -10,8 +10,7 @@ open FSharp.FinancialContracts.Testing.Generators
 module PerformanceChecker =   
     let checkPerformance contracts (label1,f) (label2,g) : unit = 
         let mutable i = 0
-        for contract in contracts do
-            let count = 1000
+        for (count,contract) in contracts do
             let stopWatch = System.Diagnostics.Stopwatch.StartNew()  
             let envList = List.init count (fun _ -> EnvironmentGenerators.Default contract)
             printfn "Generated %A environments in %f" count stopWatch.Elapsed.TotalSeconds

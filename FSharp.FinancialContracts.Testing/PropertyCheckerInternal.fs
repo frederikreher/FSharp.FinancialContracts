@@ -53,11 +53,7 @@ module PropertyCheckerInternal =
         let stopWatch = System.Diagnostics.Stopwatch.StartNew()
         let res = f ()
         (res,stopWatch.Elapsed.TotalMilliseconds)
-    
-    
-    
- 
-    
+
     //Function for running a suite of propertychecks according to the configuration. 
     let checkSuite (conf:Configuration) onSuccess onFail contract (prop:Property) : TestData =
         

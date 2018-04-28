@@ -61,7 +61,7 @@ module Generators =
         | NumVal k -> k
         | _ -> failwith "only expecting NumVal in observables from contracts"
     
-    //Functions for generating numeric/boolean values to the corresponding observables
+    //Function for generating numeric/boolean values to the corresponding observables
     //returns a map containing those values  
     let generateObservables random time generators (boolObs,numObs) : Map<string,ObservableValue>=
         
