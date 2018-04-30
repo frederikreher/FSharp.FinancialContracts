@@ -75,22 +75,63 @@ module Contract =
 
     // Return a tuple of BoolObs list and NumberObs list, 
     // containing the observables needed to evaluate all elements of a contract.
-    let rec observables c boolAcc numAcc : BoolObs list * NumberObs list =
-        match c with
-        | And(c1, c2)                        -> let (boolAcc1, numAcc1) = observables c2 boolAcc numAcc
-                                                observables c1 boolAcc1 numAcc1
-        | If(obs, tObs, c1, c2)              -> let (boolAcc1,numAcc1) = boolObs obs boolAcc numAcc
-                                                let (boolAcc2,numAcc2) = timeObs tObs boolAcc1 numAcc1
-                                                let (boolAcc3,numAcc3) = observables c1 boolAcc2 numAcc2
-                                                observables c2 boolAcc3 numAcc3
-        | Zero | One(_)                      -> (boolAcc, numAcc)
-        | Delay(obs, c)                      -> let (boolAcc1,numAcc1) = timeObs obs boolAcc numAcc
-                                                observables c boolAcc1 numAcc1
-        | Give(c)                            -> observables c boolAcc numAcc
-        | Scale(obs, c1) | ScaleNow(obs, c1) -> let (boolAcc1,numAcc1) = numberObs obs boolAcc numAcc
-                                                observables c1 boolAcc1 numAcc1
+    //let rec observables c boolAcc numAcc : BoolObs list * NumberObs list =
+    //    match c with
+    //    | And(c1, c2)                        -> let (boolAcc1, numAcc1) = observables c2 boolAcc numAcc
+    //                                            observables c1 boolAcc1 numAcc1
+    //    | If(obs, tObs, c1, c2)              -> let (boolAcc1,numAcc1) = boolObs obs boolAcc numAcc
+    //                                            let (boolAcc2,numAcc2) = timeObs tObs boolAcc1 numAcc1
+    //                                            let (boolAcc3,numAcc3) = observables c1 boolAcc2 numAcc2
+    //                                            observables c2 boolAcc3 numAcc3
+    //    | Zero | One(_)                      -> (boolAcc, numAcc)
+    //    | Delay(obs, c)                      -> let (boolAcc1,numAcc1) = timeObs obs boolAcc numAcc
+    //                                            observables c boolAcc1 numAcc1
+    //    | Give(c)                            -> observables c boolAcc numAcc
+    //    | Scale(obs, c1) | ScaleNow(obs, c1) -> let (boolAcc1,numAcc1) = numberObs obs boolAcc numAcc
+    //                                            observables c1 boolAcc1 numAcc1
+
+    //let getObservables c : BoolObs list * NumberObs list = observables c [] []
     
-    let getObservables c : BoolObs list * NumberObs list = observables c [] []
+    let rec getTimeValues timeObs values =
+        match timeObs with
+        | TimeObs.Const t     -> t::values
+        | TimeObs.If(_,t1,t2) -> (getTimeValues t1 values)@(getTimeValues t2 values)
+        | TimeObs.Add(t1,t2)  -> let t1List = getTimeValues t1 values
+                                 List.fold (fun acc t1Val -> 
+                                     let res = List.map (fun t2Val -> t1Val + t2Val) (getTimeValues t2 values)
+                                     res@acc
+                                 ) List.empty t1List
+        | TimeObs.Mult(t1,t2) -> let t1List = getTimeValues t1 values
+                                 List.fold (fun acc t1Val -> 
+                                     let res = List.map (fun t2Val -> t1Val * t2Val) (getTimeValues t2 values)
+                                     res@acc
+                                 ) List.empty t1List
+
+    let rec observablesWithTime c t (observables:(BoolObs list * NumberObs list) []) : unit =
+        match c with
+        | And(c1, c2)                        -> observablesWithTime c2 t observables |> ignore
+                                                observablesWithTime c1 t observables |> ignore
+        | If(obs, tObs, c1, c2)              -> let (boolAcc, numAcc) = observables.[t]
+                                                observables.[t] <- timeObs tObs boolAcc numAcc
+                                                let tObsMax = timeHorizon tObs
+                                                List.map (fun i -> 
+                                                    let (boolAcc1, numAcc1) = observables.[t+i]
+                                                    observables.[t+i] <- boolObs obs boolAcc1 numAcc1
+                                                    observablesWithTime c2 (t+i) observables |> ignore
+                                                    observablesWithTime c1 (t+i) observables |> ignore
+                                                ) [0..tObsMax] |> ignore
+        | Zero | One(_)                      -> ()
+        | Delay(obs, c)                      -> let (boolAcc, numAcc) = observables.[t]
+                                                let observablesForTime = timeObs obs boolAcc numAcc
+                                                observables.[t] <- observablesForTime
+                                                List.map (fun i -> 
+                                                    observablesWithTime c (t+i) observables |> ignore
+                                                ) (getTimeValues obs List.empty) |> ignore
+        | Give(c)                            -> observablesWithTime c t observables |> ignore
+        | Scale(obs, c) | ScaleNow(obs, c)   -> let (boolAcc, numAcc) = observables.[t]
+                                                observables.[t] <- numberObs obs boolAcc numAcc
+                                                observablesWithTime c t observables |> ignore
+
     
     // Evaluates a contract and returns an array of list of Transactions.   
     let evaluateContract environment contract : TransactionResults =       
