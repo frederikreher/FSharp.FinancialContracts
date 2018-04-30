@@ -29,7 +29,7 @@ module program =
                                
         let contract1 = Delay(TimeObs.Const 10000, contract)
         
-        let contract2 = Delay(TimeObs.Const 100, )
+        let contract2 = Delay(TimeObs.Const 100, contract)
         let contract3 = One DKK
         let contract4 = Delay(TimeObs.Const 10,One DKK)
         let contract5 = Scale(NumVal "x",One DKK)
