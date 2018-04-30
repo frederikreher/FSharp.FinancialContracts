@@ -66,7 +66,7 @@ module Contract =
     /// Returns a tuple of BoolObs list and NumberObs list, 
     /// containing the observables needed to evaluate all elements of a contract. 
     /// </returns>
-    val getObservables: contract:Contract -> BoolObs list * NumberObs list
+    val getObservables: contract:Contract -> (BoolObs list * NumberObs list) []
 
     /// <summary> Evaluates a contract. </summary>
     /// <param name="env"> The Environment to evaluate the contract in. </param>

@@ -47,25 +47,28 @@ module program =
         
         //PerformanceChecker.checkPerformance [contract] fastEvaluation simpleEvaluation
         
-        let sumOfDKKAre20  : Property = 
-            sumOf (transactionsOfCurrency DKK) (=) 20.0
-        let countOfAllAre1 : Property = countOf allTransactions (=) 1
+        //let sumOfDKKAre20  : Property = 
+        //    sumOf (transactionsOfCurrency DKK) (=) 20.0
+        //let countOfAllAre1 : Property = countOf allTransactions (=) 1
         
-        let bIsTrue = satisfyBoolObs (BoolVal "b")
-        let sumAndCount = (sumOfDKKAre20 &|& countOfAllAre1)
-        let bImpliesSumAndCount = bIsTrue =|> sumAndCount
-        printfn "lol"
-        let bImpliesSumAndCountOnce = 
-            forSomeTime bIsTrue =|> 
-                forOneTime (bIsTrue &|& sumAndCount)
+        //let bIsTrue = satisfyBoolObs (BoolVal "b")
+        //let sumAndCount = (sumOfDKKAre20 &|& countOfAllAre1)
+        //let bImpliesSumAndCount = bIsTrue =|> sumAndCount
+        //printfn "lol"
+        //let bImpliesSumAndCountOnce = 
+        //    forSomeTime bIsTrue =|> 
+        //        forOneTime (bIsTrue &|& sumAndCount)
                     
-        let contract = If(BoolVal "b", TimeObs.Const 5, Scale(Const 20.0, One DKK), Give(And(One GBP,One USD)))
-        let environment = EnvironmentGenerators.WithDefaultGenerators contract
-        let transactions = evaluateContract environment contract
-        let propertyIsFulfilled = bImpliesSumAndCountOnce environment transactions
+        //let contract = If(BoolVal "b", TimeObs.Const 5, Scale(Const 20.0, One DKK), Give(And(One GBP,One USD)))
+        //let environment = EnvironmentGenerators.WithDefaultGenerators contract
+        //let transactions = evaluateContract environment contract
+        //let propertyIsFulfilled = bImpliesSumAndCountOnce environment transactions
         
-        printfn "%A result was with env %A and transactions %A" propertyIsFulfilled environment transactions
+        //printfn "%A result was with env %A and transactions %A" propertyIsFulfilled environment transactions
                         
 
-        let tttt = If(BoolVal "b", TimeObs.Const 5, Zero, One DKK)
+        let test = If(BoolVal "b", TimeObs.Const 5, Zero, One DKK)
+        let test1 = Delay(TimeObs.If(BoolVal "x", TimeObs.Const 2, TimeObs.Const 5), test)
+
+        printfn "%A" (getObservables test1)
         0 // return an integer exit code

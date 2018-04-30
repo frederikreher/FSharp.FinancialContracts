@@ -132,6 +132,10 @@ module Contract =
                                                 observables.[t] <- numberObs obs boolAcc numAcc
                                                 observablesWithTime c t observables |> ignore
 
+    let getObservables c : (BoolObs list * NumberObs list) [] =
+        let observables = Array.create (getHorizon c) (List.empty, List.empty)
+        observablesWithTime c 0 observables |> ignore
+        observables
     
     // Evaluates a contract and returns an array of list of Transactions.   
     let evaluateContract environment contract : TransactionResults =       

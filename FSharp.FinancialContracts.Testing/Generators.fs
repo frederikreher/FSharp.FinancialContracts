@@ -83,7 +83,7 @@ module Generators =
         let horizon = getHorizon contract
         let observables = getObservables contract
         
-        let generateObservablesForTime t = generateObservables random t generators observables 
+        let generateObservablesForTime t = generateObservables random t generators observables.[0] 
         
         let observableValues = Array.init horizon generateObservablesForTime
         (0, observableValues,fun _ _ _ -> ())
