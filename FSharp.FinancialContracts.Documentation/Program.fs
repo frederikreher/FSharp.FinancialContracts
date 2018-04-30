@@ -13,36 +13,43 @@ module program =
 
     [<EntryPoint>]
     let main argv =
-        let dkkEUR = LessThan(NumVal "DKK/EUR", Const 7.0)
-        let buy100EUR = Scale(Const 100.0, One EUR)
-        let buy500DKK = Scale(Const 500.0, One DKK)
-        let c0 = And(If(BoolVal "x", TimeObs.Const 10, 
-                                Give(ScaleNow(Mult(NumVal "x", Const 100.0), One DKK)), 
-                                Give(Scale(Sub(NumVal "y", NumVal "x"), One EUR))),
-                             One CNY)
-        let c1 = Delay(TimeObs.Const 100, c0)
-        let c2 = If(GreaterThan(NumVal "DKK/EUR", Const 7.5), TimeObs.Const 60, buy500DKK, c1)
-        let c3 = If(dkkEUR, TimeObs.Const 30, buy100EUR, c2)
-        let contract = And(And(c3, 
-                                 And(ScaleNow(Const 1000.0, One DKK), ScaleNow(Const 1000.0, One EUR))),
-                               Delay(TimeObs.Const 365, One DKK))
-                               
-        let contract1 = Delay(TimeObs.Const 10000, contract)
-        
-        let contract2 = Delay(TimeObs.Const 100, )
-        let contract3 = One DKK
+        let repeat contract n =  
+                    let rec rep c i =
+                        if i = n then c
+                        else And(contract, Delay(TimeObs.Const i, rep contract (i+1)))
+                        
+                    if n = 0 then Zero
+                    else rep contract 1   
+           
+                              
+        let contract1 = One DKK
+        let contract2 = Delay(TimeObs.Const 1,One DKK)
+        let contract3 = Delay(TimeObs.Const 5,One DKK)
         let contract4 = Delay(TimeObs.Const 10,One DKK)
-        let contract5 = Scale(NumVal "x",One DKK)
+        let contract5 = Delay(TimeObs.Const 100,One DKK)
+        let contract6 = Delay(TimeObs.Const 1000,One DKK)
+        let contract7 = Scale(NumVal "x",One DKK)
+        let contract8 = Scale(Const 500.0,One DKK)
+        let contract9 = repeat (Scale(NumVal "x",One DKK)) 365
+        let contract10 = repeat Zero 365
+        
         
         let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c |> ignore)
         let simpleEvaluation = ("simpleEvaluation", fun env c -> ContractEvaluation.evaluateContract env c |> ignore)
         
-        let contracts = [(1000,contract1);
-                         (1000,contract2);
-                         (1000000,contract3);
-                         (1000000,contract4);
-                         (1000000,contract5)]
-                
+        let contracts = [(10000,contract1);
+                         (10000,contract2);
+                         (10000,contract3);
+                         (10000,contract4);
+                         (1000,contract5);
+                         (1000,contract6);
+                         (10000,contract7);
+                         (10000,contract8);
+                         (100,contract9);
+                         (100,contract10);
+                        ]
+                         
+            
         PerformanceChecker.checkPerformance contracts fastEvaluation simpleEvaluation
         
         0 // return an integer exit code

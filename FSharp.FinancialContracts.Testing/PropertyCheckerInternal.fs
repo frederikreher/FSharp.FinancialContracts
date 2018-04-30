@@ -72,7 +72,7 @@ module PropertyCheckerInternal =
                     collectTestData (i+1) output { nData with TestsFailed = data.TestsFailed+1 }               
         
         //Internal function used to check a single property
-        let checkProp : (string -> ObservableValue -> Time -> unit) -> int -> unit -> bool = fun f i () ->
+        let checkProp f i : unit -> bool = fun () ->
                 let (t,obs,_) = conf.EnvironmentGenerator contract
                 let env = (t,obs,f)
                 //printfn "Env is %A" env
@@ -84,7 +84,7 @@ module PropertyCheckerInternal =
                 res
         
         //Internal function for running the checks according to the configuration in parallel
-        let checkParallel () =
+        let checkParallel : unit -> TestData = fun () ->
             printfn "Parallel was called"
             let output = Array.Parallel.init conf.NumberOfTests (fun i -> 
                 let mutable accessLog = []
@@ -97,7 +97,7 @@ module PropertyCheckerInternal =
             collectTestData 0 output TestData.Empty
         
         //Internal function for running the checks according to the configuration linearly        
-        let rec check (data:TestData) c =
+        let rec check data c : TestData =
             printfn "Simple was called"
             if c >= conf.NumberOfTests || (data.TestsFailed > conf.MaxFail && not conf.FailSilently) then 
                 data 
@@ -108,7 +108,7 @@ module PropertyCheckerInternal =
                     ()
                     
                 let (fullFillsProperty,timeSpent) = timedCall (checkProp updateLog c )           
-                //printfn "Internal:  %A" (System.Diagnostics.Process.GetCurrentProcess().Threads.Item 0).Id
+                
                 let timeSpentAcc = data.InTime + timeSpent
                 let nData = { data with TestsRun = data.TestsRun+1; InTime = timeSpentAcc; InAverageTime = (timeSpentAcc/(float (data.TestsRun+1))); AccessLog = accessLog::data.AccessLog  }
                 
