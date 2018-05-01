@@ -24,34 +24,34 @@ module program =
                     else rep contract 1   
            
                               
-//        let contract1 = One DKK
-//        let contract2 = Delay(TimeObs.Const 1,One DKK)
-//        let contract3 = Delay(TimeObs.Const 5,One DKK)
-//        let contract4 = Delay(TimeObs.Const 10,One DKK)
-//        let contract5 = Delay(TimeObs.Const 100,One DKK)
-//        let contract6 = Delay(TimeObs.Const 1000,One DKK)
-//        let contract7 = Scale(NumVal "x",One DKK)
-//        let contract8 = Scale(Const 500.0,One DKK)
-//        let contract9 = repeat (Scale(NumVal "x",One DKK)) 365
-//        let contract10 = repeat Zero 365
-//        
-//        
-//        let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c)
-//        let simpleEvaluation = ("simpleEvaluation", fun env c -> ContractEvaluation.evaluateContract env c)
-//        
-//        let contracts = [(10000,contract1);
-//                         (10000,contract2);
-//                         (10000,contract3);
-//                         (10000,contract4);
-//                         (1000,contract5);
-//                         (1000,contract6);
-//                         (10000,contract7);
-//                         (10000,contract8);
-//                         (100,contract9);
-//                         (100,contract10);
-//                        ]
+        let contract1 = One DKK
+        let contract2 = Delay(TimeObs.Const 1,One DKK)
+        let contract3 = Delay(TimeObs.Const 5,One DKK)
+        let contract4 = Delay(TimeObs.Const 10,One DKK)
+        let contract5 = Delay(TimeObs.Const 100,One DKK)
+        let contract6 = Delay(TimeObs.Const 1000,One DKK)
+        let contract7 = Scale(NumVal "x",One DKK)
+        let contract8 = Scale(Const 500.0,One DKK)
+        let contract9 = repeat (Scale(NumVal "x",One DKK)) 365
+        let contract10 = repeat Zero 365
+        
+        
+        let fastEvaluation = ("fastEvaluation", fun env c -> evaluateContract env c)
+        let simpleEvaluation = ("simpleEvaluation", fun env c -> ContractEvaluation.evaluateContract env c)
+        
+        let contracts = [(10000,contract1);
+                         (10000,contract2);
+                         (10000,contract3);
+                         (10000,contract4);
+                         (1000,contract5);
+                         (1000,contract6);
+                         (10000,contract7);
+                         (10000,contract8);
+                         (100,contract9);
+                         (100,contract10);
+                        ]
                          
-        //PerformanceChecker.checkPerformance contracts fastEvaluation simpleEvaluation
+        PerformanceChecker.checkPerformance contracts fastEvaluation simpleEvaluation
         let customGenerators = Map.empty
                                 .Add( "x", BoolGenerators.BoolTrueAtTime 50)
                                 .Add( "y", fun _ t -> if t = 20 then NumberValue 20.0 else NumberValue 10.0)
@@ -69,7 +69,7 @@ module program =
                              (10000,generatorContract2,EnvironmentGenerators.WithCustomGenerators customGenerators)
                             ]
         
-        //PerformanceChecker.checkGeneratorPerformance envGenerators
+        PerformanceChecker.checkGeneratorPerformance envGenerators
         let contract1 = american (BoolVal "b") (TimeObs.Const 365) (One DKK)
         let property1 = 
             forSomeTime (satisfyBoolObs (BoolVal "b" )) =|> 
@@ -91,6 +91,6 @@ module program =
                             (1000,contract3,EnvironmentGenerators.Default,property3)
                          ] 
          
-        PerformanceChecker.checkPropertyPerformance properties
+        //PerformanceChecker.checkPropertyPerformance properties
         
         0 // return an integer exit code

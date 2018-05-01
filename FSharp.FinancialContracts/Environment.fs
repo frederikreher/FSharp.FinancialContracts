@@ -7,13 +7,12 @@ open System.Collections.Generic
 module Environment =
     
     // Environment contains the value of observables for all times and the current time.
-    type Environment = Time * Map<string,ObservableValue> array * (string -> ObservableValue -> Time -> unit)
+    type Environment = Time * seq<Map<string,ObservableValue>> * (string -> ObservableValue -> Time -> unit)
     
     // Increases the time of the provided environment by the provided value.
     let increaseEnvTime t1 ((t2, obs,f):Environment) : Environment = 
         let newTime = t1 + t2
-        if newTime >= obs.Length then failwith "The current time of the environment cannot exceed the horizon of the contract"
-        else (newTime, obs,f)
+        (newTime, obs,f)
     let (|+) env t : Environment = increaseEnvTime t env
     
      // Get the current time of an Environment.
@@ -25,7 +24,7 @@ module Environment =
 
     // Find the current value of a BoolVal observable in the environment.
     let findBoolInEnv s ((t,obs,f):Environment) = 
-        let observableValue = Map.tryFind s obs.[t]
+        let observableValue = Map.tryFind s (Seq.item t obs)
         match observableValue with
             | Some(BoolValue boolValue) -> f s (BoolValue boolValue) t
                                            boolValue
@@ -34,7 +33,7 @@ module Environment =
     
     // Find the current value of a NumVal observable in the environment.
     let findNumberInEnv s ((t,obs,f):Environment) = 
-        let observableValue = Map.tryFind s obs.[t]
+        let observableValue = Map.tryFind s (Seq.item t obs)
         match observableValue with
             | Some(NumberValue numValue) -> f s (NumberValue numValue) t
                                             numValue

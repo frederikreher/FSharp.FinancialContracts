@@ -7,7 +7,7 @@ open System.Collections.Generic
 module Environment =
     
     /// <summary> An Environment contains the current time and the value of observables for all times. </summary>
-    type Environment = Time * Map<string,ObservableValue> array * (string -> ObservableValue -> Time -> unit)
+    type Environment = Time * seq<Map<string,ObservableValue>> * (string -> ObservableValue -> Time -> unit)
         
     /// <summary> Increases the current time of an Environment. </summary>
     /// <param name="env"> The Environment to increase the time of. </param>

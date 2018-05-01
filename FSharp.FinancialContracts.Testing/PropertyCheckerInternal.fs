@@ -55,7 +55,7 @@ module PropertyCheckerInternal =
         (res,stopWatch.Elapsed.TotalMilliseconds)
 
     //Function for running a suite of propertychecks according to the configuration. 
-    let checkSuite (conf:Configuration) onSuccess onFail contract (prop:Property) : TestData =
+    let checkSuite (conf:Configuration) (onSuccess:LogFunction) (onFail:LogFunction) contract (prop:Property) : TestData =
         
         //Collect testdata from parallel Invokation.
         let rec collectTestData i output data : TestData = 
