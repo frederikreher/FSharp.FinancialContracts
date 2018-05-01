@@ -85,7 +85,6 @@ module PropertyCheckerInternal =
         
         //Internal function for running the checks according to the configuration in parallel
         let checkParallel : unit -> TestData = fun () ->
-            printfn "Parallel was called"
             let output = Array.Parallel.init conf.NumberOfTests (fun i -> 
                 let mutable accessLog = []
                 let updateLog = fun s obsval t ->
@@ -98,7 +97,6 @@ module PropertyCheckerInternal =
         
         //Internal function for running the checks according to the configuration linearly        
         let rec check data c : TestData =
-            printfn "Simple was called"
             if c >= conf.NumberOfTests || (data.TestsFailed > conf.MaxFail && not conf.FailSilently) then 
                 data 
             else 

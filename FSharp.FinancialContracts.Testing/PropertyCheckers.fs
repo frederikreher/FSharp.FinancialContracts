@@ -22,7 +22,7 @@ module PropertyCheckers =
     let checkProperty (conf:Configuration) c prop = 
         let data = PropertyCheckerInternal.checkSuite conf noLog noLog c prop
         if data.Passed then
-            printfn "Succesfully satisfied property in %A ms" data.InTime
+            //printfn "Succesfully satisfied property in %A ms" data.InTime
             ()
         else 
             failwith "Property failed on the check"

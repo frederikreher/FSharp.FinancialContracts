@@ -8,13 +8,33 @@ open FSharp.FinancialContracts.Observables
 open FSharp.FinancialContracts.Testing.Generators
 
 module PerformanceChecker =  
+    open FSharp.FinancialContracts.Testing.PropertyCheckers
+
     let n = 100
  
     let repeat n f c : unit =
         for i in [0..n-1] do 
-            f c
-            
-
+            f c |> ignore
+    
+    let checkPropertyPerformance contracts = 
+        let mutable i = 0
+        for (count,contract,generator,property) in contracts do
+                    let config = {Configuration.Default with EnvironmentGenerator = generator; NumberOfTests = count;RunInParallel = false }
+                    let stopWatch = System.Diagnostics.Stopwatch.StartNew()  
+                    PropertyCheck.CheckWithConfig config contract property
+                    printfn "Checked property %A, %A times with different environments in %A seconds" (i+1) count stopWatch.Elapsed.TotalSeconds
+                    i <- i+1
+    
+    let checkGeneratorPerformance contracts = 
+        let mutable i = 0
+        
+        for (count,contract,generator) in contracts do
+            let horizon = getHorizon contract
+            let stopWatch = System.Diagnostics.Stopwatch.StartNew()  
+            repeat count (generator) contract
+            printfn "On contract %A generated %A environments of length %A in %f" (i+1) count horizon stopWatch.Elapsed.TotalSeconds
+            i <- i+1
+    
     let checkPerformance contracts (label1,f) (label2,g) : unit = 
         let mutable i = 0
         for (count,contract) in contracts do
