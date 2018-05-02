@@ -13,8 +13,10 @@ module Contract =
         | HKD | IDR | ILS | INR | KRW | MXN | MYR | NZD | PHP | SGD
         | THB | ZAR | EUR
 
+    type Party = string
+    
     // Transaction represents a certain amount of a currency.
-    type Transaction = Transaction of float * Currency
+    type Transaction = Transaction of float * Currency * Party * Party
     
     // TransactionResults is the current time and an array of lists of transactions
     // with each list representing a day. 
