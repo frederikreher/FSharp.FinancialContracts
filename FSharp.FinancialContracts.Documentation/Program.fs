@@ -19,8 +19,15 @@ module program =
                         else And(contract, Delay(TimeObs.Const i, rep contract (i+1)))
                         
                     if n = 0 then Zero
-                    else rep contract 1   
-           
+                    else rep contract 1  
+        
+        let repeatComplex contract n =  
+                    let rec rep c i =
+                        if i = n then c
+                        else Scale(Const 100.0, And(contract, If(BoolVal "x", TimeObs.Const i, rep contract (i+1), rep contract (i+1))))
+                        
+                    if n = 0 then Zero
+                    else rep contract 1
                               
         let contract1 = One DKK
         let contract2 = Delay(TimeObs.Const 1,One DKK)

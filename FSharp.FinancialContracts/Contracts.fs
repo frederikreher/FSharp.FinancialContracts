@@ -19,8 +19,3 @@ module Contracts =
     // Asian option using an observable.
     let asian boolObs numObs time obsPeriod contract : Contract = Delay(time, If(boolObs, TimeObs.Const 0, Scale(Average(numObs, obsPeriod), contract), Zero))
     
-    let repeat contract n = 
-        let rec rep c i =
-            if i = 0 then c
-            else And(contract, Delay(TimeObs.Const i, rep contract (i-1)))
-        rep contract n
