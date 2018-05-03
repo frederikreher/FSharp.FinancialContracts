@@ -13,10 +13,13 @@ module Contract =
         | HKD | IDR | ILS | INR | KRW | MXN | MYR | NZD | PHP | SGD
         | THB | ZAR | EUR
 
+    type Party = string
+    
+    
     /// <summary> 
     /// Transaction represents the amount of a currency the holding party receives or gives.
     /// </summary>
-    type Transaction = Transaction of float * Currency
+    type Transaction = Transaction of float * Currency * Party * Party
     
     ///  <summary>
     /// The evaluation of a contract results in TransactionResults representing the current time 
@@ -38,7 +41,7 @@ module Contract =
     /// <summary> Defines the contract combinators used to construct a contract. </summary>
     type Contract = 
         | Zero
-        | One      of Currency
+        | One of Currency * Party * Party 
         | Delay    of TimeObs   * Contract
         | Scale    of NumberObs * Contract
         | ScaleNow of NumberObs * Contract

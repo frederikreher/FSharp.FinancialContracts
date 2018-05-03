@@ -36,8 +36,8 @@ module Contract =
     // Defines how a contract can be constructed.
     type Contract = 
         | Zero                                             // Contract that has no rights or obligations.
-        | One      of Currency                             // Contract paying one unit of the provided currency.
-        | Delay    of TimeObs * Contract                      // Acquire the contract at the provided time.
+        | One      of Currency * Party * Party             // Contract paying one unit of the provided currency.
+        | Delay    of TimeObs * Contract                   // Acquire the contract at the provided time.
         | Scale    of NumberObs * Contract                 // Acquire the provided contract, but all rights and obligations 
                                                            // are scaled by the provided observable according to its value 
                                                            // at the day of each transaction.
@@ -102,8 +102,8 @@ module Contract =
         let rec evalContract now factor c : unit = 
             match c with
             | Zero               -> ()
-            | One(currency)      -> let transaction = Transaction((evalNumberObs factor (now,observables,f)) * 1.0,currency)
-                                    transactions.[now] <- transaction::(transactions.[now])
+            | One(currency,p1,p2)      -> let transaction = Transaction((evalNumberObs factor (now,observables,f)) * 1.0,currency,p1,p2)
+                                          transactions.[now] <- transaction::(transactions.[now])
             | Delay(t, c)        -> let t' = evalTimeObs t environment
                                     if t' >= 0 then evalContract (now+t') factor c
                                     else failwith "Can only delay with non-negative integers"
