@@ -5,9 +5,12 @@ open FSharp.FinancialContracts.Observables
 open System.Collections.Generic
 
 module Environment =
+    type Observables = Map<string,(int -> ObservableValue)> * Dictionary<string,Dictionary<int,ObservableValue>>
     
     // Environment contains the value of observables for all times and the current time.
-    type Environment = Time * seq<Map<string,ObservableValue>> * (string -> ObservableValue -> Time -> unit)
+    type Environment = Time * Observables * (string -> ObservableValue -> Time -> unit)
+    
+    
     
     // Increases the time of the provided environment by the provided value.
     let increaseEnvTime t1 ((t2, obs,f):Environment) : Environment = 
@@ -22,15 +25,26 @@ module Environment =
     let addObservable kv (observables:Map<string, ObservableValue>) : Map<string, ObservableValue> 
         = observables.Add kv
 
-    // Find the current value of a BoolVal observable in the environment.
-    let findBoolInEnv s ((t,obs,f):Environment) = 
-        let observableValue = Map.tryFind s (Seq.item t obs)
-        match observableValue with
-            | Some(BoolValue boolValue) -> f s (BoolValue boolValue) t
-                                           boolValue
-            | None                      -> failwith (sprintf "Boolean Observable %A doesn't exist in environment" s)
-            | _                         -> failwith "Expected boolean observable"
     
+    // Find the current value of a BoolVal observable in the environment.
+    let findBoolInEnv s ((t,(generators,values),f):Environment) = 
+        let validResult observableValue = 
+                match observableValue with
+                    | BoolValue boolValue -> f s observableValue t
+                                             boolValue
+                    | _                   -> failwith "Expected boolean observable"
+    
+        if values.ContainsKey s && values.[s].ContainsKey t then 
+            validResult (values.[s].[t])
+        else 
+            if Map.containsKey s then 
+                let value = Map.
+                values.[s].[t] <- 
+            
+                        
+        let observableValue = Map.tryFind s (Seq.item t obs)
+        validResult observableValue
+        
     // Find the current value of a NumVal observable in the environment.
     let findNumberInEnv s ((t,obs,f):Environment) = 
         let observableValue = Map.tryFind s (Seq.item t obs)

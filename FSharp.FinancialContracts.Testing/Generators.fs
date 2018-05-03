@@ -86,7 +86,7 @@ module Generators =
         let generateObservablesForTime t = generateObservables random t generators observables 
         
         let observableValues = Seq.initInfinite generateObservablesForTime
-        (0, observableValues,fun _ _ _ -> ())
+        (0, (Seq.cache observableValues),fun _ _ _ -> ())
     
     //Wrapper type for accessing numeric generators
     [<Sealed>] 
