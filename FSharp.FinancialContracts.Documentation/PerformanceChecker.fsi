@@ -8,5 +8,6 @@ open FSharp.FinancialContracts.Testing.Property
 
 module PerformanceChecker =
     val checkGeneratorPerformance : seq<int*Contract*(Contract->'b)> -> unit
+    val checkParallelPerformance  : Contract -> Property -> unit
     val checkPropertyPerformance  : seq<int*Contract*EnvironmentGenerator*Property> -> unit
-    val checkPerformance : seq<int*Contract> -> ('a * (Environment -> Contract -> 'c)) -> ('b * (Environment -> Contract -> 'd)) -> unit
+    val checkPerformance          : seq<int*Contract> -> ('a * (Environment -> Contract -> 'c)) -> ('b * (Environment -> Contract -> 'd)) -> unit

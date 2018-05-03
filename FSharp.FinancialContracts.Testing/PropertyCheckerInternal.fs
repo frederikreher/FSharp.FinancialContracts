@@ -52,7 +52,7 @@ module PropertyCheckerInternal =
     let timedCall f = 
         let stopWatch = System.Diagnostics.Stopwatch.StartNew()
         let res = f ()
-        (res,stopWatch.Elapsed.TotalMilliseconds)
+        (res,stopWatch.Elapsed.TotalSeconds)
 
     //Function for running a suite of propertychecks according to the configuration. 
     let checkSuite (conf:Configuration) onSuccess onFail contract (prop:Property) : TestData =
@@ -85,18 +85,22 @@ module PropertyCheckerInternal =
         
         //Internal function for running the checks according to the configuration in parallel
         let checkParallel : unit -> TestData = fun () ->
+            //printfn "parallelcheck"
             let output = Array.Parallel.init conf.NumberOfTests (fun i -> 
                 let mutable accessLog = []
                 let updateLog = fun s obsval t ->
                     accessLog <- (s,obsval,t)::accessLog
                     ()
-
-                ((timedCall (checkProp updateLog i)),accessLog))
+                
+                let (fullFillsProperty,timeSpent) = timedCall (checkProp updateLog i)  
+                
+                ((fullFillsProperty,timeSpent),accessLog))
             
             collectTestData 0 output TestData.Empty
         
         //Internal function for running the checks according to the configuration linearly        
         let rec check data c : TestData =
+            //printfn "simplecheck"
             if c >= conf.NumberOfTests || (data.TestsFailed > conf.MaxFail && not conf.FailSilently) then 
                 data 
             else 
@@ -105,7 +109,7 @@ module PropertyCheckerInternal =
                     accessLog <- (s,obsval,t)::accessLog
                     ()
                     
-                let (fullFillsProperty,timeSpent) = timedCall (checkProp updateLog c )           
+                let (fullFillsProperty,timeSpent) = timedCall (checkProp updateLog c)           
                 
                 let timeSpentAcc = data.InTime + timeSpent
                 let nData = { data with TestsRun = data.TestsRun+1; InTime = timeSpentAcc; InAverageTime = (timeSpentAcc/(float (data.TestsRun+1))); AccessLog = accessLog::data.AccessLog  }

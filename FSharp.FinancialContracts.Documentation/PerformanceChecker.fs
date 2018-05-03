@@ -34,7 +34,24 @@ module PerformanceChecker =
             repeat count (generator) contract
             printfn "On contract %A generated %A environments of length %A in %f" (i+1) count horizon stopWatch.Elapsed.TotalSeconds
             i <- i+1
-    
+            
+    let checkParallelPerformance contract property = 
+        
+        let config = { Configuration.Default with NumberOfTests = 4}
+        
+        let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+        let d1 = PropertyCheck.CheckAndReturnDataWithConfig {config with RunInParallel = true} contract property 
+        let t1 = stopWatch.Elapsed.TotalSeconds
+        stopWatch.Restart()
+        
+        let d2 = PropertyCheck.CheckAndReturnDataWithConfig {config with RunInParallel = false} contract property 
+        let t2 = stopWatch.Elapsed.TotalSeconds
+        
+        printfn "Parallel evaluated in %A seconds and sequential evaluated in %A seconds. Difference is %A%%" t1 t2 ((t2/t1)*100.0)
+        printfn "Parallel states in %A seconds and sequential states %A seconds." d1.InAverageTime d2.InAverageTime
+        printfn "Parallel states in %A seconds and sequential states %A seconds." d1.InTime d2.InTime 
+        
+        
     let checkPerformance contracts (label1,f) (label2,g) : unit = 
         let mutable i = 0
         for (count,contract) in contracts do

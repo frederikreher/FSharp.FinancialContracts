@@ -7,27 +7,23 @@ open FSharp.FinancialContracts.Environment
 open FSharp.FinancialContracts.Testing.Generators
 
 module PropertyCheckers =   
-  
-    //TODO Determine this on background of chosen testrunner
-    let log = fun prop env tsr  -> 
-        //let s = sprintf "Property failed" prop
-        let s = "Property failed"
-        failwith s
-    
     let logSuccess : LogFunction = fun i _ _ env tsr -> printfn "Succeeded on iteration %A with tsr %A and env %A" i tsr env
     let logFailed  : LogFunction = fun i _ _ env tsr -> printfn "Failed on iteration %A with tsr %A and env %A" i tsr env
     
     let noLog  : LogFunction = fun _ _ _ _ _ -> ()
     
-    let checkProperty (conf:Configuration) c prop = 
+    let containData data = if data.Passed then ()
+                           else failwith "Property wasn't successfully satisfied"
+    let returnData data = data
+    
+    let checkProperty f (conf:Configuration) c prop = 
         let data = PropertyCheckerInternal.checkSuite conf noLog noLog c prop
-        if data.Passed then
-            //printfn "Succesfully satisfied property in %A ms" data.InTime
-            ()
-        else 
-            failwith "Property failed on the check"
+        f data
+            
     
     [<Sealed>]
     type PropertyCheck = 
-       static member Check           : (Contract -> Property -> unit) = checkProperty Configuration.Default
-       static member CheckWithConfig : (Configuration -> Contract -> Property -> unit) = checkProperty
+       static member Check                        : (Contract -> Property -> unit) = checkProperty containData Configuration.Default 
+       static member CheckWithConfig              : (Configuration -> Contract -> Property -> unit) = checkProperty containData
+       static member CheckAndReturnData           : (Contract -> Property -> TestData) = checkProperty returnData Configuration.Default 
+       static member CheckAndReturnDataWithConfig : (Configuration -> Contract -> Property -> TestData) = checkProperty returnData

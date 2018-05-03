@@ -91,6 +91,8 @@ module program =
                             (1000,contract3,EnvironmentGenerators.Default,property3)
                          ] 
          
-        PerformanceChecker.checkPropertyPerformance properties
+        //PerformanceChecker.checkPropertyPerformance properties
+        
+        PerformanceChecker.checkParallelPerformance contract3 property3
         
         0 // return an integer exit code
