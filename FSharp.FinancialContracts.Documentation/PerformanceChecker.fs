@@ -52,25 +52,25 @@ module PerformanceChecker =
         printfn "Parallel states in %A seconds and sequential states %A seconds." d1.InTime d2.InTime 
         
         
-    let checkPerformance contracts (label1,f) (label2,g) : unit = 
+    let checkPerformance repCount contracts (label1,f) (label2,g) : unit = 
         let mutable i = 0
         for (count,contract) in contracts do
             let stopWatch = System.Diagnostics.Stopwatch.StartNew()  
             let envList = List.init count (fun _ -> EnvironmentGenerators.Default contract)
             printfn "Generated %A environments in %f" count stopWatch.Elapsed.TotalSeconds
             
-            stopWatch.Restart()
+            let st1 = System.Diagnostics.Stopwatch.StartNew()  
             
             for env in envList do
-                repeat n (f env) contract
-            
-            let t1 = stopWatch.Elapsed.TotalSeconds
-            stopWatch.Restart()
+                repeat repCount (f env) contract
+            st1.Stop()
+            let t1 = st1.Elapsed.TotalSeconds
+            let st2 = System.Diagnostics.Stopwatch.StartNew() 
             
             for env in envList do
-                repeat n (g env) contract
-                
-            let t2 = stopWatch.Elapsed.TotalSeconds
+                repeat repCount (g env) contract
+            st2.Stop()    
+            let t2 = st2.Elapsed.TotalSeconds
             
-            printfn "On contract %A %A run in time %A and %A run in time %A difference is %A%%" (i+1) label1 t1 label2 t2 ((t2/t1)*100.0)       
+            printfn "On contract %A %A run in time %A and %A run in time %A difference is %A%%" (i+1) label1 t1 label2 t2 (100.0-((t2/t1)*100.0))
             i <- i+1

@@ -93,9 +93,10 @@ module Contract =
     let getObservables c : BoolObs list * NumberObs list = observables c [] []
     
     // Evaluates a contract and returns an array of list of Transactions.   
-    let evaluateContract environment contract : TransactionResults =       
-        let transactions = Array.create (getTime environment + (getHorizon contract)) List.empty
+    let evaluateContract environment contract : TransactionResults =
         let (ct,observables,f) = environment
+        let size = (getTime environment + observables.Length)
+        let transactions = Array.create size List.empty
         
         let rec evalContract now factor c : unit = 
             match c with
@@ -122,3 +123,4 @@ module Contract =
         evalContract ct (Const 1.0) contract
         (ct,transactions)
         
+         
