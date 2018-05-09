@@ -70,7 +70,7 @@ module Environment =
         | Mult(num1, num2)        -> (evalNumberObs num1 env) * (evalNumberObs num2 env)
         | If(bool, num1, num2)    -> if (evalBoolObs bool env) then (evalNumberObs num1 env)
                                      else (evalNumberObs num2 env)
-        | Average(num, t)         -> if t > (getTime env) then failwith "The observable period cannot exceed the horizon of the contract"
+        | Average(num, t)         -> if 0 > ((getTime env) - t) then failwith "The observable period has to be within the horizon of the contract"
                                      else 
-                                     let res = List.fold (fun sum _ -> sum + (evalNumberObs num (increaseEnvTime -1 env))) 0.0 [0..(t-1)]
-                                     res / float(t)
+                                     let res = List.fold (fun sum i -> sum + (evalNumberObs num (increaseEnvTime i env))) 0.0 [(-t)..0]
+                                     res / float(t+1)
