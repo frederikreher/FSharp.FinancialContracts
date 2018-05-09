@@ -9,4 +9,4 @@ module ContractEvaluation =
     /// <param name="environment"> The Environment to evaluate the contract in. </param>
     /// <param name="contract"> The contract to evaluate. </param>
     /// <returns> Returns an list of lists of Transactions. </returns>
-    val evaluateContract: environment:Environment -> contract:Contract -> Transaction list list
+    val simpleEvaluateContract: environment:Environment -> contract:Contract -> Transaction list list

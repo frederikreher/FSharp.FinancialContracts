@@ -50,7 +50,7 @@ module EvaluationPerfomance =
     let Run () =                       
         printfn "evaluation was called"
         let fastEvaluation   = ("fastEvaluation", FSharp.FinancialContracts.Contract.evaluateContract)
-        let simpleEvaluation = ("simpleEvaluation", ContractEvaluation.evaluateContract)
+        let simpleEvaluation = ("simpleEvaluation", ContractEvaluation.simpleEvaluateContract)
         
         let createTests envcount con () =
             [(envcount,con 0);

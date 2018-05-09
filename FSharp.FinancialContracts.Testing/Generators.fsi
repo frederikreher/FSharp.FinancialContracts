@@ -10,7 +10,7 @@ open FSharp.FinancialContracts.Observables
 module Generators =
 
     /// <summary> A function which takes time as parameter and returns and observable value. </summary>
-    type ValueGenerator = Random -> Time -> ObservableValue
+    type ValueGenerator = System.Random -> Time -> ObservableValue
 
     /// <summary> Holds keys for observables which maps to corresponding valuegenerators </summary>
     type ValueGenerators = Map<string,ValueGenerator>

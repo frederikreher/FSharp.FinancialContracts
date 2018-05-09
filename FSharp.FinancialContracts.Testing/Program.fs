@@ -11,6 +11,7 @@ module program =
     open Generators
     open Generators
     open Generators
+    open FSharp.FinancialContracts
      
     [<EntryPoint>]
     let main argv =
@@ -66,6 +67,9 @@ module program =
         
         printfn "%A result was with env %A and transactions %A" propertyIsFulfilled environment transactions
                         
+        let lowExchangeRate = LessThan(NumVal "USD/CNY", Const 0.15)
+        let tttt = If(lowExchangeRate, TimeObs.Const 30, Scale(Const 100.0, One CNY), Zero)
 
-        let tttt = If(BoolVal "b", TimeObs.Const 5, Zero, One DKK)
+        Delay(TimeObs.If(lowExchangeRate, TimeObs.Const 10, TimeObs.Const 20), One USD)
+
         0 // return an integer exit code

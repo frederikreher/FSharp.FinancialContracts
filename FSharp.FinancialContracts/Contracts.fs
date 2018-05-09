@@ -17,5 +17,5 @@ module Contracts =
     let european boolObs time contract : Contract = Delay(time, If(boolObs, TimeObs.Const 0, contract, Zero))
 
     // Asian option using an observable.
-    let asian boolObs numObs time obsPeriod contract : Contract = Delay(time, If(boolObs, TimeObs.Const 0, Scale(Average(numObs, obsPeriod), contract), Zero))
+    let asian boolObs numObs time obsPeriod contract : Contract = Delay(time, If(boolObs, TimeObs.Const 0, ScaleNow(Average(numObs, obsPeriod), contract), Zero))
     
