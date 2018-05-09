@@ -90,3 +90,16 @@ type TestScaleAndScaleNow () =
         let property = forAllTimes isZero
         
         PropertyCheck.Check contract property
+
+    [<TestMethod>]
+    member this.``Test that average works as intended`` () =
+        let c = Delay(TimeObs.Const 10, Scale(Average(NumVal "x", 5), One EUR))
+
+        let gen = Map.empty.Add("x", fun _ t -> NumberValue (float t))
+        let conf = {Configuration.Default with EnvironmentGenerator = EnvironmentGenerators.WithCustomGenerators gen}
+
+        let property = atTime 10 (hasTransactions [Transaction(7.5, EUR)])
+
+
+        PropertyCheck.CheckWithConfig conf c property
+
