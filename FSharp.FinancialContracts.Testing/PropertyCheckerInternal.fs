@@ -75,9 +75,9 @@ module PropertyCheckerInternal =
         let checkProp f i : unit -> bool = fun () ->
                 let (t,obs,_) = conf.EnvironmentGenerator contract
                 let env = (t,obs,f)
-                //printfn "Env is %A" env
+
                 let tsr = conf.ContractEvaluator env contract
-                
+
                 let res = (prop env tsr)            
                 if res then (onSuccess i contract prop env tsr)
                 else (onFail i contract prop env tsr)
