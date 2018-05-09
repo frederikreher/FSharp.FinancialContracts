@@ -12,7 +12,7 @@ open FSharp.FinancialContracts.Contracts
 open System
 
 module PropertyCheckerPerformance = 
-    let Run  =
+    let Run () =
         let contract1 = american (BoolVal "b") (TimeObs.Const 365) (One DKK)
         let property1 = 
             forSomeTime (satisfyBoolObs (BoolVal "b" )) =|> 
@@ -27,6 +27,9 @@ module PropertyCheckerPerformance =
                         (forSomeTime (satisfyBoolObs (BoolVal "x")) =|> 
                           forOneTime 
                               ((satisfyBoolObs (BoolVal "x")) &|& (countOf allTransactions (=) 2)))
+                              
+        let contract4 = repeat (Scale(NumVal "x", One DKK)) 1000
+        let property4 = forAllTimes !!hasNoTransactions
         
         let properties = [
                             (1000,contract1,EnvironmentGenerators.Default,property1)
@@ -34,5 +37,5 @@ module PropertyCheckerPerformance =
                             (1000,contract3,EnvironmentGenerators.Default,property3)
                          ] 
          
-        PerformanceChecker.checkPropertyPerformance properties
-        PerformanceChecker.checkParallelPerformance contract3 property3
+        //PerformanceChecker.checkPropertyPerformance properties
+        PerformanceChecker.checkParallelPerformance contract4 property4

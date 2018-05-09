@@ -51,8 +51,9 @@ module program =
 //        printfn "%A" testData.TestsFailed
 //        printfn "%A" testData.AccessLog
             
-        EvaluationPerfomance.Run ()
+        //EvaluationPerfomance.Run ()
         //GeneratorPerformance.Run
-        //PropertyCheckerPerformance.Run      
-        
+        PropertyCheckerPerformance.Run () 
+            
         0 // return an integer exit code
+    

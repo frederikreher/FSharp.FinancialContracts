@@ -37,7 +37,7 @@ module PerformanceChecker =
             
     let checkParallelPerformance contract property = 
         
-        let config = { Configuration.Default with NumberOfTests = 4}
+        let config = { Configuration.Default with NumberOfTests = 1000}
         
         let stopWatch = System.Diagnostics.Stopwatch.StartNew()
         let d1 = PropertyCheck.CheckAndReturnDataWithConfig {config with RunInParallel = true} contract property 
@@ -48,8 +48,6 @@ module PerformanceChecker =
         let t2 = stopWatch.Elapsed.TotalSeconds
         
         printfn "Parallel evaluated in %A seconds and sequential evaluated in %A seconds. Difference is %A%%" t1 t2 ((t2/t1)*100.0)
-        printfn "Parallel states in %A seconds and sequential states %A seconds." d1.InAverageTime d2.InAverageTime
-        printfn "Parallel states in %A seconds and sequential states %A seconds." d1.InTime d2.InTime 
         
         
     let checkPerformance repCount contracts (label1,f) (label2,g) : unit = 

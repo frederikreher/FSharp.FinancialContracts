@@ -28,8 +28,7 @@ module EvaluationPerfomance =
     let andNest n     =     
         let rec nest i = 
                     if i = n then One DKK
-                    else And(nest (i+1),nest (i+1))
-                  
+                    else And(nest (i+1),nest (i+1))         
         nest 0          
         
     let scaleNestIf n = 
@@ -68,8 +67,8 @@ module EvaluationPerfomance =
         
         let scaleTests = createTests 1000 repeatScale
         
-        let scaleNestIfTests = createTests 100 scaleNestIf
-        let andNestTests = createTests 1000 andNest
+        let scaleNestIfTests = createTests 1000 scaleNestIf
+        let andNestTests = createTests 100 andNest
         
 //        let contract = scaleNestIf 10
 //        let env = EnvironmentGenerators.WithDefaultGenerators contract
