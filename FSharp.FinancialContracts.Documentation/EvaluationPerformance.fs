@@ -57,6 +57,13 @@ module EvaluationPerfomance =
              ( envcount,con 1);
              ( envcount,con 5);
              ( envcount,con 10);
+             ( envcount,con 11);
+             ( envcount,con 12);
+             ( envcount,con 13);
+             ( envcount,con 14);
+             ( envcount,con 15);
+             ( envcount,con 16);
+             ( envcount,con 17);
 //             ( envcount,con 100);
 //             ( envcount,con 1000);
 //             ( envcount,con 10000);
@@ -94,5 +101,5 @@ module EvaluationPerfomance =
 //        if res1 = res2 then printfn "they were equal" 
 //        else printfn "something is very wrong"
         
-        
-        PerformanceChecker.checkPerformance 1000 (scaleNestIfTests()) simpleEvaluation fastEvaluation
+        printfn "%A" (getHorizon (scaleNestIf 10))
+        PerformanceChecker.checkPerformance 1000 (scaleNestIfTests()) fastEvaluation simpleEvaluation

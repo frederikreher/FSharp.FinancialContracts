@@ -18,8 +18,8 @@ module program =
     [<EntryPoint>]
     let main argv =
         
-        EvaluationPerfomance.Run ()
-        GeneratorPerformance.Run ()
+        //EvaluationPerfomance.Run ()
+       // GeneratorPerformance.Run ()
         PropertyCheckerPerformance.Run () 
             
         0 // return an integer exit code
